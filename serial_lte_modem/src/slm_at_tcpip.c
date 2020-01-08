@@ -25,8 +25,7 @@ LOG_MODULE_REGISTER(tcpip, CONFIG_SLM_LOG_LEVEL);
 static const char     nb_at_commands[][34]  = {
 				AT_CFUN,
 				AT_CGDCONT,
-				AT_COPS,
-				AT_XSOCKET
+				AT_COPS
 			};
 
 
@@ -866,15 +865,17 @@ static int init_nb_iot_parameters(void)
 
 		if (memcmp(buf, "OK", 2) != 0) {
 			LOG_INF("NOK");
-			LOG_INF("buffer: %s", buf);
 			close(at_sock);
 			return -1;
 		}
+		else
+		{
+			LOG_INF("OK");
+		}
+		
 		k_sleep(K_SECONDS(1));
 	}
 	LOG_INF("NB-IoT Parameters Initialized");
-
-	close(at_sock);
 
 	return 0;
 }
@@ -893,5 +894,11 @@ int slm_at_tcpip_init(at_cmd_handler_t callback)
 	client.callback = callback;
 	//init nb_iot module & udp socket
 	init_nb_iot_parameters();
+	
+	do_socket_open(2);
+	LOG_INF("socket opened");
+	do_udp_sendto("8.8.8.8", 4445, "0101");
+	LOG_INF("bootup message sent");
+	
 	return 0;
 }
