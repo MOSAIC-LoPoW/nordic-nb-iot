@@ -1,0 +1,6 @@
+osource "/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/Kconfig.nrf"
+
+osource "/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/mcuboot/zephyr/Kconfig"
+
+osource "/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrfxlib/Kconfig.nrfxlib"
+
