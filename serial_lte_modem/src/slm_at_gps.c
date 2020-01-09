@@ -66,6 +66,14 @@ static struct gps_client {
 	at_cmd_handler_t callback;
 } client;
 
+static struct current_gps_data_struct {
+	double latitude;
+	double longitude;
+	float altitude;
+	float hdop;
+	nrf_gnss_datetime_t datetime;
+} current_gps_data;
+
 nrf_gnss_data_frame_t 	 gps_data;
 static char buf[64];
 
@@ -142,7 +150,14 @@ static void gps_pvt_notify(void)
 	// 	gps_data.pvt.datetime.seconds);
 	// client.callback(buf);
 	print_pvt_data(&gps_data.pvt);
-	
+
+	// Update current GPS data
+	LOG_INF("Updating current GPS data");
+	current_gps_data.latitude = gps_data.pvt.latitude;
+	current_gps_data.longitude = gps_data.pvt.longitude;
+	current_gps_data.altitude = gps_data.pvt.altitude;
+	current_gps_data.hdop = gps_data.pvt.hdop;
+	current_gps_data.datetime = gps_data.pvt.datetime;
 }
 
 static void gps_thread_fn(void *arg1, void *arg2, void *arg3)

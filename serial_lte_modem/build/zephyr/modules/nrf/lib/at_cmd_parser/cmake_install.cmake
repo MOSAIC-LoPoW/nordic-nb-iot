@@ -1,4 +1,4 @@
-# Install script for directory: /home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/lib/at_cmd_parser
+# Install script for directory: /home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/lib/at_cmd_parser
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

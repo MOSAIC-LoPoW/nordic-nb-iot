@@ -1,7 +1,7 @@
 The target system is: Generic - 2.1.0 - arm
-The host system is: Linux - 4.15.0-70-generic - x86_64
+The host system is: Linux - 4.15.0-74-generic - x86_64
 Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
-Compiler: /home/mats/gcc-arm-none-eabi-7-2018-q2-update/bin/arm-none-eabi-gcc 
+Compiler: /opt/gnuarmemb/bin/arm-none-eabi-gcc 
 Build flags: 
 Id flags: -c 
 
@@ -11,10 +11,10 @@ The output was:
 
 Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.o"
 
-The C compiler identification is GNU, found in "/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/CMakeFiles/3.13.3/CompilerIdC/CMakeCCompilerId.o"
+The C compiler identification is GNU, found in "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/samples/nrf9160/serial_lte_modem/build/CMakeFiles/3.16.0/CompilerIdC/CMakeCCompilerId.o"
 
 Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
-Compiler: /home/mats/gcc-arm-none-eabi-7-2018-q2-update/bin/arm-none-eabi-g++ 
+Compiler: /opt/gnuarmemb/bin/arm-none-eabi-g++ 
 Build flags: 
 Id flags: -c 
 
@@ -24,11 +24,11 @@ The output was:
 
 Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.o"
 
-The CXX compiler identification is GNU, found in "/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/CMakeFiles/3.13.3/CompilerIdCXX/CMakeCXXCompilerId.o"
+The CXX compiler identification is GNU, found in "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/samples/nrf9160/serial_lte_modem/build/CMakeFiles/3.16.0/CompilerIdCXX/CMakeCXXCompilerId.o"
 
 Checking whether the ASM compiler is GNU using "--version" matched "(GNU assembler)|(GCC)|(Free Software Foundation)":
-arm-none-eabi-gcc (GNU Tools for Arm Embedded Processors 7-2018-q2-update) 7.3.1 20180622 (release) [ARM/embedded-7-branch revision 261907]
-Copyright (C) 2017 Free Software Foundation, Inc.
+arm-none-eabi-gcc (GNU Tools for Arm Embedded Processors 8-2019-q3-update) 8.3.1 20190703 (release) [gcc-8-branch revision 273027]
+Copyright (C) 2018 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 

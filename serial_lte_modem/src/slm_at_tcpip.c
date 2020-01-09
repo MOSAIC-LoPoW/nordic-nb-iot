@@ -22,10 +22,21 @@ LOG_MODULE_REGISTER(tcpip, CONFIG_SLM_LOG_LEVEL);
 #define AT_XSOCKET		"AT#XSOCKET=1,2"
 #define AT_CEREG		"AT+CEREG?"
 
-static const char     nb_at_commands[][34]  = {
+#define AT_XRFTEST		"AT\%XRFTEST=1,1,5,8300,14,0,3,1,0,0"
+#define AT_CESQ			"AT+CESQ"
+#define AT_NBRGRSRP		"AT\%NBRGRSRP"
+
+static const char nb_init_at_commands[][34] = {
 				AT_CFUN,
 				AT_CGDCONT,
 				AT_COPS
+			};
+
+static const char nb_network_at_commands[][35] = {
+				AT_XRFTEST,
+				AT_CEREG,
+				AT_CESQ,
+				AT_NBRGRSRP
 			};
 
 
@@ -848,10 +859,10 @@ static int init_nb_iot_parameters(void)
 		return -1;
 	}
 
-	for (int i = 0; i < ARRAY_SIZE(nb_at_commands); i++) {
-		LOG_INF("%s",nb_at_commands[i]);
-		bytes_sent = send(at_sock, nb_at_commands[i],
-				  strlen(nb_at_commands[i]), 0);
+	for (int i = 0; i < ARRAY_SIZE(nb_init_at_commands); i++) {
+		LOG_INF("%s",nb_init_at_commands[i]);
+		bytes_sent = send(at_sock, nb_init_at_commands[i],
+				  strlen(nb_init_at_commands[i]), 0);
 
 		if (bytes_sent < 0) {
 			LOG_INF("NO BYTES SENT");
@@ -880,6 +891,53 @@ static int init_nb_iot_parameters(void)
 	return 0;
 }
 
+static int request_nb_iot_netwerk_stats(void)
+{
+	LOG_INF("Requesting NB-IoT network stats...");
+
+	int  at_sock;
+	int  bytes_sent;
+	int  bytes_received;
+	char buf[2];
+
+	at_sock = socket(AF_LTE, 0, NPROTO_AT);
+	if (at_sock < 0) {
+		return -1;
+	}
+
+	for (int i = 0; i < ARRAY_SIZE(nb_network_at_commands); i++) {
+		LOG_INF("%s",nb_init_at_commands[i]);
+		bytes_sent = send(at_sock, nb_init_at_commands[i],
+				  strlen(nb_init_at_commands[i]), 0);
+
+		if (bytes_sent < 0) {
+			LOG_INF("NO BYTES SENT");
+			close(at_sock);
+			return -1;
+		}
+
+		do {
+			bytes_received = recv(at_sock, buf, 2, 0);
+		} while (bytes_received == 0);
+
+		if (memcmp(buf, "OK", 2) != 0) {
+			LOG_INF("NOK");
+			close(at_sock);
+			return -1;
+		}
+		else
+		{
+			LOG_INF("OK");
+		}
+		
+		k_sleep(K_SECONDS(1));
+	}
+	LOG_INF("NB-IoT netwerk stats requested.");
+
+	return 0;
+	
+}
+
 /**@brief API to initialize TCP/IP AT commands handler
  */
 int slm_at_tcpip_init(at_cmd_handler_t callback)
@@ -894,6 +952,7 @@ int slm_at_tcpip_init(at_cmd_handler_t callback)
 	client.callback = callback;
 	//init nb_iot module & udp socket
 	init_nb_iot_parameters();
+	request_nb_iot_netwerk_stats();
 	
 	do_socket_open(2);
 	LOG_INF("socket opened");

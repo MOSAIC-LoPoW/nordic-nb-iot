@@ -1,4 +1,4 @@
-# Install script for directory: /home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/modules/debug/segger
+# Install script for directory: /home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/modules/debug/segger
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
