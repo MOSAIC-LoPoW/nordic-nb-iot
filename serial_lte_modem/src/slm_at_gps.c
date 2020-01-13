@@ -20,12 +20,12 @@
 #endif
 
 static const char     gps_at_commands[][31]  = {
-				AT_XSYSTEMMODE,
+				//AT_XSYSTEMMODE,
 #ifdef CONFIG_BOARD_NRF9160_PCA10090NS
 				AT_MAGPIO,
-				AT_COEX0,
+				AT_COEX0
 #endif
-				AT_CFUN
+				//AT_CFUN
 			};
 
 
@@ -137,19 +137,19 @@ static void print_pvt_data(nrf_gnss_data_frame_t *pvt_data)
 
 static void gps_pvt_notify(void)
 {
-	// sprintf(buf, "#XGPSP: long %f lat %f\r\n",
-	// 	gps_data.pvt.longitude,
-	// 	gps_data.pvt.latitude);
-	// client.callback(buf);
-	// sprintf(buf, "#XGPSP: %04u-%02u-%02u %02u:%02u:%02u\r\n",
-	// 	gps_data.pvt.datetime.year,
-	// 	gps_data.pvt.datetime.month,
-	// 	gps_data.pvt.datetime.day,
-	// 	gps_data.pvt.datetime.hour,
-	// 	gps_data.pvt.datetime.minute,
-	// 	gps_data.pvt.datetime.seconds);
-	// client.callback(buf);
-	print_pvt_data(&gps_data.pvt);
+	sprintf(buf, "#XGPSP: long %f lat %f\r\n",
+		gps_data.pvt.longitude,
+		gps_data.pvt.latitude);
+	client.callback(buf);
+	sprintf(buf, "#XGPSP: %04u-%02u-%02u %02u:%02u:%02u\r\n",
+		gps_data.pvt.datetime.year,
+		gps_data.pvt.datetime.month,
+		gps_data.pvt.datetime.day,
+		gps_data.pvt.datetime.hour,
+		gps_data.pvt.datetime.minute,
+		gps_data.pvt.datetime.seconds);
+	client.callback(buf);
+	//print_pvt_data(&gps_data.pvt);
 
 	// Update current GPS data
 	LOG_INF("Updating current GPS data");
@@ -180,6 +180,7 @@ static void gps_thread_fn(void *arg1, void *arg2, void *arg3)
 		switch (gps_data.data_id) {
 		case NRF_GNSS_PVT_DATA_ID:
 			if (IS_FIX(gps_data.pvt.flags)) {
+				LOG_INF("GPS FIX PVT DATA");
 				gps_pvt_notify();
 				if (!client.has_fix) {
 					client.has_fix = true;
@@ -188,6 +189,7 @@ static void gps_thread_fn(void *arg1, void *arg2, void *arg3)
 			break;
 		case NRF_GNSS_NMEA_DATA_ID:
 			if (client.has_fix) {
+				LOG_INF("GPS FIX client.has_fix");	
 				client.callback("#XGPSN: ");
 				client.callback(gps_data.nmea);
 			}
@@ -407,7 +409,9 @@ static int enable_gps(void)
 			close(at_sock);
 			return -1;
 		}
+		//at_cmd_write(gps_at_commands[i], NULL, 0, NULL);
 		k_sleep(K_SECONDS(1));
+	
 	}
 	
 	close(at_sock);

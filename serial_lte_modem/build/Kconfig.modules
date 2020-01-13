@@ -1,6 +1,6 @@
-osource "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/Kconfig.nrf"
+osource "/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/Kconfig.nrf"
 
-osource "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/mcuboot/zephyr/Kconfig"
+osource "/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/mcuboot/zephyr/Kconfig"
 
-osource "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrfxlib/Kconfig.nrfxlib"
+osource "/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrfxlib/Kconfig.nrfxlib"
 

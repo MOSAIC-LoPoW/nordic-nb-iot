@@ -1,4 +1,4 @@
-# Install script for directory: /home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/zephyr/subsys
+# Install script for directory: /home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/zephyr/subsys
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,16 +34,16 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/debug/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/logging/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/fs/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/net/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/random/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/storage/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/fb/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/power/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/stats/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/testsuite/cmake_install.cmake")
+  include("/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/debug/cmake_install.cmake")
+  include("/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/logging/cmake_install.cmake")
+  include("/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/fs/cmake_install.cmake")
+  include("/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/net/cmake_install.cmake")
+  include("/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/random/cmake_install.cmake")
+  include("/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/storage/cmake_install.cmake")
+  include("/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/fb/cmake_install.cmake")
+  include("/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/power/cmake_install.cmake")
+  include("/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/stats/cmake_install.cmake")
+  include("/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/testsuite/cmake_install.cmake")
 
 endif()
 

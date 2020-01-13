@@ -1,4 +1,4 @@
-# Install script for directory: /home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/drivers/lte_link_control
+# Install script for directory: /home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/drivers/lte_link_control
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

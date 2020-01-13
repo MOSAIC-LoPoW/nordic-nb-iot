@@ -329,20 +329,20 @@ int slm_at_host_init(void)
 
 	write_uart_string(SLM_SYNC_STR, sizeof(SLM_SYNC_STR)-1);
 
-#if defined(CONFIG_SLM_GPS_AT_MODE)
-	/* Initialize the GPS module */
-	err = slm_at_gps_init(slm_at_callback);
-	if (err) {
-		LOG_ERR("GPS could not be initialized: %d", err);
-		return -EFAULT;
-	}
-#endif
-
 #if defined(CONFIG_SLM_TCPIP_AT_MODE)
 	/* Initialize the TCPIP module */
 	err = slm_at_tcpip_init(slm_at_callback);
 	if (err) {
 		LOG_ERR("TCPIP could not be initialized: %d", err);
+		return -EFAULT;
+	}
+#endif
+
+#if defined(CONFIG_SLM_GPS_AT_MODE)
+	/* Initialize the GPS module */
+	err = slm_at_gps_init(slm_at_callback);
+	if (err) {
+		LOG_ERR("GPS could not be initialized: %d", err);
 		return -EFAULT;
 	}
 #endif

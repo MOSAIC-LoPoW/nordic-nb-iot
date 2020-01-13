@@ -16,24 +16,31 @@ LOG_MODULE_REGISTER(tcpip, CONFIG_SLM_LOG_LEVEL);
 #define INVALID_SOCKET	-1
 #define TCPIP_MAX_URL	128
 
+#define AT_XSYSTEMMODE  "AT\%XSYSTEMMODE=0,1,1,0"
+#define AT_XRFTEST		"AT\%XRFTEST=1,1,5,8300,14,0,3,1,0,0"
 #define AT_CFUN         "AT+CFUN=1"
+#define AT_CFUN0        "AT+CFUN=0"
+#define AT_XBANDLOCK	"AT\%XBANDLOCK=1,\"10100\""
 #define AT_CGDCONT		"AT+CGDCONT=1,\"IP\",\"iot.orange.be\""
 #define AT_COPS			"AT+COPS=1,2,\"20610\""
-#define AT_XSOCKET		"AT#XSOCKET=1,2"
-#define AT_CEREG		"AT+CEREG?"
 
-#define AT_XRFTEST		"AT\%XRFTEST=1,1,5,8300,14,0,3,1,0,0"
+#define AT_CEREG		"AT+CEREG?"
 #define AT_CESQ			"AT+CESQ"
 #define AT_NBRGRSRP		"AT\%NBRGRSRP"
 
+#define AT_XSOCKET		"AT#XSOCKET=1,2"
+
 static const char nb_init_at_commands[][34] = {
+				// AT_CFUN0,
+				// AT_XRFTEST,
+				AT_XSYSTEMMODE,
+				//AT_XBANDLOCK,
 				AT_CFUN,
 				AT_CGDCONT,
 				AT_COPS
 			};
 
 static const char nb_network_at_commands[][35] = {
-				AT_XRFTEST,
 				AT_CEREG,
 				AT_CESQ,
 				AT_NBRGRSRP
@@ -848,7 +855,7 @@ int slm_at_tcpip_parse(const u8_t *param, u8_t length)
 static int init_nb_iot_parameters(void)
 {
 	LOG_INF("Initializing NB-IoT Parameters");
-
+	
 	int  at_sock;
 	int  bytes_sent;
 	int  bytes_received;
@@ -883,9 +890,12 @@ static int init_nb_iot_parameters(void)
 		{
 			LOG_INF("OK");
 		}
+		//at_cmd_write(nb_init_at_commands[i], NULL, 0, NULL);
 		
 		k_sleep(K_SECONDS(1));
 	}
+
+	close(at_sock);
 	LOG_INF("NB-IoT Parameters Initialized");
 
 	return 0;
@@ -895,47 +905,23 @@ static int request_nb_iot_netwerk_stats(void)
 {
 	LOG_INF("Requesting NB-IoT network stats...");
 
-	int  at_sock;
-	int  bytes_sent;
-	int  bytes_received;
-	char buf[2];
+	u8_t ceregbuf[50] ;
+	at_cmd_write(AT_CEREG, ceregbuf, 50, NULL);
+	LOG_INF("CEREGBUF: %s", ceregbuf);
+	k_sleep(K_SECONDS(2));
+	
+	u8_t cesqbuf[50] ;
+	at_cmd_write(AT_CESQ, cesqbuf, 50, NULL);
+	LOG_INF("CESQBUF: %s", cesqbuf);
+	k_sleep(K_SECONDS(2));
 
-	at_sock = socket(AF_LTE, 0, NPROTO_AT);
-	if (at_sock < 0) {
-		return -1;
-	}
-
-	for (int i = 0; i < ARRAY_SIZE(nb_network_at_commands); i++) {
-		LOG_INF("%s",nb_init_at_commands[i]);
-		bytes_sent = send(at_sock, nb_init_at_commands[i],
-				  strlen(nb_init_at_commands[i]), 0);
-
-		if (bytes_sent < 0) {
-			LOG_INF("NO BYTES SENT");
-			close(at_sock);
-			return -1;
-		}
-
-		do {
-			bytes_received = recv(at_sock, buf, 2, 0);
-		} while (bytes_received == 0);
-
-		if (memcmp(buf, "OK", 2) != 0) {
-			LOG_INF("NOK");
-			close(at_sock);
-			return -1;
-		}
-		else
-		{
-			LOG_INF("OK");
-		}
-		
-		k_sleep(K_SECONDS(1));
-	}
+	u8_t nbrbuf[50] ;
+	at_cmd_write(AT_NBRGRSRP, nbrbuf, 50, NULL);
+	LOG_INF("NBRBUF: %s", nbrbuf);
+	
 	LOG_INF("NB-IoT netwerk stats requested.");
 
 	return 0;
-	
 }
 
 /**@brief API to initialize TCP/IP AT commands handler
@@ -952,12 +938,12 @@ int slm_at_tcpip_init(at_cmd_handler_t callback)
 	client.callback = callback;
 	//init nb_iot module & udp socket
 	init_nb_iot_parameters();
-	request_nb_iot_netwerk_stats();
 	
 	do_socket_open(2);
-	LOG_INF("socket opened");
 	do_udp_sendto("8.8.8.8", 4445, "0101");
 	LOG_INF("bootup message sent");
+
+	request_nb_iot_netwerk_stats();
 	
 	return 0;
 }

@@ -1,4 +1,4 @@
-# Install script for directory: /home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/zephyr/lib
+# Install script for directory: /home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/zephyr/lib
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,10 +34,10 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/samples/nrf9160/serial_lte_modem/build/spm/zephyr/lib/libc/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/samples/nrf9160/serial_lte_modem/build/spm/zephyr/lib/posix/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/samples/nrf9160/serial_lte_modem/build/spm/zephyr/lib/gui/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/samples/nrf9160/serial_lte_modem/build/spm/zephyr/lib/os/cmake_install.cmake")
+  include("/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/spm/zephyr/lib/libc/cmake_install.cmake")
+  include("/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/spm/zephyr/lib/posix/cmake_install.cmake")
+  include("/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/spm/zephyr/lib/gui/cmake_install.cmake")
+  include("/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/spm/zephyr/lib/os/cmake_install.cmake")
 
 endif()
 
