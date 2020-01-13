@@ -90,5 +90,13 @@ void main(void)
 void main(void)
 {
 	start_execute();
+	do
+	{
+		/* code */
+		request_nb_iot_network_stats();
+		//TODO: send function
+		k_sleep(K_SECONDS(10));
+	} while (1);
+	
 }
 #endif	/* CONFIG_THIN_GPIO_WAKEUP */

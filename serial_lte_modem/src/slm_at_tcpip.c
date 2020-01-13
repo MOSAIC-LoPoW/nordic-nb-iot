@@ -24,11 +24,12 @@ LOG_MODULE_REGISTER(tcpip, CONFIG_SLM_LOG_LEVEL);
 #define AT_CGDCONT		"AT+CGDCONT=1,\"IP\",\"iot.orange.be\""
 #define AT_COPS			"AT+COPS=1,2,\"20610\""
 
+#define AT_XSOCKET		"AT#XSOCKET=1,2"
+
 #define AT_CEREG		"AT+CEREG?"
 #define AT_CESQ			"AT+CESQ"
 #define AT_NBRGRSRP		"AT\%NBRGRSRP"
 
-#define AT_XSOCKET		"AT#XSOCKET=1,2"
 
 static const char nb_init_at_commands[][34] = {
 				// AT_CFUN0,
@@ -892,7 +893,7 @@ static int init_nb_iot_parameters(void)
 		}
 		//at_cmd_write(nb_init_at_commands[i], NULL, 0, NULL);
 		
-		k_sleep(K_SECONDS(1));
+		k_sleep(K_SECONDS(3));
 	}
 
 	close(at_sock);
@@ -901,26 +902,69 @@ static int init_nb_iot_parameters(void)
 	return 0;
 }
 
-static int request_nb_iot_netwerk_stats(void)
+int request_nb_iot_network_stats(void)
 {
 	LOG_INF("Requesting NB-IoT network stats...");
 
-	u8_t ceregbuf[50] ;
-	at_cmd_write(AT_CEREG, ceregbuf, 50, NULL);
-	LOG_INF("CEREGBUF: %s", ceregbuf);
-	k_sleep(K_SECONDS(2));
-	
-	u8_t cesqbuf[50] ;
-	at_cmd_write(AT_CESQ, cesqbuf, 50, NULL);
-	LOG_INF("CESQBUF: %s", cesqbuf);
+	int  at_sock;
+	int  bytes_sent;
+	int  bytes_received;
+	char buf[150];
+
+	at_sock = socket(AF_LTE, 0, NPROTO_AT);
+	if (at_sock < 0) {
+		return -1;
+	}
+
+	LOG_INF("CEREG");
+	bytes_sent = send(at_sock, AT_CEREG, strlen(AT_CEREG), 0);
+	if (bytes_sent < 0) {
+		LOG_INF("CEREG send error");
+		close(at_sock);
+		return -1;
+	}
+	do {
+		bytes_received = recv(at_sock, buf, 100, 0);
+	} while (bytes_received == 0);
+
+	LOG_INF("CEREG RESPONSE: %s", buf);
+	//TODO: parse buffer		
 	k_sleep(K_SECONDS(2));
 
-	u8_t nbrbuf[50] ;
-	at_cmd_write(AT_NBRGRSRP, nbrbuf, 50, NULL);
-	LOG_INF("NBRBUF: %s", nbrbuf);
-	
+	LOG_INF("CESQ");
+	bytes_sent = send(at_sock, AT_CESQ, strlen(AT_CESQ), 0);
+	if (bytes_sent < 0) {
+		LOG_INF("CESQ send error");
+		close(at_sock);
+		return -1;
+	}
+	do {
+		bytes_received = recv(at_sock, buf, 100, 0);
+	} while (bytes_received == 0);
+
+	LOG_INF("CESQ RESPONSE: %s", buf);		
+	//TODO: parse buffer
+	k_sleep(K_SECONDS(2));
+
+	LOG_INF("NBRGRSRP");
+	bytes_sent = send(at_sock, AT_NBRGRSRP, strlen(AT_NBRGRSRP), 0);
+	if (bytes_sent < 0) {
+		LOG_INF("NBRGRSRP send error");
+		close(at_sock);
+		return -1;
+	}
+	do {
+		bytes_received = recv(at_sock, buf, 150, 0);
+	} while (bytes_received == 0);
+
+	LOG_INF("NBRGRSRP RESPONSE: %s", buf);	
+	//TODO: parse buffer	
+	k_sleep(K_SECONDS(2));
+
+	close(at_sock);
+
 	LOG_INF("NB-IoT netwerk stats requested.");
-
+	
 	return 0;
 }
 
@@ -943,7 +987,7 @@ int slm_at_tcpip_init(at_cmd_handler_t callback)
 	do_udp_sendto("8.8.8.8", 4445, "0101");
 	LOG_INF("bootup message sent");
 
-	request_nb_iot_netwerk_stats();
+	request_nb_iot_network_stats();
 	
 	return 0;
 }
