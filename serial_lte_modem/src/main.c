@@ -35,7 +35,7 @@ void start_execute(void)
 {
 	int err;
 
-	LOG_INF("Serial LTE Modem");
+	LOG_INF("SERIAL LTE MODEM FOR MULTIPLE NB-IOT BS");
 #if defined(CONFIG_SLM_AT_MODE)
 	err = slm_at_host_init();
 	if (err != 0) {
@@ -90,13 +90,12 @@ void main(void)
 void main(void)
 {
 	start_execute();
+	//send_message();
 	do
 	{
-		/* code */
-		request_nb_iot_network_stats();
-		//TODO: send function
+		// Send message with network stats to UDP server every 10 s.
+		send_message();
 		k_sleep(K_SECONDS(10));
 	} while (1);
-	
 }
 #endif	/* CONFIG_THIN_GPIO_WAKEUP */

@@ -336,6 +336,7 @@ int slm_at_host_init(void)
 		LOG_ERR("TCPIP could not be initialized: %d", err);
 		return -EFAULT;
 	}
+	
 #endif
 
 #if defined(CONFIG_SLM_GPS_AT_MODE)

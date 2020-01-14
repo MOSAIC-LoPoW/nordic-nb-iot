@@ -41,12 +41,20 @@ static const char nb_init_at_commands[][34] = {
 				AT_COPS
 			};
 
-static const char nb_network_at_commands[][35] = {
-				AT_CEREG,
-				AT_CESQ,
-				AT_NBRGRSRP
-			};
+// static const char nb_network_at_commands[][35] = {
+// 				AT_CEREG,
+// 				AT_CESQ,
+// 				AT_NBRGRSRP
+// 			};
 
+// Network stats
+char current_cell_id[10];
+char current_rsrp[10];
+char neighbors[50];
+char latitude[10];
+char longitude[10];
+char altitude[10];
+char hdop[3]; 
 
 /*
  * Known limitation in this version
@@ -860,7 +868,7 @@ static int init_nb_iot_parameters(void)
 	int  at_sock;
 	int  bytes_sent;
 	int  bytes_received;
-	char buf[2];
+	char buf[150];
 
 	at_sock = socket(AF_LTE, 0, NPROTO_AT);
 	if (at_sock < 0) {
@@ -895,6 +903,27 @@ static int init_nb_iot_parameters(void)
 		
 		k_sleep(K_SECONDS(3));
 	}
+	
+	// Keep requesting for neighboring cells until some are found.
+	int neighbors_found = 0;
+	while(neighbors_found == 0)
+	{
+		bytes_sent = send(at_sock, AT_NBRGRSRP, strlen(AT_NBRGRSRP), 0);
+		if (bytes_sent < 0) {
+			LOG_INF("NBRGRSRP send error");
+			close(at_sock);
+			return -1;
+		}
+		do {
+			bytes_received = recv(at_sock, buf, 150, 0);
+		} while (bytes_received == 0);
+		LOG_INF("NBRGRSRP RESPONSE: %s", buf);
+		if(strstr(buf, "NBRGRSRP:") != NULL)
+		{
+			neighbors_found = 1;
+		}
+		k_sleep(K_SECONDS(3));
+	}
 
 	close(at_sock);
 	LOG_INF("NB-IoT Parameters Initialized");
@@ -902,7 +931,7 @@ static int init_nb_iot_parameters(void)
 	return 0;
 }
 
-int request_nb_iot_network_stats(void)
+int request_nb_iot_network_stats()
 {
 	LOG_INF("Requesting NB-IoT network stats...");
 
@@ -916,6 +945,7 @@ int request_nb_iot_network_stats(void)
 		return -1;
 	}
 
+	// Get and parse current cell ID: AT+CEREG?
 	LOG_INF("CEREG");
 	bytes_sent = send(at_sock, AT_CEREG, strlen(AT_CEREG), 0);
 	if (bytes_sent < 0) {
@@ -926,11 +956,26 @@ int request_nb_iot_network_stats(void)
 	do {
 		bytes_received = recv(at_sock, buf, 100, 0);
 	} while (bytes_received == 0);
-
-	LOG_INF("CEREG RESPONSE: %s", buf);
-	//TODO: parse buffer		
+	
+	LOG_INF("CEREG RESPONSE: %s", buf); // +CEREG: 0,5,"5276","0101D268",9
+	if(strstr(buf, "OK") != NULL)
+	{
+		char* pos = strstr(buf, "\",\"")+3;		
+		for(uint8_t i=0; i<8; i++)
+		{
+			current_cell_id[i] = pos[i];
+		}
+		LOG_INF("Current cell ID = %s", current_cell_id);
+	} 
+	else if (strstr(buf, "ERROR") != NULL) 
+	{
+		LOG_ERR("Error while getting current cell ID!");
+		close(at_sock);
+		return -1;
+	}
 	k_sleep(K_SECONDS(2));
 
+	// Get and parse current RSRP: AT+CESQ
 	LOG_INF("CESQ");
 	bytes_sent = send(at_sock, AT_CESQ, strlen(AT_CESQ), 0);
 	if (bytes_sent < 0) {
@@ -942,10 +987,25 @@ int request_nb_iot_network_stats(void)
 		bytes_received = recv(at_sock, buf, 100, 0);
 	} while (bytes_received == 0);
 
-	LOG_INF("CESQ RESPONSE: %s", buf);		
-	//TODO: parse buffer
+	LOG_INF("CESQ RESPONSE: %s", buf); // +CESQ: 99,99,255,255,17,54		
+	if(strstr(buf, "OK") != NULL)
+	{
+		char* pos = strrchr(buf, ',') + 1;
+		for(uint8_t i=0; i<strlen(pos); i++)
+		{
+			current_rsrp[i] = pos[i];
+		}
+		LOG_INF("Current RSRP = %s", current_rsrp);
+	} 
+	else if (strstr(buf, "ERROR") != NULL) 
+	{
+		LOG_ERR("Error while getting current RSRP!");
+		close(at_sock);
+		return -1;
+	}
 	k_sleep(K_SECONDS(2));
 
+	// Get and parse neighboring cell IDs and RSRP values: AT+NBRGRSRP
 	LOG_INF("NBRGRSRP");
 	bytes_sent = send(at_sock, AT_NBRGRSRP, strlen(AT_NBRGRSRP), 0);
 	if (bytes_sent < 0) {
@@ -957,13 +1017,28 @@ int request_nb_iot_network_stats(void)
 		bytes_received = recv(at_sock, buf, 150, 0);
 	} while (bytes_received == 0);
 
-	LOG_INF("NBRGRSRP RESPONSE: %s", buf);	
-	//TODO: parse buffer	
+	LOG_INF("NBRGRSRP RESPONSE: %s", buf); // %NBRGRSRP: 179,6447,57,11,6447,54
+	if(strstr(buf, "OK") != NULL)
+	{
+		char* pos = strstr(buf, "\%NBRGRSRP: ") + strlen("\%NBRGRSRP: ");
+		for(uint8_t i=0; i<strlen(pos); i++)
+		{
+		 	neighbors[i] = pos[i];
+		}
+		LOG_INF("Neighbors = %s", neighbors);
+		LOG_INF("###0###");
+	}
+	else if (strstr(buf, "ERROR") != NULL) 
+	{
+		LOG_ERR("Error while getting neighbor data!");
+		close(at_sock);
+		return -1;
+	}
+
 	k_sleep(K_SECONDS(2));
 
 	close(at_sock);
-
-	LOG_INF("NB-IoT netwerk stats requested.");
+	LOG_INF("NB-IoT network stats requested.");
 	
 	return 0;
 }
@@ -982,12 +1057,20 @@ int slm_at_tcpip_init(at_cmd_handler_t callback)
 	client.callback = callback;
 	//init nb_iot module & udp socket
 	init_nb_iot_parameters();
-	
 	do_socket_open(2);
-	do_udp_sendto("8.8.8.8", 4445, "0101");
-	LOG_INF("bootup message sent");
-
-	request_nb_iot_network_stats();
-	
 	return 0;
+}
+
+void send_message(void)
+{
+	// Request network stats: Current and neighbor Cell ID, RSRP etc.
+	request_nb_iot_network_stats();
+
+	// Put all stats in a buffer
+	//char payload = "0102030405";
+
+
+	// Send message to UDP server
+	//do_udp_sendto("nbiot.idlab.uantwerpen.be", 161, payload);
+	//LOG_INF("Message sent: %s", payload);
 }
