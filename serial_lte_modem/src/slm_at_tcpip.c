@@ -11,6 +11,7 @@
 #include <net/socket.h>
 #include "slm_at_tcpip.h"
 
+
 LOG_MODULE_REGISTER(tcpip, CONFIG_SLM_LOG_LEVEL);
 
 #define INVALID_SOCKET	-1
@@ -30,7 +31,6 @@ LOG_MODULE_REGISTER(tcpip, CONFIG_SLM_LOG_LEVEL);
 #define AT_CESQ			"AT+CESQ"
 #define AT_NBRGRSRP		"AT\%NBRGRSRP"
 
-
 static const char nb_init_at_commands[][34] = {
 				// AT_CFUN0,
 				// AT_XRFTEST,
@@ -41,20 +41,13 @@ static const char nb_init_at_commands[][34] = {
 				AT_COPS
 			};
 
-// static const char nb_network_at_commands[][35] = {
-// 				AT_CEREG,
-// 				AT_CESQ,
-// 				AT_NBRGRSRP
-// 			};
-
 // Network stats
 char current_cell_id[10];
-char current_rsrp[10];
-char neighbors[50];
-char latitude[10];
-char longitude[10];
-char altitude[10];
-char hdop[3]; 
+uint8_t current_rsrp;
+char neighbors[100];
+
+//extern nrf_gnss_data_frame_t gps_data;
+//extern struct gps_client gps_client;
 
 /*
  * Known limitation in this version
@@ -904,26 +897,26 @@ static int init_nb_iot_parameters(void)
 		k_sleep(K_SECONDS(3));
 	}
 	
-	// Keep requesting for neighboring cells until some are found.
-	int neighbors_found = 0;
-	while(neighbors_found == 0)
-	{
-		bytes_sent = send(at_sock, AT_NBRGRSRP, strlen(AT_NBRGRSRP), 0);
-		if (bytes_sent < 0) {
-			LOG_INF("NBRGRSRP send error");
-			close(at_sock);
-			return -1;
-		}
-		do {
-			bytes_received = recv(at_sock, buf, 150, 0);
-		} while (bytes_received == 0);
-		LOG_INF("NBRGRSRP RESPONSE: %s", buf);
-		if(strstr(buf, "NBRGRSRP:") != NULL)
-		{
-			neighbors_found = 1;
-		}
-		k_sleep(K_SECONDS(3));
-	}
+	// // Keep requesting for neighboring cells until some are found.
+	// int neighbors_found = 0;
+	// while(neighbors_found == 0)
+	// {
+	// 	bytes_sent = send(at_sock, AT_NBRGRSRP, strlen(AT_NBRGRSRP), 0);
+	// 	if (bytes_sent < 0) {
+	// 		LOG_INF("NBRGRSRP send error");
+	// 		close(at_sock);
+	// 		return -1;
+	// 	}
+	// 	do {
+	// 		bytes_received = recv(at_sock, buf, 150, 0);
+	// 	} while (bytes_received == 0);
+	// 	LOG_INF("NBRGRSRP RESPONSE: %s", buf);
+	// 	if(strstr(buf, "NBRGRSRP:") != NULL)
+	// 	{
+	// 		neighbors_found = 1;
+	// 	}
+	// 	k_sleep(K_SECONDS(5));
+	// }
 
 	close(at_sock);
 	LOG_INF("NB-IoT Parameters Initialized");
@@ -987,15 +980,16 @@ int request_nb_iot_network_stats()
 		bytes_received = recv(at_sock, buf, 100, 0);
 	} while (bytes_received == 0);
 
-	LOG_INF("CESQ RESPONSE: %s", buf); // +CESQ: 99,99,255,255,17,54		
+	LOG_INF("CESQ RESPONSE: %s", buf); // +CESQ: 99,99,255,255,17,54 \n OK		
 	if(strstr(buf, "OK") != NULL)
 	{
-		char* pos = strrchr(buf, ',') + 1;
-		for(uint8_t i=0; i<strlen(pos); i++)
-		{
-			current_rsrp[i] = pos[i];
-		}
-		LOG_INF("Current RSRP = %s", current_rsrp);
+		char *pos1 = strrchr(buf, ',') + 1;
+		char *pos2 = strstr(pos1, "\n");
+		char rsrp[2];
+		memcpy(rsrp, pos1, strlen(pos1)-strlen(pos2));
+		char* ptr;
+		current_rsrp = (uint8_t) strtol(rsrp, &ptr, 10);
+		LOG_INF("Current RSRP = %d", current_rsrp);
 	} 
 	else if (strstr(buf, "ERROR") != NULL) 
 	{
@@ -1003,39 +997,48 @@ int request_nb_iot_network_stats()
 		close(at_sock);
 		return -1;
 	}
-	k_sleep(K_SECONDS(2));
-
-	// Get and parse neighboring cell IDs and RSRP values: AT+NBRGRSRP
-	LOG_INF("NBRGRSRP");
-	bytes_sent = send(at_sock, AT_NBRGRSRP, strlen(AT_NBRGRSRP), 0);
-	if (bytes_sent < 0) {
-		LOG_INF("NBRGRSRP send error");
-		close(at_sock);
-		return -1;
-	}
-	do {
-		bytes_received = recv(at_sock, buf, 150, 0);
-	} while (bytes_received == 0);
-
-	LOG_INF("NBRGRSRP RESPONSE: %s", buf); // %NBRGRSRP: 179,6447,57,11,6447,54
-	if(strstr(buf, "OK") != NULL)
-	{
-		char* pos = strstr(buf, "\%NBRGRSRP: ") + strlen("\%NBRGRSRP: ");
-		for(uint8_t i=0; i<strlen(pos); i++)
-		{
-		 	neighbors[i] = pos[i];
-		}
-		LOG_INF("Neighbors = %s", neighbors);
-		LOG_INF("###0###");
-	}
-	else if (strstr(buf, "ERROR") != NULL) 
-	{
-		LOG_ERR("Error while getting neighbor data!");
-		close(at_sock);
-		return -1;
-	}
 
 	k_sleep(K_SECONDS(2));
+
+	// // Get and parse neighboring cell IDs and RSRP values: AT+NBRGRSRP
+	// LOG_INF("NBRGRSRP");
+	// bytes_sent = send(at_sock, AT_NBRGRSRP, strlen(AT_NBRGRSRP), 0);
+	// if (bytes_sent < 0) {
+	// 	LOG_INF("NBRGRSRP send error");
+	// 	close(at_sock);
+	// 	return -1;
+	// }
+	// do {
+	// 	bytes_received = recv(at_sock, buf, 150, 0);
+	// } while (bytes_received == 0);
+
+	// LOG_INF("NBRGRSRP RESPONSE: %s", buf); // %NBRGRSRP: 179,6447,57,11,6447,54
+	// if(strstr(buf, "OK") != NULL)
+	// {
+	// 	if(strstr(buf, "NBRGRSRP") != NULL)
+	// 	{
+	// 		char* pos1 = strstr(buf, "\%NBRGRSRP: ") + strlen("\%NBRGRSRP: ");
+	// 		char* pos2 = strstr(pos1, "\n");
+	// 		for(uint8_t i=0; i<strlen(pos1)-strlen(pos2); i++)
+	// 		{
+	// 			neighbors[i] = pos1[i];
+	// 		}
+	// 		LOG_INF("Neighbors = %s", neighbors);
+	// 	}
+	// 	else
+	// 	{
+	// 		LOG_INF("No neighbors found.");
+	// 		neighbors[0] = '\0';
+	// 	}	
+	// }
+	// else if (strstr(buf, "ERROR") != NULL) 
+	// {
+	// 	LOG_ERR("Error while getting neighbor data!");
+	// 	close(at_sock);
+	// 	return -1;
+	// }
+	
+	// k_sleep(K_SECONDS(2));
 
 	close(at_sock);
 	LOG_INF("NB-IoT network stats requested.");
@@ -1064,13 +1067,40 @@ int slm_at_tcpip_init(at_cmd_handler_t callback)
 void send_message(void)
 {
 	// Request network stats: Current and neighbor Cell ID, RSRP etc.
-	request_nb_iot_network_stats();
+	int error = request_nb_iot_network_stats();
+	LOG_INF("error = %d", error);
+	if(error == 0)
+	{
+		// Put all stats in a buffer
+		char payloadstring[300] = "";
 
-	// Put all stats in a buffer
-	//char payload = "0102030405";
+		strcat(payloadstring, current_cell_id);
+		strcat(payloadstring, ";");
+
+		char* rsrp = (char*) &current_rsrp;
+		strcat(payloadstring, rsrp);
+		strcat(payloadstring, ";");
+
+		if(neighbors[0] != '\0')
+		{
+			strcat(payloadstring, neighbors);
+		}
+		strcat(payloadstring, ";");
+		
+		LOG_INF("Payloadstring = %s", payloadstring);
+
+		//LOG_INF("GPS client running = %d", gps_client.running);
+		//LOG_INF("lat = %d, lon = %d", gps_data.pvt.latitude, gps_data.pvt.longitude);
 
 
-	// Send message to UDP server
-	//do_udp_sendto("nbiot.idlab.uantwerpen.be", 161, payload);
-	//LOG_INF("Message sent: %s", payload);
+		// memcpy(payloadstring, latitude, 8);
+
+		// memcpy(payloadstring+9, longitude, strlen(payloadstring)+1);
+		// memcpy(payloadstring, longitude, strlen(payloadstring)+1);
+
+
+		// // Send message to UDP server
+		// do_udp_sendto("nbiot.idlab.uantwerpen.be", 161, payloadstring);
+		// LOG_INF("Message sent: %s", payloadstring);
+	}
 }
