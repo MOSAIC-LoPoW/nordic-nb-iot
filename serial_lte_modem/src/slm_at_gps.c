@@ -59,13 +59,14 @@ static slm_at_cmd_list_t m_at_list[AT_GPS_MAX] = {
 	{AT_GPSRUN, "AT#XGPSRUN", "at#xgpsrun", handle_at_gpsrun},
 };
 
-struct gps_client {
-	int sock; /* Socket descriptor. */
-	u16_t mask; /* NMEA mask */
-	bool running; /* GPS running status */
-	bool has_fix; /* At least one fix is got */
-	at_cmd_handler_t callback;
-} gps_client_inst;
+// static struct gps_client {
+// 	int sock; /* Socket descriptor. */
+// 	u16_t mask; /* NMEA mask */
+// 	bool running; /* GPS running status */
+// 	bool has_fix; /* At least one fix is got */
+// 	at_cmd_handler_t callback;
+// } gps_client_inst;
+struct gps_client gps_client_inst;
 
 nrf_gnss_data_frame_t 	 gps_data;
 static char buf[64];

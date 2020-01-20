@@ -1,4 +1,4 @@
-# Install script for directory: /home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/zephyr/ext/debug
+# Install script for directory: /home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/zephyr/ext/debug
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

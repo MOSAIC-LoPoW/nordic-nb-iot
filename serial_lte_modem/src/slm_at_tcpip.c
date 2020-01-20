@@ -10,6 +10,7 @@
 #include <nrf_socket.h>
 #include <net/socket.h>
 #include "slm_at_tcpip.h"
+#include "slm_at_gps.h"
 
 LOG_MODULE_REGISTER(tcpip, CONFIG_SLM_LOG_LEVEL);
 
@@ -46,8 +47,7 @@ uint8_t current_rsrp;
 char neighbors[100];
 
 //extern nrf_gnss_data_frame_t gps_data;
-// extern struct gps_client gps_client_inst;
-// extern int a;
+extern struct gps_client gps_client_inst;
 
 /*
  * Known limitation in this version

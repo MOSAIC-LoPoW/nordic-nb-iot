@@ -1,4 +1,4 @@
-# Install script for directory: /home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/modules/fs/littlefs
+# Install script for directory: /home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/modules/fs/littlefs
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

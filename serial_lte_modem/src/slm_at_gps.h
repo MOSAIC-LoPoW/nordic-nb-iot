@@ -16,6 +16,14 @@
 #include <zephyr/types.h>
 #include "slm_at_host.h"
 
+struct gps_client {
+	int sock; /* Socket descriptor. */
+	u16_t mask; /* NMEA mask */
+	bool running; /* GPS running status */
+	bool has_fix; /* At least one fix is got */
+	at_cmd_handler_t callback;
+};
+
 /**
  * @brief GPS AT command parser.
  *

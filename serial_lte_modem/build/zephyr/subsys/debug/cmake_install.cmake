@@ -1,4 +1,4 @@
-# Install script for directory: /home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/zephyr/subsys/debug
+# Install script for directory: /home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/zephyr/subsys/debug
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,7 +34,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/debug/tracing/cmake_install.cmake")
+  include("/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/zephyr/subsys/debug/tracing/cmake_install.cmake")
 
 endif()
 
