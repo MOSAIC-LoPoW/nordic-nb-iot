@@ -11,6 +11,7 @@
 #include <net/socket.h>
 #include "slm_at_gps.h"
 
+
 #define AT_XSYSTEMMODE "AT\%XSYSTEMMODE=0,1,1,0"
 #define AT_CFUN        "AT+CFUN=1"
 
@@ -64,7 +65,7 @@ struct gps_client {
 	bool running; /* GPS running status */
 	bool has_fix; /* At least one fix is got */
 	at_cmd_handler_t callback;
-} gps_client;
+} gps_client_inst;
 
 nrf_gnss_data_frame_t 	 gps_data;
 static char buf[64];
@@ -86,7 +87,7 @@ static void gps_satellite_stats(void)
 	u8_t in_fix = 0;
 	u8_t unhealthy = 0;
 
-	if (gps_data.data_id != NRF_GNSS_PVT_DATA_ID || gps_client.has_fix) {
+	if (gps_data.data_id != NRF_GNSS_PVT_DATA_ID || gps_client_inst.has_fix) {
 		return;
 	}
 
@@ -107,7 +108,7 @@ static void gps_satellite_stats(void)
 	if (last_tracked != tracked) {
 		sprintf(buf, "#XGPSS: tracking %d using %d unhealthy %d\r\n",
 			tracked, in_fix, unhealthy);
-		gps_client.callback(buf);
+		gps_client_inst.callback(buf);
 		last_tracked = tracked;
 	}
 }
@@ -133,7 +134,7 @@ static void gps_pvt_notify(void)
 	sprintf(buf, "#XGPSP: long %f lat %f\r\n",
 		gps_data.pvt.longitude,
 		gps_data.pvt.latitude);
-	gps_client.callback(buf);
+	gps_client_inst.callback(buf);
 	sprintf(buf, "#XGPSP: %04u-%02u-%02u %02u:%02u:%02u\r\n",
 		gps_data.pvt.datetime.year,
 		gps_data.pvt.datetime.month,
@@ -141,7 +142,7 @@ static void gps_pvt_notify(void)
 		gps_data.pvt.datetime.hour,
 		gps_data.pvt.datetime.minute,
 		gps_data.pvt.datetime.seconds);
-	gps_client.callback(buf);
+	gps_client_inst.callback(buf);
 	//print_pvt_data(&gps_data.pvt);
 }
 
@@ -152,15 +153,13 @@ static void gps_thread_fn(void *arg1, void *arg2, void *arg3)
 	ARG_UNUSED(arg3);
 
 	while (true) {
-		LOG_INF("GPS thread!!!!!!!!!!!!!!!!!");
-		LOG_INF("Lat = %d", gps_data.pvt.latitude);
-		if (nrf_recv(gps_client.sock, &gps_data, sizeof(gps_data), 0)
-			<= 0) {
+		//LOG_INF("GPS thread: lat = %d !!!!!!!!!!!!!!", gps_data.pvt.latitude);
+		if (nrf_recv(gps_client_inst.sock, &gps_data, sizeof(gps_data), 0) <= 0) {
 			LOG_ERR("GPS nrf_recv(): %d", -errno);
 			sprintf(buf, "#XGPSRUN: %d\r\n", -errno);
-			gps_client.callback(buf);
-			nrf_close(gps_client.sock);
-			gps_client.running = false;
+			gps_client_inst.callback(buf);
+			nrf_close(gps_client_inst.sock);
+			gps_client_inst.running = false;
 			break;
 		}
 		gps_satellite_stats();
@@ -169,16 +168,16 @@ static void gps_thread_fn(void *arg1, void *arg2, void *arg3)
 			if (IS_FIX(gps_data.pvt.flags)) {
 				LOG_INF("GPS FIX PVT DATA");
 				gps_pvt_notify();
-				if (!gps_client.has_fix) {
-					gps_client.has_fix = true;
+				if (!gps_client_inst.has_fix) {
+					gps_client_inst.has_fix = true;
 				}
 			}
 			break;
 		case NRF_GNSS_NMEA_DATA_ID:
-			if (gps_client.has_fix) {
-				LOG_INF("GPS FIX gps_client.has_fix");	
-				gps_client.callback("#XGPSN: ");
-				gps_client.callback(gps_data.nmea);
+			if (gps_client_inst.has_fix) {
+				LOG_INF("GPS FIX gps_client_inst.has_fix");	
+				gps_client_inst.callback("#XGPSN: ");
+				gps_client_inst.callback(gps_data.nmea);
 			}
 			break;
 		default:
@@ -195,32 +194,32 @@ static int do_gps_start(void)
 	nrf_gnss_fix_retry_t    fix_retry    = 0; /* unlimited retry period */
 	nrf_gnss_fix_interval_t fix_interval = 1; /* 1s delay between fixes */
 	nrf_gnss_delete_mask_t  delete_mask  = 0;
-	nrf_gnss_nmea_mask_t    nmea_mask = (nrf_gnss_nmea_mask_t)gps_client.mask;
+	nrf_gnss_nmea_mask_t    nmea_mask = (nrf_gnss_nmea_mask_t)gps_client_inst.mask;
 	
-	gps_client.sock = nrf_socket(NRF_AF_LOCAL, NRF_SOCK_DGRAM, NRF_PROTO_GNSS);
-	if (gps_client.sock < 0) {
+	gps_client_inst.sock = nrf_socket(NRF_AF_LOCAL, NRF_SOCK_DGRAM, NRF_PROTO_GNSS);
+	if (gps_client_inst.sock < 0) {
 		LOG_ERR("Could not init socket (err: %d)", -errno);
 		goto error;
 	}
-	ret = nrf_setsockopt(gps_client.sock, NRF_SOL_GNSS, NRF_SO_GNSS_FIX_RETRY,
+	ret = nrf_setsockopt(gps_client_inst.sock, NRF_SOL_GNSS, NRF_SO_GNSS_FIX_RETRY,
 			&fix_retry, sizeof(fix_retry));
 	if (ret != 0) {
 		LOG_ERR("Failed to set fix retry value (err: %d)", -errno);
 		goto error;
 	}
-	ret = nrf_setsockopt(gps_client.sock, NRF_SOL_GNSS,
+	ret = nrf_setsockopt(gps_client_inst.sock, NRF_SOL_GNSS,
 		NRF_SO_GNSS_FIX_INTERVAL, &fix_interval, sizeof(fix_interval));
 	if (ret != 0) {
 		LOG_ERR("Failed to set fix interval value (err: %d)", -errno);
 		goto error;
 	}
-	ret = nrf_setsockopt(gps_client.sock, NRF_SOL_GNSS, NRF_SO_GNSS_NMEA_MASK,
+	ret = nrf_setsockopt(gps_client_inst.sock, NRF_SOL_GNSS, NRF_SO_GNSS_NMEA_MASK,
 			&nmea_mask, sizeof(nmea_mask));
 	if (ret != 0) {
 		LOG_ERR("Failed to set nmea mask (err: %d)", -errno);
 		goto error;
 	}
-	ret = nrf_setsockopt(gps_client.sock, NRF_SOL_GNSS, NRF_SO_GNSS_START,
+	ret = nrf_setsockopt(gps_client_inst.sock, NRF_SOL_GNSS, NRF_SO_GNSS_START,
 			&delete_mask, sizeof(delete_mask));
 	if (ret != 0) {
 		LOG_ERR("Failed to start GPS (err: %d)", -errno);
@@ -237,18 +236,18 @@ static int do_gps_start(void)
 				THREAD_PRIORITY, 0, K_NO_WAIT);
 	}
 
-	gps_client.running = true;
+	gps_client_inst.running = true;
 	LOG_DBG("GPS started");
 
-	sprintf(buf, "#XGPSRUN: 1,%d\r\n", gps_client.mask);
-	gps_client.callback(buf);
+	sprintf(buf, "#XGPSRUN: 1,%d\r\n", gps_client_inst.mask);
+	gps_client_inst.callback(buf);
 	return 0;
 
 error:
 	LOG_ERR("GPS start failed: %d", ret);
 	sprintf(buf, "#XGPSRUN: %d\r\n", ret);
-	gps_client.callback(buf);
-	gps_client.running = false;
+	gps_client_inst.callback(buf);
+	gps_client_inst.running = false;
 
 	return -errno;
 }
@@ -258,17 +257,17 @@ static int do_gps_stop(void)
 	int ret = 0;
 	nrf_gnss_delete_mask_t	delete_mask  = 0;
 
-	if (gps_client.sock != INVALID_SOCKET) {
-		ret = nrf_setsockopt(gps_client.sock, NRF_SOL_GNSS,
+	if (gps_client_inst.sock != INVALID_SOCKET) {
+		ret = nrf_setsockopt(gps_client_inst.sock, NRF_SOL_GNSS,
 			NRF_SO_GNSS_STOP, &delete_mask, sizeof(delete_mask));
 		if (ret != 0) {
 			LOG_ERR("Failed to stop GPS (err: %d)", -errno);
 			ret = -errno;
 		} else {
 			k_thread_suspend(gps_thread_id);
-			nrf_close(gps_client.sock);
-			gps_client.running = false;
-			gps_client.callback("#XGPSRUN: 0\r\n");
+			nrf_close(gps_client_inst.sock);
+			gps_client_inst.running = false;
+			gps_client_inst.callback("#XGPSRUN: 0\r\n");
 			LOG_DBG("GPS stopped");
 		}
 
@@ -308,31 +307,31 @@ static int handle_at_gpsrun(const char *at_cmd, size_t param_offset)
 		if (op == 1) {
 			if (at_params_valid_count_get(&m_param_list) > 2) {
 				err = at_params_short_get(&m_param_list, 2,
-							&gps_client.mask);
+							&gps_client_inst.mask);
 				if (err < 0) {
 					return err;
 				};
 			}
-			if (gps_client.running) {
+			if (gps_client_inst.running) {
 				LOG_WRN("GPS is running");
 			} else {
 				LOG_INF("running do_gps_start from at handler");
 				err = do_gps_start();
 			}
 		} else if (op == 0) {
-			if (!gps_client.running) {
+			if (!gps_client_inst.running) {
 				LOG_WRN("GPS is not running");
 			} else {
 				err = do_gps_stop();
 			}
 		}
 	} else if (*(at_param) == '?') {
-		if (gps_client.running) {
-			sprintf(buf, "#XGPSRUN: 1,%d\r\n", gps_client.mask);
+		if (gps_client_inst.running) {
+			sprintf(buf, "#XGPSRUN: 1,%d\r\n", gps_client_inst.mask);
 		} else {
 			sprintf(buf, "#XGPSRUN: 0\r\n");
 		}
-		gps_client.callback(buf);
+		gps_client_inst.callback(buf);
 		err = 0;
 	}
 
@@ -415,15 +414,15 @@ int slm_at_gps_init(at_cmd_handler_t callback)
 		LOG_ERR("No callback");
 		return -EINVAL;
 	}
-	gps_client.sock = INVALID_SOCKET;
-	gps_client.mask =  NRF_GNSS_NMEA_GSV_MASK |
+	gps_client_inst.sock = INVALID_SOCKET;
+	gps_client_inst.mask =  NRF_GNSS_NMEA_GSV_MASK |
 		       NRF_GNSS_NMEA_GSA_MASK |
 		       NRF_GNSS_NMEA_GLL_MASK |
 		       NRF_GNSS_NMEA_GGA_MASK |
 		       NRF_GNSS_NMEA_RMC_MASK;
-	gps_client.running = false;
-	gps_client.has_fix = false;
-	gps_client.callback = callback;
+	gps_client_inst.running = false;
+	gps_client_inst.has_fix = false;
+	gps_client_inst.callback = callback;
 	gps_thread_id = NULL;
 	enable_gps();
 	do_gps_start();

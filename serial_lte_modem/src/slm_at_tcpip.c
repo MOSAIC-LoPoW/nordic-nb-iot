@@ -11,7 +11,6 @@
 #include <net/socket.h>
 #include "slm_at_tcpip.h"
 
-
 LOG_MODULE_REGISTER(tcpip, CONFIG_SLM_LOG_LEVEL);
 
 #define INVALID_SOCKET	-1
@@ -47,7 +46,8 @@ uint8_t current_rsrp;
 char neighbors[100];
 
 //extern nrf_gnss_data_frame_t gps_data;
-//extern struct gps_client gps_client;
+// extern struct gps_client gps_client_inst;
+// extern int a;
 
 /*
  * Known limitation in this version
@@ -1089,7 +1089,7 @@ void send_message(void)
 		
 		LOG_INF("Payloadstring = %s", payloadstring);
 
-		//LOG_INF("GPS client running = %d", gps_client.running);
+		LOG_INF("GPS client running = %d", gps_client_inst.running);
 		//LOG_INF("lat = %d, lon = %d", gps_data.pvt.latitude, gps_data.pvt.longitude);
 
 
