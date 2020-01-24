@@ -687,6 +687,20 @@
     ],
     [
         [
+            "int espi_read_lpc_request",
+            "struct device *dev,\n\t\t\t\tenum lpc_peripheral_opcode op, u32_t *data"
+        ],
+        "espi.h"
+    ],
+    [
+        [
+            "int espi_write_lpc_request",
+            "struct device *dev,\n\t\t\t\t     enum lpc_peripheral_opcode op,\n\t\t\t\t     u32_t *data"
+        ],
+        "espi.h"
+    ],
+    [
+        [
             "int espi_send_vwire",
             "struct device *dev,\n\t\t\t      enum espi_vwire_signal signal,\n\t\t\t      u8_t level"
         ],

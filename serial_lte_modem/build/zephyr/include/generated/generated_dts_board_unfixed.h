@@ -5,7 +5,7 @@
  *   nrf9160_pca10090ns.dts.pre.tmp
  *
  * Directories with bindings:
- *   $ZEPHYR_BASE/dts/bindings
+ *   /home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/cmake/../dts/bindings, $ZEPHYR_BASE/dts/bindings
  */
 
 /* Nodes in dependency order (ordinal : path): */

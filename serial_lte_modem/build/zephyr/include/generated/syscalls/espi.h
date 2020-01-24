@@ -73,6 +73,32 @@ static inline int espi_write_request(struct device * dev, struct espi_request_pa
 }
 
 
+extern int z_impl_espi_read_lpc_request(struct device * dev, enum lpc_peripheral_opcode op, u32_t * data);
+static inline int espi_read_lpc_request(struct device * dev, enum lpc_peripheral_opcode op, u32_t * data)
+{
+#ifdef CONFIG_USERSPACE
+	if (z_syscall_trap()) {
+		return (int) arch_syscall_invoke3(*(uintptr_t *)&dev, *(uintptr_t *)&op, *(uintptr_t *)&data, K_SYSCALL_ESPI_READ_LPC_REQUEST);
+	}
+#endif
+	compiler_barrier();
+	return z_impl_espi_read_lpc_request(dev, op, data);
+}
+
+
+extern int z_impl_espi_write_lpc_request(struct device * dev, enum lpc_peripheral_opcode op, u32_t * data);
+static inline int espi_write_lpc_request(struct device * dev, enum lpc_peripheral_opcode op, u32_t * data)
+{
+#ifdef CONFIG_USERSPACE
+	if (z_syscall_trap()) {
+		return (int) arch_syscall_invoke3(*(uintptr_t *)&dev, *(uintptr_t *)&op, *(uintptr_t *)&data, K_SYSCALL_ESPI_WRITE_LPC_REQUEST);
+	}
+#endif
+	compiler_barrier();
+	return z_impl_espi_write_lpc_request(dev, op, data);
+}
+
+
 extern int z_impl_espi_send_vwire(struct device * dev, enum espi_vwire_signal signal, u8_t level);
 static inline int espi_send_vwire(struct device * dev, enum espi_vwire_signal signal, u8_t level)
 {

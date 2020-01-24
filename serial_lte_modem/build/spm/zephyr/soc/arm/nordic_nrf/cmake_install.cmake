@@ -1,4 +1,4 @@
-# Install script for directory: /home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/zephyr/soc/arm/nordic_nrf
+# Install script for directory: /home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/zephyr/soc/arm/nordic_nrf
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,7 +34,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/nrf/samples/nrf9160/serial_lte_modem/build/spm/zephyr/soc/arm/nordic_nrf/nrf91/cmake_install.cmake")
+  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/spm/zephyr/soc/arm/nordic_nrf/nrf91/cmake_install.cmake")
 
 endif()
 

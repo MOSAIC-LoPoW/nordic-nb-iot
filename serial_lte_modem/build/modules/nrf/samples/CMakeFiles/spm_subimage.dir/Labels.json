@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/samples/CMakeFiles/spm_subimage"
+		},
+		{
+			"file" : "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/samples/CMakeFiles/spm_subimage.rule"
+		},
+		{
+			"file" : "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/samples/CMakeFiles/spm_subimage-complete.rule"
+		},
+		{
+			"file" : "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/samples/spm_subimage-prefix/src/spm_subimage-stamp/spm_subimage-install.rule"
+		},
+		{
+			"file" : "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/samples/spm_subimage-prefix/src/spm_subimage-stamp/spm_subimage-mkdir.rule"
+		},
+		{
+			"file" : "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/samples/spm_subimage-prefix/src/spm_subimage-stamp/spm_subimage-download.rule"
+		},
+		{
+			"file" : "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/samples/spm_subimage-prefix/src/spm_subimage-stamp/spm_subimage-update.rule"
+		},
+		{
+			"file" : "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/samples/spm_subimage-prefix/src/spm_subimage-stamp/spm_subimage-patch.rule"
+		},
+		{
+			"file" : "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/samples/spm_subimage-prefix/src/spm_subimage-stamp/spm_subimage-configure.rule"
+		},
+		{
+			"file" : "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/samples/spm_subimage-prefix/src/spm_subimage-stamp/spm_subimage-build.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"spm_subimage"
+		],
+		"name" : "spm_subimage"
+	}
+}

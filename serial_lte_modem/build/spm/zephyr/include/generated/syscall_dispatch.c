@@ -385,6 +385,14 @@ uintptr_t z_mrsh_espi_write_request(uintptr_t arg1, uintptr_t arg2, uintptr_t ar
          uintptr_t arg4, uintptr_t arg5, uintptr_t arg6, void *ssf);
 
 __weak ALIAS_OF(handler_no_syscall)
+uintptr_t z_mrsh_espi_read_lpc_request(uintptr_t arg1, uintptr_t arg2, uintptr_t arg3,
+         uintptr_t arg4, uintptr_t arg5, uintptr_t arg6, void *ssf);
+
+__weak ALIAS_OF(handler_no_syscall)
+uintptr_t z_mrsh_espi_write_lpc_request(uintptr_t arg1, uintptr_t arg2, uintptr_t arg3,
+         uintptr_t arg4, uintptr_t arg5, uintptr_t arg6, void *ssf);
+
+__weak ALIAS_OF(handler_no_syscall)
 uintptr_t z_mrsh_espi_send_vwire(uintptr_t arg1, uintptr_t arg2, uintptr_t arg3,
          uintptr_t arg4, uintptr_t arg5, uintptr_t arg6, void *ssf);
 
@@ -978,6 +986,8 @@ const _k_syscall_handler_t _k_syscall_table[K_SYSCALL_LIMIT] = {
 	[K_SYSCALL_ESPI_GET_CHANNEL_STATUS] = z_mrsh_espi_get_channel_status,
 	[K_SYSCALL_ESPI_READ_REQUEST] = z_mrsh_espi_read_request,
 	[K_SYSCALL_ESPI_WRITE_REQUEST] = z_mrsh_espi_write_request,
+	[K_SYSCALL_ESPI_READ_LPC_REQUEST] = z_mrsh_espi_read_lpc_request,
+	[K_SYSCALL_ESPI_WRITE_LPC_REQUEST] = z_mrsh_espi_write_lpc_request,
 	[K_SYSCALL_ESPI_SEND_VWIRE] = z_mrsh_espi_send_vwire,
 	[K_SYSCALL_ESPI_RECEIVE_VWIRE] = z_mrsh_espi_receive_vwire,
 	[K_SYSCALL_ESPI_SEND_OOB] = z_mrsh_espi_send_oob,

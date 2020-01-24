@@ -137,10 +137,10 @@ SECTIONS
  *(.rodata)
  *(".rodata.*")
  *(.gnu.linkonce.r.*)
- . = ALIGN(4);
- _ext_abis_start = .;
- KEEP(*(.ext_abis))
- _ext_abis_size = ABSOLUTE((. - _ext_abis_start) / 4);
+. = ALIGN(4);
+_ext_apis_start = .;
+KEEP(*(.ext_apis))
+_ext_apis_size = ABSOLUTE(. - _ext_apis_start);
  . = ALIGN(4);
  } > FLASH
  _image_rodata_end = .;

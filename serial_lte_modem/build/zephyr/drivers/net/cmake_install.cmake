@@ -1,4 +1,4 @@
-# Install script for directory: /home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/zephyr/drivers/net
+# Install script for directory: /home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/zephyr/drivers/net
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

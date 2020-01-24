@@ -1,4 +1,4 @@
-# Install script for directory: /home/mats/Documents/IDLab/nordic-nrf-nbiot/ncs/zephyr/ext/lib/crypto
+# Install script for directory: /home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/zephyr/ext/lib/crypto
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

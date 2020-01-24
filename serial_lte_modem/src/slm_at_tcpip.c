@@ -7,26 +7,24 @@
 #include <zephyr.h>
 #include <stdio.h>
 #include <string.h>
-#include <nrf_socket.h>
 #include <net/socket.h>
 #include "slm_at_tcpip.h"
-#include "slm_at_gps.h"
+// #include "slm_at_gps.h" /////////////////////////////////////////
 
 LOG_MODULE_REGISTER(tcpip, CONFIG_SLM_LOG_LEVEL);
 
 #define INVALID_SOCKET	-1
 #define TCPIP_MAX_URL	128
 
+//////////////////////////////////////////////////////////////////
 #define AT_XSYSTEMMODE  "AT\%XSYSTEMMODE=0,1,1,0"
 #define AT_XRFTEST		"AT\%XRFTEST=1,1,5,8300,14,0,3,1,0,0"
-#define AT_CFUN         "AT+CFUN=1"
+#define AT_CFUN1        "AT+CFUN=1"
 #define AT_CFUN0        "AT+CFUN=0"
 #define AT_XBANDLOCK	"AT\%XBANDLOCK=1,\"10100\""
 #define AT_CGDCONT		"AT+CGDCONT=1,\"IP\",\"iot.orange.be\""
 #define AT_COPS			"AT+COPS=1,2,\"20610\""
-
 #define AT_XSOCKET		"AT#XSOCKET=1,2"
-
 #define AT_CEREG		"AT+CEREG?"
 #define AT_CESQ			"AT+CESQ"
 #define AT_NBRGRSRP		"AT\%NBRGRSRP"
@@ -36,7 +34,7 @@ static const char nb_init_at_commands[][34] = {
 				// AT_XRFTEST,
 				AT_XSYSTEMMODE,
 				//AT_XBANDLOCK,
-				AT_CFUN,
+				AT_CFUN1,
 				AT_CGDCONT,
 				AT_COPS
 			};
@@ -46,8 +44,10 @@ char current_cell_id[10];
 uint8_t current_rsrp;
 char neighbors[100];
 
-//extern nrf_gnss_data_frame_t gps_data;
-extern struct gps_client gps_client_inst;
+// // GPS stats
+// extern nrf_gnss_data_frame_t gps_data; 
+// extern struct gps_client gps_client_inst;
+// //////////////////////////////////////////////////////////////////
 
 /*
  * Known limitation in this version
@@ -78,30 +78,23 @@ enum slm_tcpip_at_cmd_type {
 };
 
 /** forward declaration of cmd handlers **/
-static int handle_at_socket(const char *at_cmd, size_t param_offset);
-static int handle_at_bind(const char *at_cmd, size_t param_offset);
-static int handle_at_tcp_conn(const char *at_cmd, size_t param_offset);
-static int handle_at_tcp_send(const char *at_cmd, size_t param_offset);
-static int handle_at_tcp_recv(const char *at_cmd, size_t param_offset);
-static int handle_at_udp_sendto(const char *at_cmd, size_t param_offset);
-static int handle_at_udp_recvfrom(const char *at_cmd, size_t param_offset);
+static int handle_at_socket(enum at_cmd_type cmd_type);
+static int handle_at_bind(enum at_cmd_type cmd_type);
+static int handle_at_tcp_conn(enum at_cmd_type cmd_type);
+static int handle_at_tcp_send(enum at_cmd_type cmd_type);
+static int handle_at_tcp_recv(enum at_cmd_type cmd_type);
+static int handle_at_udp_sendto(enum at_cmd_type cmd_type);
+static int handle_at_udp_recvfrom(enum at_cmd_type cmd_type);
 
 /**@brief SLM AT Command list type. */
-static slm_at_cmd_list_t m_at_list[AT_TCPIP_MAX] = {
-	{AT_SOCKET, "AT#XSOCKET", "at#xsocket",
-		handle_at_socket},
-	{AT_BIND, "AT#XBIND", "at#xbind",
-		handle_at_bind},
-	{AT_TCP_CONNECT, "AT#XTCPCONN", "at#xtcpconn",
-		handle_at_tcp_conn},
-	{AT_TCP_SEND, "AT#XTCPSEND", "at#xtcpsend",
-		handle_at_tcp_send},
-	{AT_TCP_RECV, "AT#XTCPRECV", "at#xtcprecv",
-		handle_at_tcp_recv},
-	{AT_UDP_SENDTO, "AT#XUDPSENDTO", "at#xudpsendto",
-		handle_at_udp_sendto},
-	{AT_UDP_RECVFROM, "AT#XUDPRECVFROM", "at#xudprecvfrom",
-		handle_at_udp_recvfrom},
+static slm_at_cmd_list_t m_tcpip_at_list[AT_TCPIP_MAX] = {
+	{AT_SOCKET, "AT#XSOCKET", handle_at_socket},
+	{AT_BIND, "AT#XBIND", handle_at_bind},
+	{AT_TCP_CONNECT, "AT#XTCPCONN", handle_at_tcp_conn},
+	{AT_TCP_SEND, "AT#XTCPSEND", handle_at_tcp_send},
+	{AT_TCP_RECV, "AT#XTCPRECV", handle_at_tcp_recv},
+	{AT_UDP_SENDTO, "AT#XUDPSENDTO", handle_at_udp_sendto},
+	{AT_UDP_RECVFROM, "AT#XUDPRECVFROM", handle_at_udp_recvfrom},
 };
 
 static struct sockaddr_storage remote;
@@ -245,26 +238,14 @@ static int do_socket_close(int error)
 	return ret;
 }
 
-static int do_bind(const char *ip, u16_t port)
+static int do_bind(u16_t port)
 {
 	int ret;
 	struct sockaddr_in local;
 
-	LOG_DBG("%s:%d", log_strdup(ip), port);
-
-	if (!check_for_ipv4(ip, strlen(ip))) {
-		LOG_ERR("Not IPv4 address");
-		return -EINVAL;
-	}
-
 	local.sin_family = AF_INET;
 	local.sin_port = htons(port);
-	/* NOTE inet_pton() returns 1 as success */
-	if (inet_pton(AF_INET, ip, &local.sin_addr) != 1) {
-		LOG_ERR("Parse failed: %d", -errno);
-		return -EINVAL;
-	}
-
+	local.sin_addr.s_addr = htonl(INADDR_ANY);
 	ret = bind(client.sock, (struct sockaddr *)&local,
 		 sizeof(struct sockaddr_in));
 	if (ret < 0) {
@@ -405,7 +386,7 @@ static int do_udp_sendto(const char *url, u16_t port, const char *data)
 	ret = do_udp_init(url, port);
 	if (ret < 0) {
 		return ret;
-	};
+	}
 
 	while (offset < datalen) {
 		ret = sendto(client.sock, data + offset,
@@ -440,7 +421,7 @@ static int do_udp_recvfrom(const char *url, u16_t port, u16_t length,
 	ret = do_udp_init(url, port);
 	if (ret < 0) {
 		return ret;
-	};
+	}
 
 	ret = setsockopt(client.sock, SOL_SOCKET, SO_RCVTIMEO,
 			&tmo, sizeof(struct timeval));
@@ -485,28 +466,20 @@ static int do_udp_recvfrom(const char *url, u16_t port, u16_t length,
  *  AT#XSOCKET?
  *  AT#XSOCKET=? TEST command not supported
  */
-static int handle_at_socket(const char *at_cmd, size_t param_offset)
+static int handle_at_socket(enum at_cmd_type cmd_type)
 {
 	int err = -EINVAL;
-	char *at_param = (char *)at_cmd + param_offset;
 	u16_t op;
 
-	if (*(at_param) == '=') {
-		at_param++;
-		if (*(at_param) == '?') {
-			return err;
-		}
-		err = at_parser_params_from_str(at_cmd, NULL, &m_param_list);
-		if (err < 0) {
-			return err;
-		};
+	switch (cmd_type) {
+	case AT_CMD_TYPE_SET_COMMAND:
 		if (at_params_valid_count_get(&m_param_list) < 2) {
 			return -EINVAL;
 		}
 		err = at_params_short_get(&m_param_list, 1, &op);
 		if (err < 0) {
 			return err;
-		};
+		}
 		if (op == 1) {
 			u16_t type;
 
@@ -516,7 +489,7 @@ static int handle_at_socket(const char *at_cmd, size_t param_offset)
 			err = at_params_short_get(&m_param_list, 2, &type);
 			if (err < 0) {
 				return err;
-			};
+			}
 			if (client.sock > 0) {
 				LOG_WRN("Socket is already opened");
 			} else {
@@ -528,8 +501,9 @@ static int handle_at_socket(const char *at_cmd, size_t param_offset)
 			} else {
 				err = do_socket_close(0);
 			}
-		}
-	} else if (*(at_param) == '?') {
+		} break;
+
+	case AT_CMD_TYPE_READ_COMMAND:
 		if (client.sock != INVALID_SOCKET) {
 			sprintf(buf, "#XSOCKET: %d, %d\r\n", client.sock,
 				client.ip_proto);
@@ -538,46 +512,44 @@ static int handle_at_socket(const char *at_cmd, size_t param_offset)
 		}
 		client.callback(buf);
 		err = 0;
+		break;
+
+	default:
+		break;
 	}
 
 	return err;
 }
 
 /**@brief handle AT#XBIND commands
- *  AT#XBIND=<local_ip>,<port>
+ *  AT#XBIND=<port>
  *  AT#XBIND?
  *  AT#XBIND=? TEST command not supported
  */
-static int handle_at_bind(const char *at_cmd, size_t param_offset)
+static int handle_at_bind(enum at_cmd_type cmd_type)
 {
 	int err = -EINVAL;
-	char *at_param = (char *)at_cmd + param_offset;
-	char ip[TCPIP_MAX_URL];
-	int size = TCPIP_MAX_URL;
 	u16_t port;
 
-	if (*(at_param) == '=') {
-		at_param++;
-		if (*(at_param) == '?') {
-			return err;
-		}
-		err = at_parser_params_from_str(at_cmd, NULL, &m_param_list);
-		if (err < 0) {
-			return err;
-		};
-		if (at_params_valid_count_get(&m_param_list) < 3) {
+	if (client.sock < 0) {
+		LOG_ERR("Socket not opened yet");
+		return err;
+	}
+
+	switch (cmd_type) {
+	case AT_CMD_TYPE_SET_COMMAND:
+		if (at_params_valid_count_get(&m_param_list) < 2) {
 			return -EINVAL;
 		}
-		err = at_params_string_get(&m_param_list, 1, ip, &size);
+		err = at_params_short_get(&m_param_list, 1, &port);
 		if (err < 0) {
 			return err;
-		};
-		ip[size] = '\0';
-		err = at_params_short_get(&m_param_list, 2, &port);
-		if (err < 0) {
-			return err;
-		};
-		err = do_bind(ip, port);
+		}
+		err = do_bind(port);
+		break;
+
+	default:
+		break;
 	}
 
 	return err;
@@ -588,10 +560,9 @@ static int handle_at_bind(const char *at_cmd, size_t param_offset)
  *  AT#XTCPCONN?
  *  AT#XTCPCONN=? TEST command not supported
  */
-static int handle_at_tcp_conn(const char *at_cmd, size_t param_offset)
+static int handle_at_tcp_conn(enum at_cmd_type cmd_type)
 {
 	int err = -EINVAL;
-	char *at_param = (char *)at_cmd + param_offset;
 	char url[TCPIP_MAX_URL];
 	int size = TCPIP_MAX_URL;
 	u16_t port;
@@ -601,35 +572,34 @@ static int handle_at_tcp_conn(const char *at_cmd, size_t param_offset)
 		return err;
 	}
 
-	if (*(at_param) == '=') {
-		at_param++;
-		if (*(at_param) == '?') {
-			return err;
-		}
-		err = at_parser_params_from_str(at_cmd, NULL, &m_param_list);
-		if (err < 0) {
-			return err;
-		};
+	switch (cmd_type) {
+	case AT_CMD_TYPE_SET_COMMAND:
 		if (at_params_valid_count_get(&m_param_list) < 3) {
 			return -EINVAL;
 		}
 		err = at_params_string_get(&m_param_list, 1, url, &size);
 		if (err < 0) {
 			return err;
-		};
+		}
 		url[size] = '\0';
 		err = at_params_short_get(&m_param_list, 2, &port);
 		if (err < 0) {
 			return err;
-		};
+		}
 		err = do_tcp_connect(url, port);
-	} else if (*(at_param) == '?') {
+		break;
+
+	case AT_CMD_TYPE_READ_COMMAND:
 		if (client.connected) {
 			client.callback("+XTCPCONN: 1\r\n");
 		} else {
 			client.callback("+XTCPCONN: 0\r\n");
 		}
 		err = 0;
+		break;
+
+	default:
+		break;
 	}
 
 	return err;
@@ -640,10 +610,9 @@ static int handle_at_tcp_conn(const char *at_cmd, size_t param_offset)
  *  AT#XTCPSEND? READ command not supported
  *  AT#XTCPSEND=? TEST command not supported
  */
-static int handle_at_tcp_send(const char *at_cmd, size_t param_offset)
+static int handle_at_tcp_send(enum at_cmd_type cmd_type)
 {
 	int err = -EINVAL;
-	char *at_param = (char *)at_cmd + param_offset;
 	char data[NET_IPV4_MTU];
 	int size = NET_IPV4_MTU;
 
@@ -652,38 +621,34 @@ static int handle_at_tcp_send(const char *at_cmd, size_t param_offset)
 		return err;
 	}
 
-	if (*(at_param) == '=') {
-		at_param++;
-		if (*(at_param) == '?') {
-			return err;
-		}
-		err = at_parser_params_from_str(at_cmd, NULL, &m_param_list);
-		if (err < 0) {
-			return err;
-		};
+	switch (cmd_type) {
+	case AT_CMD_TYPE_SET_COMMAND:
 		if (at_params_valid_count_get(&m_param_list) < 2) {
 			return -EINVAL;
 		}
 		err = at_params_string_get(&m_param_list, 1, data, &size);
 		if (err < 0) {
 			return err;
-		};
+		}
 		data[size] = '\0';
 		err = do_tcp_send(data);
+		break;
+
+	default:
+		break;
 	}
 
 	return err;
 }
 
 /**@brief handle AT#XTCPRECV commands
- *  AT#XTCPRECV=<length>
+ *  AT#XTCPRECV=<length>,<timeout>
  *  AT#XTCPRECV? READ command not supported
  *  AT#XTCPRECV=? TEST command not supported
  */
-static int handle_at_tcp_recv(const char *at_cmd, size_t param_offset)
+static int handle_at_tcp_recv(enum at_cmd_type cmd_type)
 {
 	int err = -EINVAL;
-	char *at_param = (char *)at_cmd + param_offset;
 	u16_t length, time;
 
 	if (!client.connected) {
@@ -691,27 +656,24 @@ static int handle_at_tcp_recv(const char *at_cmd, size_t param_offset)
 		return err;
 	}
 
-	if (*(at_param) == '=') {
-		at_param++;
-		if (*(at_param) == '?') {
-			return err;
-		}
-		err = at_parser_params_from_str(at_cmd, NULL, &m_param_list);
-		if (err < 0) {
-			return err;
-		};
+	switch (cmd_type) {
+	case AT_CMD_TYPE_SET_COMMAND:
 		if (at_params_valid_count_get(&m_param_list) < 3) {
 			return -EINVAL;
 		}
 		err = at_params_short_get(&m_param_list, 1, &length);
 		if (err < 0) {
 			return err;
-		};
+		}
 		err = at_params_short_get(&m_param_list, 2, &time);
 		if (err < 0) {
 			return err;
-		};
+		}
 		err = do_tcp_receive(length, time);
+		break;
+
+	default:
+		break;
 	}
 
 	return err;
@@ -722,10 +684,9 @@ static int handle_at_tcp_recv(const char *at_cmd, size_t param_offset)
  *  AT#XUDPSENDTO? READ command not supported
  *  AT#XUDPSENDTO=? TEST command not supported
  */
-static int handle_at_udp_sendto(const char *at_cmd, size_t param_offset)
+static int handle_at_udp_sendto(enum at_cmd_type cmd_type)
 {
 	int err = -EINVAL;
-	char *at_param = (char *)at_cmd + param_offset;
 	char url[TCPIP_MAX_URL];
 	u16_t port;
 	char data[NET_IPV4_MTU];
@@ -739,15 +700,8 @@ static int handle_at_udp_sendto(const char *at_cmd, size_t param_offset)
 		return err;
 	}
 
-	if (*(at_param) == '=') {
-		at_param++;
-		if (*(at_param) == '?') {
-			return err;
-		}
-		err = at_parser_params_from_str(at_cmd, NULL, &m_param_list);
-		if (err < 0) {
-			return err;
-		};
+	switch (cmd_type) {
+	case AT_CMD_TYPE_SET_COMMAND:
 		if (at_params_valid_count_get(&m_param_list) < 4) {
 			return -EINVAL;
 		}
@@ -755,33 +709,36 @@ static int handle_at_udp_sendto(const char *at_cmd, size_t param_offset)
 		err = at_params_string_get(&m_param_list, 1, url, &size);
 		if (err < 0) {
 			return err;
-		};
+		}
 		url[size] = '\0';
 		err = at_params_short_get(&m_param_list, 2, &port);
 		if (err < 0) {
 			return err;
-		};
+		}
 		size = NET_IPV4_MTU;
 		err = at_params_string_get(&m_param_list, 3, data, &size);
 		if (err < 0) {
 			return err;
-		};
+		}
 		data[size] = '\0';
 		err = do_udp_sendto(url, port, data);
+		break;
+
+	default:
+		break;
 	}
 
 	return err;
 }
 
 /**@brief handle AT#XUDPRECVFROM commands
- *  AT#XUDPRECVFROM=<url>,<port>,<length>
+ *  AT#XUDPRECVFROM=<url>,<port>,<length>,<timeout>
  *  AT#XUDPRECVFROM? READ command not supported
  *  AT#XUDPRECVFROM=? TEST command not supported
  */
-static int handle_at_udp_recvfrom(const char *at_cmd, size_t param_offset)
+static int handle_at_udp_recvfrom(enum at_cmd_type cmd_type)
 {
 	int err = -EINVAL;
-	char *at_param = (char *)at_cmd + param_offset;
 	char url[TCPIP_MAX_URL];
 	int size = TCPIP_MAX_URL;
 	u16_t port, length, time;
@@ -794,36 +751,33 @@ static int handle_at_udp_recvfrom(const char *at_cmd, size_t param_offset)
 		return err;
 	}
 
-	if (*(at_param) == '=') {
-		at_param++;
-		if (*(at_param) == '?') {
-			return err;
-		}
-		err = at_parser_params_from_str(at_cmd, NULL, &m_param_list);
-		if (err < 0) {
-			return err;
-		};
+	switch (cmd_type) {
+	case AT_CMD_TYPE_SET_COMMAND:
 		if (at_params_valid_count_get(&m_param_list) < 5) {
 			return -EINVAL;
 		}
 		err = at_params_string_get(&m_param_list, 1, url, &size);
 		if (err < 0) {
 			return err;
-		};
+		}
 		url[size] = '\0';
 		err = at_params_short_get(&m_param_list, 2, &port);
 		if (err < 0) {
 			return err;
-		};
+		}
 		err = at_params_short_get(&m_param_list, 3, &length);
 		if (err < 0) {
 			return err;
-		};
+		}
 		err = at_params_short_get(&m_param_list, 4, &time);
 		if (err < 0) {
 			return err;
-		};
+		}
 		err = do_udp_recvfrom(url, port, length, time);
+		break;
+
+	default:
+		break;
 	}
 
 	return err;
@@ -831,22 +785,24 @@ static int handle_at_udp_recvfrom(const char *at_cmd, size_t param_offset)
 
 /**@brief API to handle TCP/IP AT commands
  */
-int slm_at_tcpip_parse(const u8_t *param, u8_t length)
+int slm_at_tcpip_parse(const char *at_cmd)
 {
 	int ret = -ENOTSUP;
-
-	ARG_UNUSED(length);
+	enum at_cmd_type type;
 
 	for (int i = 0; i < AT_TCPIP_MAX; i++) {
-		u8_t cmd_len = strlen(m_at_list[i].string_upper);
+		u8_t cmd_len = strlen(m_tcpip_at_list[i].string);
 
-		if (strncmp(param, m_at_list[i].string_upper,
-			cmd_len) == 0) {
-			ret = m_at_list[i].handler(param, cmd_len);
-			break;
-		} else if (strncmp(param, m_at_list[i].string_lower,
-			cmd_len) == 0) {
-			ret = m_at_list[i].handler(param, cmd_len);
+		if (slm_at_cmd_cmp(at_cmd, m_tcpip_at_list[i].string,
+			cmd_len)) {
+			ret = at_parser_params_from_str(at_cmd, NULL,
+						&m_param_list);
+			if (ret < 0) {
+				LOG_ERR("Failed to parse AT command %d", ret);
+				return -EINVAL;
+			}
+			type = at_parser_cmd_type_get(at_cmd);
+			ret = m_tcpip_at_list[i].handler(type);
 			break;
 		}
 	}
@@ -854,6 +810,7 @@ int slm_at_tcpip_parse(const u8_t *param, u8_t length)
 	return ret;
 }
 
+////////////////////////////////////////////////////////////////////////
 static int init_nb_iot_parameters(void)
 {
 	LOG_INF("Initializing NB-IoT Parameters");
@@ -923,7 +880,9 @@ static int init_nb_iot_parameters(void)
 
 	return 0;
 }
+////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////
 int request_nb_iot_network_stats()
 {
 	LOG_INF("Requesting NB-IoT network stats...");
@@ -939,7 +898,7 @@ int request_nb_iot_network_stats()
 	}
 
 	// Get and parse current cell ID: AT+CEREG?
-	LOG_INF("CEREG");
+	// LOG_INF("CEREG");
 	bytes_sent = send(at_sock, AT_CEREG, strlen(AT_CEREG), 0);
 	if (bytes_sent < 0) {
 		LOG_INF("CEREG send error");
@@ -950,7 +909,7 @@ int request_nb_iot_network_stats()
 		bytes_received = recv(at_sock, buf, 100, 0);
 	} while (bytes_received == 0);
 	
-	LOG_INF("CEREG RESPONSE: %s", buf); // +CEREG: 0,5,"5276","0101D268",9
+	// LOG_INF("CEREG RESPONSE: %s", buf); // +CEREG: 0,5,"5276","0101D268",9
 	if(strstr(buf, "OK") != NULL)
 	{
 		char* pos = strstr(buf, "\",\"")+3;		
@@ -969,7 +928,7 @@ int request_nb_iot_network_stats()
 	k_sleep(K_SECONDS(2));
 
 	// Get and parse current RSRP: AT+CESQ
-	LOG_INF("CESQ");
+	// LOG_INF("CESQ");
 	bytes_sent = send(at_sock, AT_CESQ, strlen(AT_CESQ), 0);
 	if (bytes_sent < 0) {
 		LOG_INF("CESQ send error");
@@ -980,7 +939,7 @@ int request_nb_iot_network_stats()
 		bytes_received = recv(at_sock, buf, 100, 0);
 	} while (bytes_received == 0);
 
-	LOG_INF("CESQ RESPONSE: %s", buf); // +CESQ: 99,99,255,255,17,54 \n OK		
+	// LOG_INF("CESQ RESPONSE: %s", buf); // +CESQ: 99,99,255,255,17,54 \n OK		
 	if(strstr(buf, "OK") != NULL)
 	{
 		char *pos1 = strrchr(buf, ',') + 1;
@@ -1000,51 +959,53 @@ int request_nb_iot_network_stats()
 
 	k_sleep(K_SECONDS(2));
 
-	// // Get and parse neighboring cell IDs and RSRP values: AT+NBRGRSRP
+	// Get and parse neighboring cell IDs and RSRP values: AT+NBRGRSRP
 	// LOG_INF("NBRGRSRP");
-	// bytes_sent = send(at_sock, AT_NBRGRSRP, strlen(AT_NBRGRSRP), 0);
-	// if (bytes_sent < 0) {
-	// 	LOG_INF("NBRGRSRP send error");
-	// 	close(at_sock);
-	// 	return -1;
-	// }
-	// do {
-	// 	bytes_received = recv(at_sock, buf, 150, 0);
-	// } while (bytes_received == 0);
+	bytes_sent = send(at_sock, AT_NBRGRSRP, strlen(AT_NBRGRSRP), 0);
+	if (bytes_sent < 0) {
+		LOG_INF("NBRGRSRP send error");
+		close(at_sock);
+		return -1;
+	}
+	do {
+		bytes_received = recv(at_sock, buf, 150, 0);
+	} while (bytes_received == 0);
 
-	// LOG_INF("NBRGRSRP RESPONSE: %s", buf); // %NBRGRSRP: 179,6447,57,11,6447,54
-	// if(strstr(buf, "OK") != NULL)
-	// {
-	// 	if(strstr(buf, "NBRGRSRP") != NULL)
-	// 	{
-	// 		char* pos1 = strstr(buf, "\%NBRGRSRP: ") + strlen("\%NBRGRSRP: ");
-	// 		char* pos2 = strstr(pos1, "\n");
-	// 		for(uint8_t i=0; i<strlen(pos1)-strlen(pos2); i++)
-	// 		{
-	// 			neighbors[i] = pos1[i];
-	// 		}
-	// 		LOG_INF("Neighbors = %s", neighbors);
-	// 	}
-	// 	else
-	// 	{
-	// 		LOG_INF("No neighbors found.");
-	// 		neighbors[0] = '\0';
-	// 	}	
-	// }
-	// else if (strstr(buf, "ERROR") != NULL) 
-	// {
-	// 	LOG_ERR("Error while getting neighbor data!");
-	// 	close(at_sock);
-	// 	return -1;
-	// }
+	//LOG_INF("NBRGRSRP RESPONSE: %s", buf); // %NBRGRSRP: 179,6447,57,11,6447,54
+	if(strstr(buf, "OK") != NULL)
+	{
+		if(strstr(buf, "NBRGRSRP") != NULL)
+		{
+			char* pos1 = strstr(buf, "\%NBRGRSRP: ") + strlen("\%NBRGRSRP: ");
+			char* pos2 = strstr(pos1, "\n");
+			for(uint8_t i=0; i<strlen(pos1)-strlen(pos2); i++)
+			{
+				neighbors[i] = pos1[i];
+			}
+			LOG_INF("Neighbors = %s", neighbors);
+		}
+		else
+		{
+			LOG_INF("No neighbors found.");
+			neighbors[0] = '\0';
+		}	
+	}
+	else if (strstr(buf, "ERROR") != NULL) 
+	{
+		LOG_ERR("Error while getting neighbor data!");
+		close(at_sock);
+		return -1;
+	}
 	
-	// k_sleep(K_SECONDS(2));
+	k_sleep(K_SECONDS(2));
 
 	close(at_sock);
 	LOG_INF("NB-IoT network stats requested.");
 	
 	return 0;
 }
+////////////////////////////////////////////////////////////////////////
+
 
 /**@brief API to initialize TCP/IP AT commands handler
  */
@@ -1058,18 +1019,30 @@ int slm_at_tcpip_init(at_cmd_handler_t callback)
 	client.connected = false;
 	client.ip_proto = IPPROTO_IP;
 	client.callback = callback;
-	//init nb_iot module & udp socket
+
+	////////////////////////////////////////////////////////////////////
+	// Init nb_iot module & udp socket
 	init_nb_iot_parameters();
 	do_socket_open(2);
+	////////////////////////////////////////////////////////////////////
+
 	return 0;
 }
 
+/**@brief API to uninitialize TCP/IP AT commands handler
+ */
+int slm_at_tcpip_uninit(void)
+{
+	return do_socket_close(0);
+}
+
+////////////////////////////////////////////////////////////////////////
 void send_message(void)
 {
 	// Request network stats: Current and neighbor Cell ID, RSRP etc.
 	int error = request_nb_iot_network_stats();
-	LOG_INF("error = %d", error);
-	if(error == 0)
+	//LOG_INF("error = %d, GPS fix = %d", error, gps_client_inst.has_fix);
+	if(error == 0)  // && gps_data.pvt.has_fix() == 1
 	{
 		// Put all stats in a buffer
 		char payloadstring[300] = "";
@@ -1087,20 +1060,32 @@ void send_message(void)
 		}
 		strcat(payloadstring, ";");
 		
-		LOG_INF("Payloadstring = %s", payloadstring);
+		// LOG_INF("Payloadstring = %s", payloadstring);
 
-		LOG_INF("GPS client running = %d", gps_client_inst.running);
-		//LOG_INF("lat = %d, lon = %d", gps_data.pvt.latitude, gps_data.pvt.longitude);
-
-
-		// memcpy(payloadstring, latitude, 8);
-
+		//memcpy(payloadstring, gps_data.pvt.latitude, 8);
 		// memcpy(payloadstring+9, longitude, strlen(payloadstring)+1);
 		// memcpy(payloadstring, longitude, strlen(payloadstring)+1);
 
 
-		// // Send message to UDP server
-		// do_udp_sendto("nbiot.idlab.uantwerpen.be", 161, payloadstring);
-		// LOG_INF("Message sent: %s", payloadstring);
+		// Send message to UDP server
+		// do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, "payloadstring");
+		LOG_INF("MESSAGE SENT: %s", payloadstring);
 	}
+
+
+	// LOG_INF("GPS fix = %d", gps_client_inst.has_fix);
+
+	// printf("Longitude:  %f\n", gps_data.pvt.longitude);
+	// printf("Latitude:   %f\n", gps_data.pvt.latitude);
+	// printf("Altitude:   %f\n", gps_data.pvt.altitude);
+	// printf("Speed:      %f\n", gps_data.pvt.speed);
+	// printf("Heading:    %f\n", gps_data.pvt.heading);
+	// printk("Date:       %02u-%02u-%02u\n", gps_data.pvt.datetime.day,
+	// 				       gps_data.pvt.datetime.month,
+	// 				       gps_data.pvt.datetime.year);
+	// printk("Time (UTC): %02u:%02u:%02u\n", gps_data.pvt.datetime.hour,
+					    //    gps_data.pvt.datetime.minute,
+					    //   gps_data.pvt.datetime.seconds);
+
 }
+////////////////////////////////////////////////////////////////////////
