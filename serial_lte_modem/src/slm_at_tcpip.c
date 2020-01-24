@@ -8,8 +8,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <net/socket.h>
+#include <nrf_socket.h> /////////////////////////////////////////
 #include "slm_at_tcpip.h"
-// #include "slm_at_gps.h" /////////////////////////////////////////
+#include "slm_at_gps.h" /////////////////////////////////////////
 
 LOG_MODULE_REGISTER(tcpip, CONFIG_SLM_LOG_LEVEL);
 
@@ -44,10 +45,10 @@ char current_cell_id[10];
 uint8_t current_rsrp;
 char neighbors[100];
 
-// // GPS stats
-// extern nrf_gnss_data_frame_t gps_data; 
-// extern struct gps_client gps_client_inst;
-// //////////////////////////////////////////////////////////////////
+// GPS stats
+extern nrf_gnss_data_frame_t gps_data; 
+extern struct gps_client gps_client_inst;
+/////////////////////////////////////////////////////////////////
 
 /*
  * Known limitation in this version
@@ -1039,53 +1040,58 @@ int slm_at_tcpip_uninit(void)
 ////////////////////////////////////////////////////////////////////////
 void send_message(void)
 {
-	// Request network stats: Current and neighbor Cell ID, RSRP etc.
-	int error = request_nb_iot_network_stats();
-	//LOG_INF("error = %d, GPS fix = %d", error, gps_client_inst.has_fix);
-	if(error == 0)  // && gps_data.pvt.has_fix() == 1
+	// If GPS has fix, request network stats: Current and neighbor's Cell ID + RSRP.
+	if(gps_client_inst.has_fix == 1)
 	{
-		// Put all stats in a buffer
-		char payloadstring[300] = "";
+		LOG_INF("GPS fix found!");
+		printf("Longitude:  %f\n", gps_data.pvt.longitude);
+		printf("Latitude:   %f\n", gps_data.pvt.latitude);
+		printf("Altitude:   %f\n", gps_data.pvt.altitude);
+		printf("Speed:      %f\n", gps_data.pvt.speed);
+		printf("Heading:    %f\n", gps_data.pvt.heading);
+		printk("Date:       %02u-%02u-%02u\n", gps_data.pvt.datetime.day,
+							gps_data.pvt.datetime.month,
+							gps_data.pvt.datetime.year);
+		printk("Time (UTC): %02u:%02u:%02u\n", gps_data.pvt.datetime.hour,
+							gps_data.pvt.datetime.minute,
+							gps_data.pvt.datetime.seconds);
 
-		strcat(payloadstring, current_cell_id);
-		strcat(payloadstring, ";");
 
-		char* rsrp = (char*) &current_rsrp;
-		strcat(payloadstring, rsrp);
-		strcat(payloadstring, ";");
-
-		if(neighbors[0] != '\0')
+		int error = request_nb_iot_network_stats();
+		if(error == 0)
 		{
-			strcat(payloadstring, neighbors);
+			// Put all stats in a buffer
+			char payloadstring[300] = "";
+
+			strcat(payloadstring, current_cell_id);
+			strcat(payloadstring, ";");
+
+			char* rsrp = (char*) &current_rsrp;
+			strcat(payloadstring, rsrp);
+			strcat(payloadstring, ";");
+
+			if(neighbors[0] != '\0')
+			{
+				strcat(payloadstring, neighbors);
+			}
+			strcat(payloadstring, ";");
+
+			//memcpy(payloadstring, gps_data.pvt.latitude, 8);
+			// memcpy(payloadstring+9, longitude, strlen(payloadstring)+1);
+			// memcpy(payloadstring, longitude, strlen(payloadstring)+1);
+
+
+			// Send message to UDP server
+			// do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, "payloadstring");
+			LOG_INF("MESSAGE SENT: %s", payloadstring);
+		} else 
+		{
+			LOG_ERR("Unexpected ERROR, try rebooting the device.");
 		}
-		strcat(payloadstring, ";");
-		
-		// LOG_INF("Payloadstring = %s", payloadstring);
-
-		//memcpy(payloadstring, gps_data.pvt.latitude, 8);
-		// memcpy(payloadstring+9, longitude, strlen(payloadstring)+1);
-		// memcpy(payloadstring, longitude, strlen(payloadstring)+1);
-
-
-		// Send message to UDP server
-		// do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, "payloadstring");
-		LOG_INF("MESSAGE SENT: %s", payloadstring);
+			
+	} else 
+	{
+		LOG_INF("Waiting for GPS fix ...");
 	}
-
-
-	// LOG_INF("GPS fix = %d", gps_client_inst.has_fix);
-
-	// printf("Longitude:  %f\n", gps_data.pvt.longitude);
-	// printf("Latitude:   %f\n", gps_data.pvt.latitude);
-	// printf("Altitude:   %f\n", gps_data.pvt.altitude);
-	// printf("Speed:      %f\n", gps_data.pvt.speed);
-	// printf("Heading:    %f\n", gps_data.pvt.heading);
-	// printk("Date:       %02u-%02u-%02u\n", gps_data.pvt.datetime.day,
-	// 				       gps_data.pvt.datetime.month,
-	// 				       gps_data.pvt.datetime.year);
-	// printk("Time (UTC): %02u:%02u:%02u\n", gps_data.pvt.datetime.hour,
-					    //    gps_data.pvt.datetime.minute,
-					    //   gps_data.pvt.datetime.seconds);
-
 }
 ////////////////////////////////////////////////////////////////////////

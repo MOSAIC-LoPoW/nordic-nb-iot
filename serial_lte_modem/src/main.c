@@ -102,7 +102,7 @@ void main(void)
 void main(void)
 {
 	start_execute();
-	k_sleep(K_SECONDS(30));
+	k_sleep(K_SECONDS(10));
 	while(1)
 	{
 		send_message();
