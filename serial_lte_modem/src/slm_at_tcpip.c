@@ -910,7 +910,7 @@ int request_nb_iot_network_stats()
 		bytes_received = recv(at_sock, buf, 100, 0);
 	} while (bytes_received == 0);
 	
-	// LOG_INF("CEREG RESPONSE: %s", buf); // +CEREG: 0,5,"5276","0101D268",9
+	//LOG_INF("CEREG RESPONSE: %s", buf); // +CEREG: 0,5,"5276","0101D268",9
 	if(strstr(buf, "OK") != NULL)
 	{
 		char* pos = strstr(buf, "\",\"")+3;		
@@ -940,7 +940,7 @@ int request_nb_iot_network_stats()
 		bytes_received = recv(at_sock, buf, 100, 0);
 	} while (bytes_received == 0);
 
-	// LOG_INF("CESQ RESPONSE: %s", buf); // +CESQ: 99,99,255,255,17,54 \n OK		
+	LOG_INF("CESQ RESPONSE: %s", buf); // +CESQ: 99,99,255,255,17,54 \n OK		
 	if(strstr(buf, "OK") != NULL)
 	{
 		char *pos1 = strrchr(buf, ',') + 1;
@@ -1044,7 +1044,6 @@ void send_message(void)
 	if(gps_client_inst.has_fix == 1)
 	{
 		LOG_INF("GPS fix found!");
-		LOG_INF("NMEA = %s", gps_data.nmea);
 
 		int error = request_nb_iot_network_stats();
 		if(error == 0)
@@ -1065,12 +1064,16 @@ void send_message(void)
 			}
 			strcat(payloadstring, ";");
 
-			strcat(payloadstring, gps_data.nmea);
+			char nmea_sentence[100];
+			char *pos1 = strstr(gps_data.nmea, "$GPGGA,") + 7;
+			char *pos2 = strstr(pos1, "\n");
+			memcpy(nmea_sentence, pos1, strlen(pos1)-strlen(pos2));
+			strcat(payloadstring, nmea_sentence);
 			strcat(payloadstring, ";");
 
 			// Send message to UDP server
-			do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, "payloadstring");
-			LOG_INF("MESSAGE SENT: %s", payloadstring);
+			//do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring);
+			LOG_INF("MESSAGE SENT: \"%s\"", payloadstring);
 		} else 
 		{
 			LOG_ERR("Unexpected ERROR, try rebooting the device.");

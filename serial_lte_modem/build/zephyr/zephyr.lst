@@ -45,7 +45,7 @@ Disassembly of section text:
 	...
 
 0000c200 <m_firmware_info>:
-    c200:	281ee6de 8fcebb4c 00005b01 00014a50     ...(L....[..PJ..
+    c200:	281ee6de 8fcebb4c 00005b01 00014a38     ...(L....[..8J..
     c210:	00000001 0000c000 2002c3f0 000121c5     ........... .!..
 
 Disassembly of section _TEXT_SECTION_NAME_2:
@@ -875,7 +875,7 @@ static inline void uart_irq_callback_user_data_set(
     c87a:	f7ff fea1 	bl	c5c0 <write_uart_string>
 	err = slm_at_tcpip_init(slm_at_callback);
     c87e:	4811      	ldr	r0, [pc, #68]	; (c8c4 <slm_at_host_init+0x154>)
-    c880:	f001 f942 	bl	db08 <slm_at_tcpip_init>
+    c880:	f001 f93e 	bl	db00 <slm_at_tcpip_init>
 	if (err) {
     c884:	4601      	mov	r1, r0
     c886:	2800      	cmp	r0, #0
@@ -1172,7 +1172,7 @@ static inline int toupper(int chr)
     cabc:	e7f6      	b.n	caac <cmd_send+0x13c>
 	err = slm_at_tcpip_parse(at_buf);
     cabe:	4816      	ldr	r0, [pc, #88]	; (cb18 <cmd_send+0x1a8>)
-    cac0:	f000 fe52 	bl	d768 <slm_at_tcpip_parse>
+    cac0:	f000 fe40 	bl	d744 <slm_at_tcpip_parse>
 	if (err == 0) {
     cac4:	2800      	cmp	r0, #0
     cac6:	d0cf      	beq.n	ca68 <cmd_send+0xf8>
@@ -1574,20 +1574,20 @@ static int handle_at_socket(enum at_cmd_type cmd_type)
     cd6c:	20020108 	.word	0x20020108
     cd70:	0001ed30 	.word	0x0001ed30
     cd74:	0001eda8 	.word	0x0001eda8
-    cd78:	0001f695 	.word	0x0001f695
-    cd7c:	0001f6ae 	.word	0x0001f6ae
+    cd78:	0001f66f 	.word	0x0001f66f
+    cd7c:	0001f688 	.word	0x0001f688
     cd80:	0001f5e0 	.word	0x0001f5e0
     cd84:	20026340 	.word	0x20026340
-    cd88:	0001f6c7 	.word	0x0001f6c7
+    cd88:	0001f6a1 	.word	0x0001f6a1
 
-0000cd8c <send.constprop.11>:
+0000cd8c <send.constprop.10>:
 			   int flags)
 {
 	__ASSERT_NO_MSG(socket_ops);
 	__ASSERT_NO_MSG(socket_ops->send);
 
 	return socket_ops->send(sock, buf, len, flags);
-    cd8c:	4b04      	ldr	r3, [pc, #16]	; (cda0 <send.constprop.11+0x14>)
+    cd8c:	4b04      	ldr	r3, [pc, #16]	; (cda0 <send.constprop.10+0x14>)
 static inline ssize_t send(int sock, const void *buf, size_t len,
     cd8e:	b410      	push	{r4}
 	return socket_ops->send(sock, buf, len, flags);
@@ -1681,7 +1681,7 @@ static int handle_at_tcp_send(enum at_cmd_type cmd_type)
     ce10:	1b3a      	subs	r2, r7, r4
     ce12:	1931      	adds	r1, r6, r4
     ce14:	6828      	ldr	r0, [r5, #0]
-    ce16:	f7ff ffb9 	bl	cd8c <send.constprop.11>
+    ce16:	f7ff ffb9 	bl	cd8c <send.constprop.10>
 		if (ret < 0) {
     ce1a:	2800      	cmp	r0, #0
     ce1c:	da22      	bge.n	ce64 <handle_at_tcp_send+0xc0>
@@ -1726,15 +1726,15 @@ static int handle_at_tcp_send(enum at_cmd_type cmd_type)
     ce68:	20020108 	.word	0x20020108
     ce6c:	0001ed30 	.word	0x0001ed30
     ce70:	0001eda8 	.word	0x0001eda8
-    ce74:	0001f728 	.word	0x0001f728
+    ce74:	0001f702 	.word	0x0001f702
     ce78:	200200e8 	.word	0x200200e8
-    ce7c:	0001f73e 	.word	0x0001f73e
-    ce80:	0001f750 	.word	0x0001f750
+    ce7c:	0001f718 	.word	0x0001f718
+    ce80:	0001f72a 	.word	0x0001f72a
     ce84:	20026340 	.word	0x20026340
 
-0000ce88 <recv.constprop.13>:
+0000ce88 <recv.constprop.12>:
 	return socket_ops->recv(sock, buf, max_len, flags);
-    ce88:	4b04      	ldr	r3, [pc, #16]	; (ce9c <recv.constprop.13+0x14>)
+    ce88:	4b04      	ldr	r3, [pc, #16]	; (ce9c <recv.constprop.12+0x14>)
 static inline ssize_t recv(int sock, void *buf, size_t max_len,
     ce8a:	b410      	push	{r4}
 	return socket_ops->recv(sock, buf, max_len, flags);
@@ -1851,10 +1851,10 @@ static inline ssize_t recv(int sock, void *buf, size_t max_len,
     cf58:	20020108 	.word	0x20020108
     cf5c:	0001ed30 	.word	0x0001ed30
     cf60:	0001eda8 	.word	0x0001eda8
-    cf64:	0001f66d 	.word	0x0001f66d
+    cf64:	0001f647 	.word	0x0001f647
     cf68:	200200e8 	.word	0x200200e8
     cf6c:	2002031c 	.word	0x2002031c
-    cf70:	0001f683 	.word	0x0001f683
+    cf70:	0001f65d 	.word	0x0001f65d
 
 0000cf74 <parse_host_by_name>:
 {
@@ -2182,15 +2182,15 @@ static inline void freeaddrinfo(struct addrinfo *res)
     d198:	20020108 	.word	0x20020108
     d19c:	0001ed30 	.word	0x0001ed30
     d1a0:	0001eda8 	.word	0x0001eda8
-    d1a4:	0001f66d 	.word	0x0001f66d
-    d1a8:	0001f70a 	.word	0x0001f70a
+    d1a4:	0001f647 	.word	0x0001f647
+    d1a8:	0001f6e4 	.word	0x0001f6e4
     d1ac:	200200e8 	.word	0x200200e8
-    d1b0:	0001f6d5 	.word	0x0001f6d5
+    d1b0:	0001f6af 	.word	0x0001f6af
     d1b4:	2002031c 	.word	0x2002031c
     d1b8:	20024e04 	.word	0x20024e04
-    d1bc:	0001f6e6 	.word	0x0001f6e6
-    d1c0:	0001f6fb 	.word	0x0001f6fb
-    d1c4:	0001f719 	.word	0x0001f719
+    d1bc:	0001f6c0 	.word	0x0001f6c0
+    d1c0:	0001f6d5 	.word	0x0001f6d5
+    d1c4:	0001f6f3 	.word	0x0001f6f3
 
 0000d1c8 <do_tcp_receive>:
 	struct timeval tmo = {
@@ -2254,7 +2254,7 @@ static inline void freeaddrinfo(struct addrinfo *res)
     d238:	463a      	movls	r2, r7
     d23a:	6828      	ldr	r0, [r5, #0]
     d23c:	4631      	mov	r1, r6
-    d23e:	f7ff fe23 	bl	ce88 <recv.constprop.13>
+    d23e:	f7ff fe23 	bl	ce88 <recv.constprop.12>
 	if (ret < 0) {
     d242:	2800      	cmp	r0, #0
 		ret = recv(client.sock, data, length, 0);
@@ -2340,7 +2340,7 @@ static inline void freeaddrinfo(struct addrinfo *res)
     d2e8:	0001f60a 	.word	0x0001f60a
     d2ec:	0001f61b 	.word	0x0001f61b
     d2f0:	0001f62b 	.word	0x0001f62b
-    d2f4:	0001f725 	.word	0x0001f725
+    d2f4:	0001f6ff 	.word	0x0001f6ff
     d2f8:	0001f637 	.word	0x0001f637
     d2fc:	20026340 	.word	0x20026340
 
@@ -2414,7 +2414,7 @@ static int handle_at_tcp_recv(enum at_cmd_type cmd_type)
     d368:	20020108 	.word	0x20020108
     d36c:	0001ed30 	.word	0x0001ed30
     d370:	0001eda8 	.word	0x0001eda8
-    d374:	0001f728 	.word	0x0001f728
+    d374:	0001f702 	.word	0x0001f702
     d378:	200200e8 	.word	0x200200e8
 
 0000d37c <do_udp_init>:
@@ -2471,7 +2471,7 @@ static int handle_at_tcp_recv(enum at_cmd_type cmd_type)
     d3d6:	e7de      	b.n	d396 <do_udp_init+0x1a>
     d3d8:	0001ed30 	.word	0x0001ed30
     d3dc:	0001eda8 	.word	0x0001eda8
-    d3e0:	0001f6d5 	.word	0x0001f6d5
+    d3e0:	0001f6af 	.word	0x0001f6af
 
 0000d3e4 <handle_at_udp_recvfrom>:
  */
@@ -2717,991 +2717,988 @@ static int handle_at_udp_recvfrom(enum at_cmd_type cmd_type)
     d598:	20020108 	.word	0x20020108
     d59c:	0001ed30 	.word	0x0001ed30
     d5a0:	0001eda8 	.word	0x0001eda8
-    d5a4:	0001f66d 	.word	0x0001f66d
-    d5a8:	0001f760 	.word	0x0001f760
+    d5a4:	0001f647 	.word	0x0001f647
+    d5a8:	0001f73a 	.word	0x0001f73a
     d5ac:	200200e8 	.word	0x200200e8
     d5b0:	2002031c 	.word	0x2002031c
     d5b4:	0001f5f3 	.word	0x0001f5f3
     d5b8:	20024e04 	.word	0x20024e04
-    d5bc:	0001f76f 	.word	0x0001f76f
-    d5c0:	0001f784 	.word	0x0001f784
-    d5c4:	0001f725 	.word	0x0001f725
-    d5c8:	0001f790 	.word	0x0001f790
+    d5bc:	0001f749 	.word	0x0001f749
+    d5c0:	0001f75e 	.word	0x0001f75e
+    d5c4:	0001f6ff 	.word	0x0001f6ff
+    d5c8:	0001f76a 	.word	0x0001f76a
     d5cc:	20026340 	.word	0x20026340
 
-0000d5d0 <do_udp_sendto>:
+0000d5d0 <handle_at_udp_sendto>:
 {
-    d5d0:	e92d 47f3 	stmdb	sp!, {r0, r1, r4, r5, r6, r7, r8, r9, sl, lr}
-    d5d4:	4604      	mov	r4, r0
-	u32_t datalen = strlen(data);
-    d5d6:	4610      	mov	r0, r2
-{
-    d5d8:	460d      	mov	r5, r1
-    d5da:	4617      	mov	r7, r2
-	u32_t datalen = strlen(data);
-    d5dc:	f00f fce0 	bl	1cfa0 <strlen>
-	ret = do_udp_init(url, port);
-    d5e0:	4629      	mov	r1, r5
-	u32_t datalen = strlen(data);
-    d5e2:	4606      	mov	r6, r0
-	ret = do_udp_init(url, port);
-    d5e4:	4620      	mov	r0, r4
-    d5e6:	f7ff fec9 	bl	d37c <do_udp_init>
-	if (ret < 0) {
-    d5ea:	2800      	cmp	r0, #0
-    d5ec:	db3c      	blt.n	d668 <do_udp_sendto+0x98>
-	u32_t offset = 0;
-    d5ee:	2400      	movs	r4, #0
-    d5f0:	4d20      	ldr	r5, [pc, #128]	; (d674 <do_udp_sendto+0xa4>)
-	return socket_ops->sendto(sock, buf, len, flags, to, tolen);
-    d5f2:	f8df 8098 	ldr.w	r8, [pc, #152]	; d68c <do_udp_sendto+0xbc>
-    d5f6:	f8df 9098 	ldr.w	r9, [pc, #152]	; d690 <do_udp_sendto+0xc0>
-	while (offset < datalen) {
-    d5fa:	42a6      	cmp	r6, r4
-    d5fc:	d809      	bhi.n	d612 <do_udp_sendto+0x42>
-	sprintf(buf, "#XUDPSENDTO: %d\r\n", offset);
-    d5fe:	4622      	mov	r2, r4
-    d600:	491d      	ldr	r1, [pc, #116]	; (d678 <do_udp_sendto+0xa8>)
-    d602:	481e      	ldr	r0, [pc, #120]	; (d67c <do_udp_sendto+0xac>)
-    d604:	f003 f984 	bl	10910 <sprintf>
-	client.callback(buf);
-    d608:	481c      	ldr	r0, [pc, #112]	; (d67c <do_udp_sendto+0xac>)
-    d60a:	68ab      	ldr	r3, [r5, #8]
-    d60c:	4798      	blx	r3
-	return 0;
-    d60e:	2000      	movs	r0, #0
-    d610:	e02a      	b.n	d668 <do_udp_sendto+0x98>
-    d612:	2208      	movs	r2, #8
-    d614:	e9cd 9200 	strd	r9, r2, [sp]
-    d618:	f8d8 3000 	ldr.w	r3, [r8]
-    d61c:	1b32      	subs	r2, r6, r4
-    d61e:	f8d3 a030 	ldr.w	sl, [r3, #48]	; 0x30
-    d622:	1939      	adds	r1, r7, r4
-    d624:	2300      	movs	r3, #0
-    d626:	6828      	ldr	r0, [r5, #0]
-    d628:	47d0      	blx	sl
-		if (ret <= 0) {
-    d62a:	2800      	cmp	r0, #0
-    d62c:	dc1f      	bgt.n	d66e <do_udp_sendto+0x9e>
-			LOG_ERR("sendto() failed: %d", -errno);
-    d62e:	2301      	movs	r3, #1
-    d630:	f04f 0400 	mov.w	r4, #0
-    d634:	4a12      	ldr	r2, [pc, #72]	; (d680 <do_udp_sendto+0xb0>)
-    d636:	f363 0407 	bfi	r4, r3, #0, #8
-    d63a:	4b12      	ldr	r3, [pc, #72]	; (d684 <do_udp_sendto+0xb4>)
-    d63c:	1a9b      	subs	r3, r3, r2
-    d63e:	08db      	lsrs	r3, r3, #3
-    d640:	f363 148f 	bfi	r4, r3, #6, #10
-    d644:	f00e fbd7 	bl	1bdf6 <z_errno>
-    d648:	6801      	ldr	r1, [r0, #0]
-    d64a:	4622      	mov	r2, r4
-    d64c:	4249      	negs	r1, r1
-    d64e:	480e      	ldr	r0, [pc, #56]	; (d688 <do_udp_sendto+0xb8>)
-    d650:	f00e ff78 	bl	1c544 <log_1>
-			do_socket_close(-errno);
-    d654:	f00e fbcf 	bl	1bdf6 <z_errno>
-    d658:	6800      	ldr	r0, [r0, #0]
-    d65a:	4240      	negs	r0, r0
-    d65c:	f7ff fa88 	bl	cb70 <do_socket_close>
-			return -errno;
-    d660:	f00e fbc9 	bl	1bdf6 <z_errno>
-    d664:	6800      	ldr	r0, [r0, #0]
-    d666:	4240      	negs	r0, r0
-}
-    d668:	b002      	add	sp, #8
-    d66a:	e8bd 87f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, pc}
-		offset += ret;
-    d66e:	4404      	add	r4, r0
-    d670:	e7c3      	b.n	d5fa <do_udp_sendto+0x2a>
-    d672:	bf00      	nop
-    d674:	20020108 	.word	0x20020108
-    d678:	0001f65b 	.word	0x0001f65b
-    d67c:	20026340 	.word	0x20026340
-    d680:	0001ed30 	.word	0x0001ed30
-    d684:	0001eda8 	.word	0x0001eda8
-    d688:	0001f647 	.word	0x0001f647
-    d68c:	2002031c 	.word	0x2002031c
-    d690:	20024e04 	.word	0x20024e04
-
-0000d694 <handle_at_udp_sendto>:
-{
-    d694:	b570      	push	{r4, r5, r6, lr}
+    d5d0:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
 	if (client.sock < 0) {
-    d696:	4b2e      	ldr	r3, [pc, #184]	; (d750 <handle_at_udp_sendto+0xbc>)
+    d5d4:	4b50      	ldr	r3, [pc, #320]	; (d718 <handle_at_udp_sendto+0x148>)
 {
-    d698:	f5ad 7d32 	sub.w	sp, sp, #712	; 0x2c8
+    d5d6:	f5ad 7d35 	sub.w	sp, sp, #724	; 0x2d4
 	if (client.sock < 0) {
-    d69c:	681a      	ldr	r2, [r3, #0]
+    d5da:	681a      	ldr	r2, [r3, #0]
 {
-    d69e:	4605      	mov	r5, r0
+    d5dc:	4604      	mov	r4, r0
 	if (client.sock < 0) {
-    d6a0:	2a00      	cmp	r2, #0
-    d6a2:	da12      	bge.n	d6ca <handle_at_udp_sendto+0x36>
+    d5de:	2a00      	cmp	r2, #0
+    d5e0:	461f      	mov	r7, r3
+    d5e2:	da13      	bge.n	d60c <handle_at_udp_sendto+0x3c>
 		LOG_ERR("Socket not opened yet");
-    d6a4:	2301      	movs	r3, #1
-    d6a6:	f04f 0100 	mov.w	r1, #0
-    d6aa:	4a2a      	ldr	r2, [pc, #168]	; (d754 <handle_at_udp_sendto+0xc0>)
-    d6ac:	f363 0107 	bfi	r1, r3, #0, #8
-    d6b0:	4b29      	ldr	r3, [pc, #164]	; (d758 <handle_at_udp_sendto+0xc4>)
-    d6b2:	482a      	ldr	r0, [pc, #168]	; (d75c <handle_at_udp_sendto+0xc8>)
-    d6b4:	1a9b      	subs	r3, r3, r2
-    d6b6:	08db      	lsrs	r3, r3, #3
-    d6b8:	f363 118f 	bfi	r1, r3, #6, #10
+    d5e4:	2301      	movs	r3, #1
+    d5e6:	f04f 0100 	mov.w	r1, #0
+    d5ea:	4a4c      	ldr	r2, [pc, #304]	; (d71c <handle_at_udp_sendto+0x14c>)
+    d5ec:	f363 0107 	bfi	r1, r3, #0, #8
+    d5f0:	4b4b      	ldr	r3, [pc, #300]	; (d720 <handle_at_udp_sendto+0x150>)
+    d5f2:	484c      	ldr	r0, [pc, #304]	; (d724 <handle_at_udp_sendto+0x154>)
+    d5f4:	1a9b      	subs	r3, r3, r2
+    d5f6:	08db      	lsrs	r3, r3, #3
+    d5f8:	f363 118f 	bfi	r1, r3, #6, #10
 		LOG_ERR("Invalid socket");
-    d6bc:	f00e ff35 	bl	1c52a <log_0>
-		return err;
-    d6c0:	f06f 0015 	mvn.w	r0, #21
+    d5fc:	f00e ff95 	bl	1c52a <log_0>
+	int err = -EINVAL;
+    d600:	f06f 0015 	mvn.w	r0, #21
 }
-    d6c4:	f50d 7d32 	add.w	sp, sp, #712	; 0x2c8
-    d6c8:	bd70      	pop	{r4, r5, r6, pc}
+    d604:	f50d 7d35 	add.w	sp, sp, #724	; 0x2d4
+    d608:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
 	} else if (client.ip_proto != IPPROTO_UDP) {
-    d6ca:	791b      	ldrb	r3, [r3, #4]
-    d6cc:	2b11      	cmp	r3, #17
-    d6ce:	d00c      	beq.n	d6ea <handle_at_udp_sendto+0x56>
+    d60c:	791b      	ldrb	r3, [r3, #4]
+    d60e:	2b11      	cmp	r3, #17
+    d610:	d00c      	beq.n	d62c <handle_at_udp_sendto+0x5c>
 		LOG_ERR("Invalid socket");
-    d6d0:	2301      	movs	r3, #1
-    d6d2:	f04f 0100 	mov.w	r1, #0
-    d6d6:	4a1f      	ldr	r2, [pc, #124]	; (d754 <handle_at_udp_sendto+0xc0>)
-    d6d8:	f363 0107 	bfi	r1, r3, #0, #8
-    d6dc:	4b1e      	ldr	r3, [pc, #120]	; (d758 <handle_at_udp_sendto+0xc4>)
-    d6de:	4820      	ldr	r0, [pc, #128]	; (d760 <handle_at_udp_sendto+0xcc>)
-    d6e0:	1a9b      	subs	r3, r3, r2
-    d6e2:	08db      	lsrs	r3, r3, #3
-    d6e4:	f363 118f 	bfi	r1, r3, #6, #10
-    d6e8:	e7e8      	b.n	d6bc <handle_at_udp_sendto+0x28>
+    d612:	2301      	movs	r3, #1
+    d614:	f04f 0100 	mov.w	r1, #0
+    d618:	4a40      	ldr	r2, [pc, #256]	; (d71c <handle_at_udp_sendto+0x14c>)
+    d61a:	f363 0107 	bfi	r1, r3, #0, #8
+    d61e:	4b40      	ldr	r3, [pc, #256]	; (d720 <handle_at_udp_sendto+0x150>)
+    d620:	4841      	ldr	r0, [pc, #260]	; (d728 <handle_at_udp_sendto+0x158>)
+    d622:	1a9b      	subs	r3, r3, r2
+    d624:	08db      	lsrs	r3, r3, #3
+    d626:	f363 118f 	bfi	r1, r3, #6, #10
+    d62a:	e7e7      	b.n	d5fc <handle_at_udp_sendto+0x2c>
 	switch (cmd_type) {
-    d6ea:	2801      	cmp	r0, #1
-    d6ec:	d1e8      	bne.n	d6c0 <handle_at_udp_sendto+0x2c>
+    d62c:	2801      	cmp	r0, #1
+    d62e:	d1e7      	bne.n	d600 <handle_at_udp_sendto+0x30>
 		if (at_params_valid_count_get(&m_param_list) < 4) {
-    d6ee:	481d      	ldr	r0, [pc, #116]	; (d764 <handle_at_udp_sendto+0xd0>)
-    d6f0:	f010 fda5 	bl	1e23e <at_params_valid_count_get>
-    d6f4:	2803      	cmp	r0, #3
-    d6f6:	d9e3      	bls.n	d6c0 <handle_at_udp_sendto+0x2c>
+    d630:	483e      	ldr	r0, [pc, #248]	; (d72c <handle_at_udp_sendto+0x15c>)
+    d632:	f010 fe04 	bl	1e23e <at_params_valid_count_get>
+    d636:	2803      	cmp	r0, #3
+    d638:	d9e2      	bls.n	d600 <handle_at_udp_sendto+0x30>
 		size = TCPIP_MAX_URL;
-    d6f8:	2380      	movs	r3, #128	; 0x80
+    d63a:	2380      	movs	r3, #128	; 0x80
 		err = at_params_string_get(&m_param_list, 1, url, &size);
-    d6fa:	ac02      	add	r4, sp, #8
+    d63c:	ae04      	add	r6, sp, #16
 		size = TCPIP_MAX_URL;
-    d6fc:	9301      	str	r3, [sp, #4]
+    d63e:	9303      	str	r3, [sp, #12]
 		err = at_params_string_get(&m_param_list, 1, url, &size);
-    d6fe:	4622      	mov	r2, r4
-    d700:	ab01      	add	r3, sp, #4
-    d702:	4629      	mov	r1, r5
-    d704:	4817      	ldr	r0, [pc, #92]	; (d764 <handle_at_udp_sendto+0xd0>)
-    d706:	f010 fd77 	bl	1e1f8 <at_params_string_get>
+    d640:	4632      	mov	r2, r6
+    d642:	ab03      	add	r3, sp, #12
+    d644:	4621      	mov	r1, r4
+    d646:	4839      	ldr	r0, [pc, #228]	; (d72c <handle_at_udp_sendto+0x15c>)
+    d648:	f010 fdd6 	bl	1e1f8 <at_params_string_get>
 		if (err < 0) {
-    d70a:	2800      	cmp	r0, #0
-    d70c:	dbda      	blt.n	d6c4 <handle_at_udp_sendto+0x30>
+    d64c:	2800      	cmp	r0, #0
+    d64e:	dbd9      	blt.n	d604 <handle_at_udp_sendto+0x34>
 		url[size] = '\0';
-    d70e:	2600      	movs	r6, #0
-    d710:	9b01      	ldr	r3, [sp, #4]
+    d650:	2400      	movs	r4, #0
+    d652:	9b03      	ldr	r3, [sp, #12]
 		err = at_params_short_get(&m_param_list, 2, &port);
-    d712:	f10d 0202 	add.w	r2, sp, #2
-    d716:	2102      	movs	r1, #2
-    d718:	4812      	ldr	r0, [pc, #72]	; (d764 <handle_at_udp_sendto+0xd0>)
+    d654:	f10d 020a 	add.w	r2, sp, #10
+    d658:	2102      	movs	r1, #2
+    d65a:	4834      	ldr	r0, [pc, #208]	; (d72c <handle_at_udp_sendto+0x15c>)
 		url[size] = '\0';
-    d71a:	54e6      	strb	r6, [r4, r3]
+    d65c:	54f4      	strb	r4, [r6, r3]
 		err = at_params_short_get(&m_param_list, 2, &port);
-    d71c:	f010 fd5a 	bl	1e1d4 <at_params_short_get>
+    d65e:	f010 fdb9 	bl	1e1d4 <at_params_short_get>
 		if (err < 0) {
-    d720:	2800      	cmp	r0, #0
-    d722:	dbcf      	blt.n	d6c4 <handle_at_udp_sendto+0x30>
+    d662:	2800      	cmp	r0, #0
+    d664:	dbce      	blt.n	d604 <handle_at_udp_sendto+0x34>
 		size = NET_IPV4_MTU;
-    d724:	f44f 7310 	mov.w	r3, #576	; 0x240
+    d666:	f44f 7310 	mov.w	r3, #576	; 0x240
 		err = at_params_string_get(&m_param_list, 3, data, &size);
-    d728:	ad22      	add	r5, sp, #136	; 0x88
+    d66a:	ad24      	add	r5, sp, #144	; 0x90
 		size = NET_IPV4_MTU;
-    d72a:	9301      	str	r3, [sp, #4]
+    d66c:	9303      	str	r3, [sp, #12]
 		err = at_params_string_get(&m_param_list, 3, data, &size);
-    d72c:	462a      	mov	r2, r5
-    d72e:	ab01      	add	r3, sp, #4
-    d730:	2103      	movs	r1, #3
-    d732:	480c      	ldr	r0, [pc, #48]	; (d764 <handle_at_udp_sendto+0xd0>)
-    d734:	f010 fd60 	bl	1e1f8 <at_params_string_get>
+    d66e:	462a      	mov	r2, r5
+    d670:	ab03      	add	r3, sp, #12
+    d672:	2103      	movs	r1, #3
+    d674:	482d      	ldr	r0, [pc, #180]	; (d72c <handle_at_udp_sendto+0x15c>)
+    d676:	f010 fdbf 	bl	1e1f8 <at_params_string_get>
 		if (err < 0) {
-    d738:	2800      	cmp	r0, #0
-    d73a:	dbc3      	blt.n	d6c4 <handle_at_udp_sendto+0x30>
+    d67a:	2800      	cmp	r0, #0
+    d67c:	dbc2      	blt.n	d604 <handle_at_udp_sendto+0x34>
 		data[size] = '\0';
-    d73c:	9b01      	ldr	r3, [sp, #4]
-		err = do_udp_sendto(url, port, data);
-    d73e:	462a      	mov	r2, r5
-    d740:	f8bd 1002 	ldrh.w	r1, [sp, #2]
-    d744:	4620      	mov	r0, r4
+    d67e:	9b03      	ldr	r3, [sp, #12]
+	u32_t datalen = strlen(data);
+    d680:	4628      	mov	r0, r5
 		data[size] = '\0';
-    d746:	54ee      	strb	r6, [r5, r3]
+    d682:	54ec      	strb	r4, [r5, r3]
 		err = do_udp_sendto(url, port, data);
-    d748:	f7ff ff42 	bl	d5d0 <do_udp_sendto>
-		break;
-    d74c:	e7ba      	b.n	d6c4 <handle_at_udp_sendto+0x30>
-    d74e:	bf00      	nop
-    d750:	20020108 	.word	0x20020108
-    d754:	0001ed30 	.word	0x0001ed30
-    d758:	0001eda8 	.word	0x0001eda8
-    d75c:	0001f66d 	.word	0x0001f66d
-    d760:	0001f760 	.word	0x0001f760
-    d764:	200200e8 	.word	0x200200e8
+    d684:	f8bd 900a 	ldrh.w	r9, [sp, #10]
+	u32_t datalen = strlen(data);
+    d688:	f00f fc8a 	bl	1cfa0 <strlen>
+	ret = do_udp_init(url, port);
+    d68c:	4649      	mov	r1, r9
+	u32_t datalen = strlen(data);
+    d68e:	4680      	mov	r8, r0
+	ret = do_udp_init(url, port);
+    d690:	4630      	mov	r0, r6
+    d692:	f7ff fe73 	bl	d37c <do_udp_init>
+	if (ret < 0) {
+    d696:	2800      	cmp	r0, #0
+    d698:	dbb4      	blt.n	d604 <handle_at_udp_sendto+0x34>
+	return socket_ops->sendto(sock, buf, len, flags, to, tolen);
+    d69a:	f04f 0908 	mov.w	r9, #8
+    d69e:	4e24      	ldr	r6, [pc, #144]	; (d730 <handle_at_udp_sendto+0x160>)
+    d6a0:	f8df a09c 	ldr.w	sl, [pc, #156]	; d740 <handle_at_udp_sendto+0x170>
+	while (offset < datalen) {
+    d6a4:	45a0      	cmp	r8, r4
+    d6a6:	d809      	bhi.n	d6bc <handle_at_udp_sendto+0xec>
+	sprintf(buf, "#XUDPSENDTO: %d\r\n", offset);
+    d6a8:	4622      	mov	r2, r4
+    d6aa:	4922      	ldr	r1, [pc, #136]	; (d734 <handle_at_udp_sendto+0x164>)
+    d6ac:	4822      	ldr	r0, [pc, #136]	; (d738 <handle_at_udp_sendto+0x168>)
+    d6ae:	f003 f92f 	bl	10910 <sprintf>
+	client.callback(buf);
+    d6b2:	4821      	ldr	r0, [pc, #132]	; (d738 <handle_at_udp_sendto+0x168>)
+    d6b4:	68bb      	ldr	r3, [r7, #8]
+    d6b6:	4798      	blx	r3
+	return 0;
+    d6b8:	2000      	movs	r0, #0
+    d6ba:	e7a3      	b.n	d604 <handle_at_udp_sendto+0x34>
+    d6bc:	6833      	ldr	r3, [r6, #0]
+    d6be:	e9cd a900 	strd	sl, r9, [sp]
+    d6c2:	eba8 0204 	sub.w	r2, r8, r4
+    d6c6:	f8d3 b030 	ldr.w	fp, [r3, #48]	; 0x30
+    d6ca:	1929      	adds	r1, r5, r4
+    d6cc:	2300      	movs	r3, #0
+    d6ce:	6838      	ldr	r0, [r7, #0]
+    d6d0:	47d8      	blx	fp
+		if (ret <= 0) {
+    d6d2:	2800      	cmp	r0, #0
+    d6d4:	dc1d      	bgt.n	d712 <handle_at_udp_sendto+0x142>
+			LOG_ERR("sendto() failed: %d", -errno);
+    d6d6:	2301      	movs	r3, #1
+    d6d8:	f04f 0400 	mov.w	r4, #0
+    d6dc:	4a0f      	ldr	r2, [pc, #60]	; (d71c <handle_at_udp_sendto+0x14c>)
+    d6de:	f363 0407 	bfi	r4, r3, #0, #8
+    d6e2:	4b0f      	ldr	r3, [pc, #60]	; (d720 <handle_at_udp_sendto+0x150>)
+    d6e4:	1a9b      	subs	r3, r3, r2
+    d6e6:	08db      	lsrs	r3, r3, #3
+    d6e8:	f363 148f 	bfi	r4, r3, #6, #10
+    d6ec:	f00e fb83 	bl	1bdf6 <z_errno>
+    d6f0:	6801      	ldr	r1, [r0, #0]
+    d6f2:	4622      	mov	r2, r4
+    d6f4:	4249      	negs	r1, r1
+    d6f6:	4811      	ldr	r0, [pc, #68]	; (d73c <handle_at_udp_sendto+0x16c>)
+    d6f8:	f00e ff24 	bl	1c544 <log_1>
+			do_socket_close(-errno);
+    d6fc:	f00e fb7b 	bl	1bdf6 <z_errno>
+    d700:	6800      	ldr	r0, [r0, #0]
+    d702:	4240      	negs	r0, r0
+    d704:	f7ff fa34 	bl	cb70 <do_socket_close>
+			return -errno;
+    d708:	f00e fb75 	bl	1bdf6 <z_errno>
+    d70c:	6800      	ldr	r0, [r0, #0]
+    d70e:	4240      	negs	r0, r0
+    d710:	e778      	b.n	d604 <handle_at_udp_sendto+0x34>
+		offset += ret;
+    d712:	4404      	add	r4, r0
+    d714:	e7c6      	b.n	d6a4 <handle_at_udp_sendto+0xd4>
+    d716:	bf00      	nop
+    d718:	20020108 	.word	0x20020108
+    d71c:	0001ed30 	.word	0x0001ed30
+    d720:	0001eda8 	.word	0x0001eda8
+    d724:	0001f647 	.word	0x0001f647
+    d728:	0001f73a 	.word	0x0001f73a
+    d72c:	200200e8 	.word	0x200200e8
+    d730:	2002031c 	.word	0x2002031c
+    d734:	0001f78e 	.word	0x0001f78e
+    d738:	20026340 	.word	0x20026340
+    d73c:	0001f77a 	.word	0x0001f77a
+    d740:	20024e04 	.word	0x20024e04
 
-0000d768 <slm_at_tcpip_parse>:
+0000d744 <slm_at_tcpip_parse>:
 
 /**@brief API to handle TCP/IP AT commands
  */
 int slm_at_tcpip_parse(const char *at_cmd)
 {
-    d768:	e92d 41f0 	stmdb	sp!, {r4, r5, r6, r7, r8, lr}
-    d76c:	4d20      	ldr	r5, [pc, #128]	; (d7f0 <slm_at_tcpip_parse+0x88>)
-    d76e:	4606      	mov	r6, r0
+    d744:	e92d 41f0 	stmdb	sp!, {r4, r5, r6, r7, r8, lr}
+    d748:	4d20      	ldr	r5, [pc, #128]	; (d7cc <slm_at_tcpip_parse+0x88>)
+    d74a:	4606      	mov	r6, r0
 	int ret = -ENOTSUP;
 	enum at_cmd_type type;
 
 	for (int i = 0; i < AT_TCPIP_MAX; i++) {
-    d770:	2400      	movs	r4, #0
-    d772:	46a8      	mov	r8, r5
+    d74c:	2400      	movs	r4, #0
+    d74e:	46a8      	mov	r8, r5
 		u8_t cmd_len = strlen(m_tcpip_at_list[i].string);
-    d774:	686f      	ldr	r7, [r5, #4]
-    d776:	4638      	mov	r0, r7
-    d778:	f00f fc12 	bl	1cfa0 <strlen>
-    d77c:	2300      	movs	r3, #0
-    d77e:	b2c0      	uxtb	r0, r0
-    d780:	4283      	cmp	r3, r0
-    d782:	db18      	blt.n	d7b6 <slm_at_tcpip_parse+0x4e>
+    d750:	686f      	ldr	r7, [r5, #4]
+    d752:	4638      	mov	r0, r7
+    d754:	f00f fc24 	bl	1cfa0 <strlen>
+    d758:	2300      	movs	r3, #0
+    d75a:	b2c0      	uxtb	r0, r0
+    d75c:	4283      	cmp	r3, r0
+    d75e:	db18      	blt.n	d792 <slm_at_tcpip_parse+0x4e>
 
 		if (slm_at_cmd_cmp(at_cmd, m_tcpip_at_list[i].string,
 			cmd_len)) {
 			ret = at_parser_params_from_str(at_cmd, NULL,
-    d784:	2100      	movs	r1, #0
-    d786:	4a1b      	ldr	r2, [pc, #108]	; (d7f4 <slm_at_tcpip_parse+0x8c>)
-    d788:	4630      	mov	r0, r6
-    d78a:	f010 fc29 	bl	1dfe0 <at_parser_params_from_str>
+    d760:	2100      	movs	r1, #0
+    d762:	4a1b      	ldr	r2, [pc, #108]	; (d7d0 <slm_at_tcpip_parse+0x8c>)
+    d764:	4630      	mov	r0, r6
+    d766:	f010 fc3b 	bl	1dfe0 <at_parser_params_from_str>
 						&m_param_list);
 			if (ret < 0) {
-    d78e:	1e01      	subs	r1, r0, #0
-    d790:	da1c      	bge.n	d7cc <slm_at_tcpip_parse+0x64>
+    d76a:	1e01      	subs	r1, r0, #0
+    d76c:	da1c      	bge.n	d7a8 <slm_at_tcpip_parse+0x64>
 				LOG_ERR("Failed to parse AT command %d", ret);
-    d792:	2301      	movs	r3, #1
-    d794:	f04f 0200 	mov.w	r2, #0
-    d798:	4817      	ldr	r0, [pc, #92]	; (d7f8 <slm_at_tcpip_parse+0x90>)
-    d79a:	f363 0207 	bfi	r2, r3, #0, #8
-    d79e:	4b17      	ldr	r3, [pc, #92]	; (d7fc <slm_at_tcpip_parse+0x94>)
-    d7a0:	1a1b      	subs	r3, r3, r0
-    d7a2:	08db      	lsrs	r3, r3, #3
-    d7a4:	4816      	ldr	r0, [pc, #88]	; (d800 <slm_at_tcpip_parse+0x98>)
-    d7a6:	f363 128f 	bfi	r2, r3, #6, #10
-    d7aa:	f00e fecb 	bl	1c544 <log_1>
+    d76e:	2301      	movs	r3, #1
+    d770:	f04f 0200 	mov.w	r2, #0
+    d774:	4817      	ldr	r0, [pc, #92]	; (d7d4 <slm_at_tcpip_parse+0x90>)
+    d776:	f363 0207 	bfi	r2, r3, #0, #8
+    d77a:	4b17      	ldr	r3, [pc, #92]	; (d7d8 <slm_at_tcpip_parse+0x94>)
+    d77c:	1a1b      	subs	r3, r3, r0
+    d77e:	08db      	lsrs	r3, r3, #3
+    d780:	4816      	ldr	r0, [pc, #88]	; (d7dc <slm_at_tcpip_parse+0x98>)
+    d782:	f363 128f 	bfi	r2, r3, #6, #10
+    d786:	f00e fedd 	bl	1c544 <log_1>
 				return -EINVAL;
-    d7ae:	f06f 0015 	mvn.w	r0, #21
+    d78a:	f06f 0015 	mvn.w	r0, #21
 			break;
 		}
 	}
 
 	return ret;
 }
-    d7b2:	e8bd 81f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, pc}
+    d78e:	e8bd 81f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, pc}
 		if (toupper(*(cmd + i)) != *(slm_cmd + i)) {
-    d7b6:	5cf2      	ldrb	r2, [r6, r3]
-    d7b8:	f1a2 0161 	sub.w	r1, r2, #97	; 0x61
-    d7bc:	2919      	cmp	r1, #25
-    d7be:	5cf9      	ldrb	r1, [r7, r3]
-    d7c0:	bf98      	it	ls
-    d7c2:	3a20      	subls	r2, #32
-    d7c4:	4291      	cmp	r1, r2
-    d7c6:	d10b      	bne.n	d7e0 <slm_at_tcpip_parse+0x78>
+    d792:	5cf2      	ldrb	r2, [r6, r3]
+    d794:	f1a2 0161 	sub.w	r1, r2, #97	; 0x61
+    d798:	2919      	cmp	r1, #25
+    d79a:	5cf9      	ldrb	r1, [r7, r3]
+    d79c:	bf98      	it	ls
+    d79e:	3a20      	subls	r2, #32
+    d7a0:	4291      	cmp	r1, r2
+    d7a2:	d10b      	bne.n	d7bc <slm_at_tcpip_parse+0x78>
 	for (int i = 0; i < length; i++) {
-    d7c8:	3301      	adds	r3, #1
-    d7ca:	e7d9      	b.n	d780 <slm_at_tcpip_parse+0x18>
+    d7a4:	3301      	adds	r3, #1
+    d7a6:	e7d9      	b.n	d75c <slm_at_tcpip_parse+0x18>
 			type = at_parser_cmd_type_get(at_cmd);
-    d7cc:	4630      	mov	r0, r6
-    d7ce:	f010 fc0a 	bl	1dfe6 <at_parser_cmd_type_get>
+    d7a8:	4630      	mov	r0, r6
+    d7aa:	f010 fc1c 	bl	1dfe6 <at_parser_cmd_type_get>
 			ret = m_tcpip_at_list[i].handler(type);
-    d7d2:	230c      	movs	r3, #12
-    d7d4:	fb03 8404 	mla	r4, r3, r4, r8
-    d7d8:	68a3      	ldr	r3, [r4, #8]
+    d7ae:	230c      	movs	r3, #12
+    d7b0:	fb03 8404 	mla	r4, r3, r4, r8
+    d7b4:	68a3      	ldr	r3, [r4, #8]
 }
-    d7da:	e8bd 41f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, lr}
+    d7b6:	e8bd 41f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, lr}
 			ret = m_tcpip_at_list[i].handler(type);
-    d7de:	4718      	bx	r3
+    d7ba:	4718      	bx	r3
 	for (int i = 0; i < AT_TCPIP_MAX; i++) {
-    d7e0:	3401      	adds	r4, #1
-    d7e2:	2c07      	cmp	r4, #7
-    d7e4:	f105 050c 	add.w	r5, r5, #12
-    d7e8:	d1c4      	bne.n	d774 <slm_at_tcpip_parse+0xc>
+    d7bc:	3401      	adds	r4, #1
+    d7be:	2c07      	cmp	r4, #7
+    d7c0:	f105 050c 	add.w	r5, r5, #12
+    d7c4:	d1c4      	bne.n	d750 <slm_at_tcpip_parse+0xc>
 	int ret = -ENOTSUP;
-    d7ea:	f06f 0022 	mvn.w	r0, #34	; 0x22
-    d7ee:	e7e0      	b.n	d7b2 <slm_at_tcpip_parse+0x4a>
-    d7f0:	0001ede8 	.word	0x0001ede8
-    d7f4:	200200e8 	.word	0x200200e8
-    d7f8:	0001ed30 	.word	0x0001ed30
-    d7fc:	0001eda8 	.word	0x0001eda8
-    d800:	0001f37b 	.word	0x0001f37b
+    d7c6:	f06f 0022 	mvn.w	r0, #34	; 0x22
+    d7ca:	e7e0      	b.n	d78e <slm_at_tcpip_parse+0x4a>
+    d7cc:	0001ede8 	.word	0x0001ede8
+    d7d0:	200200e8 	.word	0x200200e8
+    d7d4:	0001ed30 	.word	0x0001ed30
+    d7d8:	0001eda8 	.word	0x0001eda8
+    d7dc:	0001f37b 	.word	0x0001f37b
 
-0000d804 <request_nb_iot_network_stats>:
+0000d7e0 <request_nb_iot_network_stats>:
 ////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////
 int request_nb_iot_network_stats()
 {
 	LOG_INF("Requesting NB-IoT network stats...");
-    d804:	2303      	movs	r3, #3
-    d806:	f04f 0100 	mov.w	r1, #0
+    d7e0:	2303      	movs	r3, #3
+    d7e2:	f04f 0100 	mov.w	r1, #0
 {
-    d80a:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+    d7e6:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
 	LOG_INF("Requesting NB-IoT network stats...");
-    d80e:	f363 0107 	bfi	r1, r3, #0, #8
-    d812:	4ca3      	ldr	r4, [pc, #652]	; (daa0 <request_nb_iot_network_stats+0x29c>)
-    d814:	4ba3      	ldr	r3, [pc, #652]	; (daa4 <request_nb_iot_network_stats+0x2a0>)
+    d7ea:	f363 0107 	bfi	r1, r3, #0, #8
+    d7ee:	4ca9      	ldr	r4, [pc, #676]	; (da94 <request_nb_iot_network_stats+0x2b4>)
+    d7f0:	4ba9      	ldr	r3, [pc, #676]	; (da98 <request_nb_iot_network_stats+0x2b8>)
 {
-    d816:	b0a9      	sub	sp, #164	; 0xa4
+    d7f2:	b0a9      	sub	sp, #164	; 0xa4
 	LOG_INF("Requesting NB-IoT network stats...");
-    d818:	1ae4      	subs	r4, r4, r3
-    d81a:	f3c4 04c9 	ubfx	r4, r4, #3, #10
-    d81e:	f364 118f 	bfi	r1, r4, #6, #10
-    d822:	48a1      	ldr	r0, [pc, #644]	; (daa8 <request_nb_iot_network_stats+0x2a4>)
-    d824:	f00e fe81 	bl	1c52a <log_0>
+    d7f4:	1ae4      	subs	r4, r4, r3
+    d7f6:	f3c4 04c9 	ubfx	r4, r4, #3, #10
+    d7fa:	f364 118f 	bfi	r1, r4, #6, #10
+    d7fe:	48a7      	ldr	r0, [pc, #668]	; (da9c <request_nb_iot_network_stats+0x2bc>)
+    d800:	f00e fe93 	bl	1c52a <log_0>
 	int  at_sock;
 	int  bytes_sent;
 	int  bytes_received;
 	char buf[150];
 
 	at_sock = socket(AF_LTE, 0, NPROTO_AT);
-    d828:	f240 2201 	movw	r2, #513	; 0x201
-    d82c:	2100      	movs	r1, #0
-    d82e:	2066      	movs	r0, #102	; 0x66
-    d830:	f7ff f992 	bl	cb58 <socket>
+    d804:	f240 2201 	movw	r2, #513	; 0x201
+    d808:	2100      	movs	r1, #0
+    d80a:	2066      	movs	r0, #102	; 0x66
+    d80c:	f7ff f9a4 	bl	cb58 <socket>
 	if (at_sock < 0) {
-    d834:	1e05      	subs	r5, r0, #0
-    d836:	db16      	blt.n	d866 <request_nb_iot_network_stats+0x62>
+    d810:	1e05      	subs	r5, r0, #0
+    d812:	db16      	blt.n	d842 <request_nb_iot_network_stats+0x62>
 		return -1;
 	}
 
 	// Get and parse current cell ID: AT+CEREG?
 	// LOG_INF("CEREG");
 	bytes_sent = send(at_sock, AT_CEREG, strlen(AT_CEREG), 0);
-    d838:	489c      	ldr	r0, [pc, #624]	; (daac <request_nb_iot_network_stats+0x2a8>)
-    d83a:	f00f fbb1 	bl	1cfa0 <strlen>
-    d83e:	499b      	ldr	r1, [pc, #620]	; (daac <request_nb_iot_network_stats+0x2a8>)
-    d840:	4602      	mov	r2, r0
-    d842:	4628      	mov	r0, r5
-    d844:	f7ff faa2 	bl	cd8c <send.constprop.11>
+    d814:	48a2      	ldr	r0, [pc, #648]	; (daa0 <request_nb_iot_network_stats+0x2c0>)
+    d816:	f00f fbc3 	bl	1cfa0 <strlen>
+    d81a:	49a1      	ldr	r1, [pc, #644]	; (daa0 <request_nb_iot_network_stats+0x2c0>)
+    d81c:	4602      	mov	r2, r0
+    d81e:	4628      	mov	r0, r5
+    d820:	f7ff fab4 	bl	cd8c <send.constprop.10>
 	if (bytes_sent < 0) {
-    d848:	2800      	cmp	r0, #0
-    d84a:	da0f      	bge.n	d86c <request_nb_iot_network_stats+0x68>
+    d824:	2800      	cmp	r0, #0
+    d826:	da0f      	bge.n	d848 <request_nb_iot_network_stats+0x68>
 		LOG_INF("CEREG send error");
-    d84c:	f04f 0100 	mov.w	r1, #0
-    d850:	2303      	movs	r3, #3
-    d852:	4897      	ldr	r0, [pc, #604]	; (dab0 <request_nb_iot_network_stats+0x2ac>)
-    d854:	f363 0107 	bfi	r1, r3, #0, #8
-    d858:	f364 118f 	bfi	r1, r4, #6, #10
+    d828:	f04f 0100 	mov.w	r1, #0
+    d82c:	2303      	movs	r3, #3
+    d82e:	489d      	ldr	r0, [pc, #628]	; (daa4 <request_nb_iot_network_stats+0x2c4>)
+    d830:	f363 0107 	bfi	r1, r3, #0, #8
+    d834:	f364 118f 	bfi	r1, r4, #6, #10
 			neighbors[0] = '\0';
 		}	
 	}
 	else if (strstr(buf, "ERROR") != NULL) 
 	{
 		LOG_ERR("Error while getting neighbor data!");
-    d85c:	f00e fe65 	bl	1c52a <log_0>
+    d838:	f00e fe77 	bl	1c52a <log_0>
 		close(at_sock);
-    d860:	4628      	mov	r0, r5
-    d862:	f7ff f97f 	bl	cb64 <close>
+    d83c:	4628      	mov	r0, r5
+    d83e:	f7ff f991 	bl	cb64 <close>
 		return -1;
-    d866:	f04f 30ff 	mov.w	r0, #4294967295	; 0xffffffff
-    d86a:	e0f5      	b.n	da58 <request_nb_iot_network_stats+0x254>
+    d842:	f04f 30ff 	mov.w	r0, #4294967295	; 0xffffffff
+    d846:	e100      	b.n	da4a <request_nb_iot_network_stats+0x26a>
 		bytes_received = recv(at_sock, buf, 100, 0);
-    d86c:	2264      	movs	r2, #100	; 0x64
-    d86e:	a902      	add	r1, sp, #8
-    d870:	4628      	mov	r0, r5
-    d872:	f7ff fb09 	bl	ce88 <recv.constprop.13>
+    d848:	2264      	movs	r2, #100	; 0x64
+    d84a:	a902      	add	r1, sp, #8
+    d84c:	4628      	mov	r0, r5
+    d84e:	f7ff fb1b 	bl	ce88 <recv.constprop.12>
 	} while (bytes_received == 0);
-    d876:	2800      	cmp	r0, #0
-    d878:	d0f8      	beq.n	d86c <request_nb_iot_network_stats+0x68>
+    d852:	2800      	cmp	r0, #0
+    d854:	d0f8      	beq.n	d848 <request_nb_iot_network_stats+0x68>
 	if(strstr(buf, "OK") != NULL)
-    d87a:	498e      	ldr	r1, [pc, #568]	; (dab4 <request_nb_iot_network_stats+0x2b0>)
-    d87c:	a802      	add	r0, sp, #8
-    d87e:	f00f fb3a 	bl	1cef6 <strstr>
-    d882:	b370      	cbz	r0, d8e2 <request_nb_iot_network_stats+0xde>
+    d856:	4994      	ldr	r1, [pc, #592]	; (daa8 <request_nb_iot_network_stats+0x2c8>)
+    d858:	a802      	add	r0, sp, #8
+    d85a:	f00f fb4c 	bl	1cef6 <strstr>
+    d85e:	b370      	cbz	r0, d8be <request_nb_iot_network_stats+0xde>
 		char* pos = strstr(buf, "\",\"")+3;		
-    d884:	498c      	ldr	r1, [pc, #560]	; (dab8 <request_nb_iot_network_stats+0x2b4>)
-    d886:	a802      	add	r0, sp, #8
-    d888:	f00f fb35 	bl	1cef6 <strstr>
-    d88c:	4a8b      	ldr	r2, [pc, #556]	; (dabc <request_nb_iot_network_stats+0x2b8>)
-    d88e:	1c83      	adds	r3, r0, #2
-    d890:	300a      	adds	r0, #10
+    d860:	4992      	ldr	r1, [pc, #584]	; (daac <request_nb_iot_network_stats+0x2cc>)
+    d862:	a802      	add	r0, sp, #8
+    d864:	f00f fb47 	bl	1cef6 <strstr>
+    d868:	4a91      	ldr	r2, [pc, #580]	; (dab0 <request_nb_iot_network_stats+0x2d0>)
+    d86a:	1c83      	adds	r3, r0, #2
+    d86c:	300a      	adds	r0, #10
 			current_cell_id[i] = pos[i];
-    d892:	f813 1f01 	ldrb.w	r1, [r3, #1]!
+    d86e:	f813 1f01 	ldrb.w	r1, [r3, #1]!
 		for(uint8_t i=0; i<8; i++)
-    d896:	4298      	cmp	r0, r3
+    d872:	4298      	cmp	r0, r3
 			current_cell_id[i] = pos[i];
-    d898:	f802 1b01 	strb.w	r1, [r2], #1
+    d874:	f802 1b01 	strb.w	r1, [r2], #1
 		for(uint8_t i=0; i<8; i++)
-    d89c:	d1f9      	bne.n	d892 <request_nb_iot_network_stats+0x8e>
+    d878:	d1f9      	bne.n	d86e <request_nb_iot_network_stats+0x8e>
 		LOG_INF("Current cell ID = %s", current_cell_id);
-    d89e:	f04f 0200 	mov.w	r2, #0
-    d8a2:	2303      	movs	r3, #3
-    d8a4:	f363 0207 	bfi	r2, r3, #0, #8
-    d8a8:	f364 128f 	bfi	r2, r4, #6, #10
-    d8ac:	4983      	ldr	r1, [pc, #524]	; (dabc <request_nb_iot_network_stats+0x2b8>)
-    d8ae:	4884      	ldr	r0, [pc, #528]	; (dac0 <request_nb_iot_network_stats+0x2bc>)
-    d8b0:	f00e fe48 	bl	1c544 <log_1>
+    d87a:	f04f 0200 	mov.w	r2, #0
+    d87e:	2303      	movs	r3, #3
+    d880:	f363 0207 	bfi	r2, r3, #0, #8
+    d884:	f364 128f 	bfi	r2, r4, #6, #10
+    d888:	4989      	ldr	r1, [pc, #548]	; (dab0 <request_nb_iot_network_stats+0x2d0>)
+    d88a:	488a      	ldr	r0, [pc, #552]	; (dab4 <request_nb_iot_network_stats+0x2d4>)
+    d88c:	f00e fe5a 	bl	1c544 <log_1>
 	k_sleep(K_SECONDS(2));
-    d8b4:	f44f 60fa 	mov.w	r0, #2000	; 0x7d0
-    d8b8:	f00e fa9f 	bl	1bdfa <k_sleep>
+    d890:	f44f 60fa 	mov.w	r0, #2000	; 0x7d0
+    d894:	f00e fab1 	bl	1bdfa <k_sleep>
 	bytes_sent = send(at_sock, AT_CESQ, strlen(AT_CESQ), 0);
-    d8bc:	4881      	ldr	r0, [pc, #516]	; (dac4 <request_nb_iot_network_stats+0x2c0>)
-    d8be:	f00f fb6f 	bl	1cfa0 <strlen>
-    d8c2:	4980      	ldr	r1, [pc, #512]	; (dac4 <request_nb_iot_network_stats+0x2c0>)
-    d8c4:	4602      	mov	r2, r0
-    d8c6:	4628      	mov	r0, r5
-    d8c8:	f7ff fa60 	bl	cd8c <send.constprop.11>
+    d898:	4887      	ldr	r0, [pc, #540]	; (dab8 <request_nb_iot_network_stats+0x2d8>)
+    d89a:	f00f fb81 	bl	1cfa0 <strlen>
+    d89e:	4986      	ldr	r1, [pc, #536]	; (dab8 <request_nb_iot_network_stats+0x2d8>)
+    d8a0:	4602      	mov	r2, r0
+    d8a2:	4628      	mov	r0, r5
+    d8a4:	f7ff fa72 	bl	cd8c <send.constprop.10>
 	if (bytes_sent < 0) {
-    d8cc:	2800      	cmp	r0, #0
-    d8ce:	da17      	bge.n	d900 <request_nb_iot_network_stats+0xfc>
+    d8a8:	2800      	cmp	r0, #0
+    d8aa:	da17      	bge.n	d8dc <request_nb_iot_network_stats+0xfc>
 		LOG_INF("CESQ send error");
-    d8d0:	f04f 0100 	mov.w	r1, #0
-    d8d4:	2303      	movs	r3, #3
-    d8d6:	f363 0107 	bfi	r1, r3, #0, #8
-    d8da:	f364 118f 	bfi	r1, r4, #6, #10
-    d8de:	487a      	ldr	r0, [pc, #488]	; (dac8 <request_nb_iot_network_stats+0x2c4>)
-    d8e0:	e7bc      	b.n	d85c <request_nb_iot_network_stats+0x58>
+    d8ac:	f04f 0100 	mov.w	r1, #0
+    d8b0:	2303      	movs	r3, #3
+    d8b2:	f363 0107 	bfi	r1, r3, #0, #8
+    d8b6:	f364 118f 	bfi	r1, r4, #6, #10
+    d8ba:	4880      	ldr	r0, [pc, #512]	; (dabc <request_nb_iot_network_stats+0x2dc>)
+    d8bc:	e7bc      	b.n	d838 <request_nb_iot_network_stats+0x58>
 	else if (strstr(buf, "ERROR") != NULL) 
-    d8e2:	497a      	ldr	r1, [pc, #488]	; (dacc <request_nb_iot_network_stats+0x2c8>)
-    d8e4:	a802      	add	r0, sp, #8
-    d8e6:	f00f fb06 	bl	1cef6 <strstr>
-    d8ea:	2800      	cmp	r0, #0
-    d8ec:	d0e2      	beq.n	d8b4 <request_nb_iot_network_stats+0xb0>
+    d8be:	4980      	ldr	r1, [pc, #512]	; (dac0 <request_nb_iot_network_stats+0x2e0>)
+    d8c0:	a802      	add	r0, sp, #8
+    d8c2:	f00f fb18 	bl	1cef6 <strstr>
+    d8c6:	2800      	cmp	r0, #0
+    d8c8:	d0e2      	beq.n	d890 <request_nb_iot_network_stats+0xb0>
 		LOG_ERR("Error while getting current cell ID!");
-    d8ee:	f04f 0100 	mov.w	r1, #0
-    d8f2:	2301      	movs	r3, #1
-    d8f4:	f363 0107 	bfi	r1, r3, #0, #8
-    d8f8:	f364 118f 	bfi	r1, r4, #6, #10
-    d8fc:	4874      	ldr	r0, [pc, #464]	; (dad0 <request_nb_iot_network_stats+0x2cc>)
-    d8fe:	e7ad      	b.n	d85c <request_nb_iot_network_stats+0x58>
+    d8ca:	f04f 0100 	mov.w	r1, #0
+    d8ce:	2301      	movs	r3, #1
+    d8d0:	f363 0107 	bfi	r1, r3, #0, #8
+    d8d4:	f364 118f 	bfi	r1, r4, #6, #10
+    d8d8:	487a      	ldr	r0, [pc, #488]	; (dac4 <request_nb_iot_network_stats+0x2e4>)
+    d8da:	e7ad      	b.n	d838 <request_nb_iot_network_stats+0x58>
 		bytes_received = recv(at_sock, buf, 100, 0);
-    d900:	2264      	movs	r2, #100	; 0x64
-    d902:	a902      	add	r1, sp, #8
-    d904:	4628      	mov	r0, r5
-    d906:	f7ff fabf 	bl	ce88 <recv.constprop.13>
+    d8dc:	2264      	movs	r2, #100	; 0x64
+    d8de:	a902      	add	r1, sp, #8
+    d8e0:	4628      	mov	r0, r5
+    d8e2:	f7ff fad1 	bl	ce88 <recv.constprop.12>
 	} while (bytes_received == 0);
-    d90a:	2800      	cmp	r0, #0
-    d90c:	d0f8      	beq.n	d900 <request_nb_iot_network_stats+0xfc>
+    d8e6:	2800      	cmp	r0, #0
+    d8e8:	d0f8      	beq.n	d8dc <request_nb_iot_network_stats+0xfc>
+	LOG_INF("CESQ RESPONSE: %s", buf); // +CESQ: 99,99,255,255,17,54 \n OK		
+    d8ea:	2303      	movs	r3, #3
+    d8ec:	f04f 0200 	mov.w	r2, #0
+    d8f0:	f363 0207 	bfi	r2, r3, #0, #8
+    d8f4:	a902      	add	r1, sp, #8
+    d8f6:	4874      	ldr	r0, [pc, #464]	; (dac8 <request_nb_iot_network_stats+0x2e8>)
+    d8f8:	f364 128f 	bfi	r2, r4, #6, #10
+    d8fc:	f00e fe22 	bl	1c544 <log_1>
 	if(strstr(buf, "OK") != NULL)
-    d90e:	4969      	ldr	r1, [pc, #420]	; (dab4 <request_nb_iot_network_stats+0x2b0>)
-    d910:	a802      	add	r0, sp, #8
-    d912:	f00f faf0 	bl	1cef6 <strstr>
-    d916:	2800      	cmp	r0, #0
-    d918:	d03e      	beq.n	d998 <request_nb_iot_network_stats+0x194>
+    d900:	4969      	ldr	r1, [pc, #420]	; (daa8 <request_nb_iot_network_stats+0x2c8>)
+    d902:	a802      	add	r0, sp, #8
+    d904:	f00f faf7 	bl	1cef6 <strstr>
+    d908:	2800      	cmp	r0, #0
+    d90a:	d03e      	beq.n	d98a <request_nb_iot_network_stats+0x1aa>
 		char *pos1 = strrchr(buf, ',') + 1;
-    d91a:	212c      	movs	r1, #44	; 0x2c
-    d91c:	a802      	add	r0, sp, #8
-    d91e:	f00f fb32 	bl	1cf86 <strrchr>
-    d922:	1c46      	adds	r6, r0, #1
+    d90c:	212c      	movs	r1, #44	; 0x2c
+    d90e:	a802      	add	r0, sp, #8
+    d910:	f00f fb39 	bl	1cf86 <strrchr>
+    d914:	1c46      	adds	r6, r0, #1
 		char *pos2 = strstr(pos1, "\n");
-    d924:	496b      	ldr	r1, [pc, #428]	; (dad4 <request_nb_iot_network_stats+0x2d0>)
-    d926:	4630      	mov	r0, r6
-    d928:	f00f fae5 	bl	1cef6 <strstr>
-    d92c:	4680      	mov	r8, r0
+    d916:	496d      	ldr	r1, [pc, #436]	; (dacc <request_nb_iot_network_stats+0x2ec>)
+    d918:	4630      	mov	r0, r6
+    d91a:	f00f faec 	bl	1cef6 <strstr>
+    d91e:	4680      	mov	r8, r0
 		memcpy(rsrp, pos1, strlen(pos1)-strlen(pos2));
-    d92e:	4630      	mov	r0, r6
-    d930:	f00f fb36 	bl	1cfa0 <strlen>
-    d934:	4607      	mov	r7, r0
-    d936:	4640      	mov	r0, r8
-    d938:	f00f fb32 	bl	1cfa0 <strlen>
-    d93c:	4631      	mov	r1, r6
-    d93e:	1a3a      	subs	r2, r7, r0
-    d940:	4668      	mov	r0, sp
-    d942:	f00f fb68 	bl	1d016 <memcpy>
+    d920:	4630      	mov	r0, r6
+    d922:	f00f fb3d 	bl	1cfa0 <strlen>
+    d926:	4607      	mov	r7, r0
+    d928:	4640      	mov	r0, r8
+    d92a:	f00f fb39 	bl	1cfa0 <strlen>
+    d92e:	4631      	mov	r1, r6
+    d930:	1a3a      	subs	r2, r7, r0
+    d932:	4668      	mov	r0, sp
+    d934:	f00f fb6f 	bl	1d016 <memcpy>
 		current_rsrp = (uint8_t) strtol(rsrp, &ptr, 10);
-    d946:	220a      	movs	r2, #10
-    d948:	a901      	add	r1, sp, #4
-    d94a:	4668      	mov	r0, sp
-    d94c:	f00f f9e4 	bl	1cd18 <strtol>
-    d950:	4b61      	ldr	r3, [pc, #388]	; (dad8 <request_nb_iot_network_stats+0x2d4>)
+    d938:	220a      	movs	r2, #10
+    d93a:	a901      	add	r1, sp, #4
+    d93c:	4668      	mov	r0, sp
+    d93e:	f00f f9eb 	bl	1cd18 <strtol>
+    d942:	4b63      	ldr	r3, [pc, #396]	; (dad0 <request_nb_iot_network_stats+0x2f0>)
 		LOG_INF("Current RSRP = %d", current_rsrp);
-    d952:	f04f 0200 	mov.w	r2, #0
+    d944:	f04f 0200 	mov.w	r2, #0
 		current_rsrp = (uint8_t) strtol(rsrp, &ptr, 10);
-    d956:	7018      	strb	r0, [r3, #0]
+    d948:	7018      	strb	r0, [r3, #0]
 		LOG_INF("Current RSRP = %d", current_rsrp);
-    d958:	2303      	movs	r3, #3
-    d95a:	f363 0207 	bfi	r2, r3, #0, #8
-    d95e:	b2c1      	uxtb	r1, r0
-    d960:	f364 128f 	bfi	r2, r4, #6, #10
-    d964:	485d      	ldr	r0, [pc, #372]	; (dadc <request_nb_iot_network_stats+0x2d8>)
-    d966:	f00e fded 	bl	1c544 <log_1>
+    d94a:	2303      	movs	r3, #3
+    d94c:	f363 0207 	bfi	r2, r3, #0, #8
+    d950:	b2c1      	uxtb	r1, r0
+    d952:	f364 128f 	bfi	r2, r4, #6, #10
+    d956:	485f      	ldr	r0, [pc, #380]	; (dad4 <request_nb_iot_network_stats+0x2f4>)
+    d958:	f00e fdf4 	bl	1c544 <log_1>
 	k_sleep(K_SECONDS(2));
-    d96a:	f44f 60fa 	mov.w	r0, #2000	; 0x7d0
-    d96e:	f00e fa44 	bl	1bdfa <k_sleep>
+    d95c:	f44f 60fa 	mov.w	r0, #2000	; 0x7d0
+    d960:	f00e fa4b 	bl	1bdfa <k_sleep>
 	bytes_sent = send(at_sock, AT_NBRGRSRP, strlen(AT_NBRGRSRP), 0);
-    d972:	485b      	ldr	r0, [pc, #364]	; (dae0 <request_nb_iot_network_stats+0x2dc>)
-    d974:	f00f fb14 	bl	1cfa0 <strlen>
-    d978:	4959      	ldr	r1, [pc, #356]	; (dae0 <request_nb_iot_network_stats+0x2dc>)
-    d97a:	4602      	mov	r2, r0
-    d97c:	4628      	mov	r0, r5
-    d97e:	f7ff fa05 	bl	cd8c <send.constprop.11>
+    d964:	485c      	ldr	r0, [pc, #368]	; (dad8 <request_nb_iot_network_stats+0x2f8>)
+    d966:	f00f fb1b 	bl	1cfa0 <strlen>
+    d96a:	495b      	ldr	r1, [pc, #364]	; (dad8 <request_nb_iot_network_stats+0x2f8>)
+    d96c:	4602      	mov	r2, r0
+    d96e:	4628      	mov	r0, r5
+    d970:	f7ff fa0c 	bl	cd8c <send.constprop.10>
 	if (bytes_sent < 0) {
-    d982:	2800      	cmp	r0, #0
-    d984:	da17      	bge.n	d9b6 <request_nb_iot_network_stats+0x1b2>
+    d974:	2800      	cmp	r0, #0
+    d976:	da17      	bge.n	d9a8 <request_nb_iot_network_stats+0x1c8>
 		LOG_INF("NBRGRSRP send error");
-    d986:	f04f 0100 	mov.w	r1, #0
-    d98a:	2303      	movs	r3, #3
-    d98c:	f363 0107 	bfi	r1, r3, #0, #8
-    d990:	f364 118f 	bfi	r1, r4, #6, #10
-    d994:	4853      	ldr	r0, [pc, #332]	; (dae4 <request_nb_iot_network_stats+0x2e0>)
-    d996:	e761      	b.n	d85c <request_nb_iot_network_stats+0x58>
+    d978:	f04f 0100 	mov.w	r1, #0
+    d97c:	2303      	movs	r3, #3
+    d97e:	f363 0107 	bfi	r1, r3, #0, #8
+    d982:	f364 118f 	bfi	r1, r4, #6, #10
+    d986:	4855      	ldr	r0, [pc, #340]	; (dadc <request_nb_iot_network_stats+0x2fc>)
+    d988:	e756      	b.n	d838 <request_nb_iot_network_stats+0x58>
 	else if (strstr(buf, "ERROR") != NULL) 
-    d998:	494c      	ldr	r1, [pc, #304]	; (dacc <request_nb_iot_network_stats+0x2c8>)
-    d99a:	a802      	add	r0, sp, #8
-    d99c:	f00f faab 	bl	1cef6 <strstr>
-    d9a0:	2800      	cmp	r0, #0
-    d9a2:	d0e2      	beq.n	d96a <request_nb_iot_network_stats+0x166>
+    d98a:	494d      	ldr	r1, [pc, #308]	; (dac0 <request_nb_iot_network_stats+0x2e0>)
+    d98c:	a802      	add	r0, sp, #8
+    d98e:	f00f fab2 	bl	1cef6 <strstr>
+    d992:	2800      	cmp	r0, #0
+    d994:	d0e2      	beq.n	d95c <request_nb_iot_network_stats+0x17c>
 		LOG_ERR("Error while getting current RSRP!");
-    d9a4:	f04f 0100 	mov.w	r1, #0
-    d9a8:	2301      	movs	r3, #1
-    d9aa:	f363 0107 	bfi	r1, r3, #0, #8
-    d9ae:	f364 118f 	bfi	r1, r4, #6, #10
-    d9b2:	484d      	ldr	r0, [pc, #308]	; (dae8 <request_nb_iot_network_stats+0x2e4>)
-    d9b4:	e752      	b.n	d85c <request_nb_iot_network_stats+0x58>
+    d996:	f04f 0100 	mov.w	r1, #0
+    d99a:	2301      	movs	r3, #1
+    d99c:	f363 0107 	bfi	r1, r3, #0, #8
+    d9a0:	f364 118f 	bfi	r1, r4, #6, #10
+    d9a4:	484e      	ldr	r0, [pc, #312]	; (dae0 <request_nb_iot_network_stats+0x300>)
+    d9a6:	e747      	b.n	d838 <request_nb_iot_network_stats+0x58>
 		bytes_received = recv(at_sock, buf, 150, 0);
-    d9b6:	2296      	movs	r2, #150	; 0x96
-    d9b8:	a902      	add	r1, sp, #8
-    d9ba:	4628      	mov	r0, r5
-    d9bc:	f7ff fa64 	bl	ce88 <recv.constprop.13>
+    d9a8:	2296      	movs	r2, #150	; 0x96
+    d9aa:	a902      	add	r1, sp, #8
+    d9ac:	4628      	mov	r0, r5
+    d9ae:	f7ff fa6b 	bl	ce88 <recv.constprop.12>
 	} while (bytes_received == 0);
-    d9c0:	2800      	cmp	r0, #0
-    d9c2:	d0f8      	beq.n	d9b6 <request_nb_iot_network_stats+0x1b2>
+    d9b2:	2800      	cmp	r0, #0
+    d9b4:	d0f8      	beq.n	d9a8 <request_nb_iot_network_stats+0x1c8>
 	if(strstr(buf, "OK") != NULL)
-    d9c4:	493b      	ldr	r1, [pc, #236]	; (dab4 <request_nb_iot_network_stats+0x2b0>)
-    d9c6:	a802      	add	r0, sp, #8
-    d9c8:	f00f fa95 	bl	1cef6 <strstr>
-    d9cc:	2800      	cmp	r0, #0
-    d9ce:	d058      	beq.n	da82 <request_nb_iot_network_stats+0x27e>
+    d9b6:	493c      	ldr	r1, [pc, #240]	; (daa8 <request_nb_iot_network_stats+0x2c8>)
+    d9b8:	a802      	add	r0, sp, #8
+    d9ba:	f00f fa9c 	bl	1cef6 <strstr>
+    d9be:	2800      	cmp	r0, #0
+    d9c0:	d058      	beq.n	da74 <request_nb_iot_network_stats+0x294>
 		if(strstr(buf, "NBRGRSRP") != NULL)
-    d9d0:	4946      	ldr	r1, [pc, #280]	; (daec <request_nb_iot_network_stats+0x2e8>)
+    d9c2:	4948      	ldr	r1, [pc, #288]	; (dae4 <request_nb_iot_network_stats+0x304>)
+    d9c4:	a802      	add	r0, sp, #8
+    d9c6:	f00f fa96 	bl	1cef6 <strstr>
+    d9ca:	4606      	mov	r6, r0
+    d9cc:	2800      	cmp	r0, #0
+    d9ce:	d044      	beq.n	da5a <request_nb_iot_network_stats+0x27a>
+			char* pos1 = strstr(buf, "\%NBRGRSRP: ") + strlen("\%NBRGRSRP: ");
+    d9d0:	4945      	ldr	r1, [pc, #276]	; (dae8 <request_nb_iot_network_stats+0x308>)
     d9d2:	a802      	add	r0, sp, #8
     d9d4:	f00f fa8f 	bl	1cef6 <strstr>
-    d9d8:	4606      	mov	r6, r0
-    d9da:	2800      	cmp	r0, #0
-    d9dc:	d044      	beq.n	da68 <request_nb_iot_network_stats+0x264>
-			char* pos1 = strstr(buf, "\%NBRGRSRP: ") + strlen("\%NBRGRSRP: ");
-    d9de:	4944      	ldr	r1, [pc, #272]	; (daf0 <request_nb_iot_network_stats+0x2ec>)
-    d9e0:	a802      	add	r0, sp, #8
-    d9e2:	f00f fa88 	bl	1cef6 <strstr>
-    d9e6:	4607      	mov	r7, r0
-    d9e8:	4841      	ldr	r0, [pc, #260]	; (daf0 <request_nb_iot_network_stats+0x2ec>)
-    d9ea:	f00f fad9 	bl	1cfa0 <strlen>
-    d9ee:	4407      	add	r7, r0
+    d9d8:	4607      	mov	r7, r0
+    d9da:	4843      	ldr	r0, [pc, #268]	; (dae8 <request_nb_iot_network_stats+0x308>)
+    d9dc:	f00f fae0 	bl	1cfa0 <strlen>
+    d9e0:	4407      	add	r7, r0
 			char* pos2 = strstr(pos1, "\n");
-    d9f0:	4938      	ldr	r1, [pc, #224]	; (dad4 <request_nb_iot_network_stats+0x2d0>)
-    d9f2:	4638      	mov	r0, r7
-    d9f4:	f00f fa7f 	bl	1cef6 <strstr>
+    d9e2:	493a      	ldr	r1, [pc, #232]	; (dacc <request_nb_iot_network_stats+0x2ec>)
+    d9e4:	4638      	mov	r0, r7
+    d9e6:	f00f fa86 	bl	1cef6 <strstr>
 			for(uint8_t i=0; i<strlen(pos1)-strlen(pos2); i++)
-    d9f8:	2600      	movs	r6, #0
+    d9ea:	2600      	movs	r6, #0
 			char* pos2 = strstr(pos1, "\n");
-    d9fa:	4681      	mov	r9, r0
+    d9ec:	4681      	mov	r9, r0
 				neighbors[i] = pos1[i];
-    d9fc:	f8df b0f4 	ldr.w	fp, [pc, #244]	; daf4 <request_nb_iot_network_stats+0x2f0>
+    d9ee:	f8df b0fc 	ldr.w	fp, [pc, #252]	; daec <request_nb_iot_network_stats+0x30c>
 			for(uint8_t i=0; i<strlen(pos1)-strlen(pos2); i++)
-    da00:	4638      	mov	r0, r7
-    da02:	f00f facd 	bl	1cfa0 <strlen>
-    da06:	4680      	mov	r8, r0
-    da08:	4648      	mov	r0, r9
-    da0a:	f00f fac9 	bl	1cfa0 <strlen>
-    da0e:	fa5f fa86 	uxtb.w	sl, r6
-    da12:	eba8 0000 	sub.w	r0, r8, r0
-    da16:	4582      	cmp	sl, r0
-    da18:	f106 0601 	add.w	r6, r6, #1
-    da1c:	d31f      	bcc.n	da5e <request_nb_iot_network_stats+0x25a>
+    d9f2:	4638      	mov	r0, r7
+    d9f4:	f00f fad4 	bl	1cfa0 <strlen>
+    d9f8:	4680      	mov	r8, r0
+    d9fa:	4648      	mov	r0, r9
+    d9fc:	f00f fad0 	bl	1cfa0 <strlen>
+    da00:	fa5f fa86 	uxtb.w	sl, r6
+    da04:	eba8 0000 	sub.w	r0, r8, r0
+    da08:	4582      	cmp	sl, r0
+    da0a:	f106 0601 	add.w	r6, r6, #1
+    da0e:	d31f      	bcc.n	da50 <request_nb_iot_network_stats+0x270>
 			LOG_INF("Neighbors = %s", neighbors);
-    da1e:	f04f 0200 	mov.w	r2, #0
-    da22:	2303      	movs	r3, #3
-    da24:	f363 0207 	bfi	r2, r3, #0, #8
-    da28:	f364 128f 	bfi	r2, r4, #6, #10
-    da2c:	4931      	ldr	r1, [pc, #196]	; (daf4 <request_nb_iot_network_stats+0x2f0>)
-    da2e:	4832      	ldr	r0, [pc, #200]	; (daf8 <request_nb_iot_network_stats+0x2f4>)
-    da30:	f00e fd88 	bl	1c544 <log_1>
+    da10:	f04f 0200 	mov.w	r2, #0
+    da14:	2303      	movs	r3, #3
+    da16:	f363 0207 	bfi	r2, r3, #0, #8
+    da1a:	f364 128f 	bfi	r2, r4, #6, #10
+    da1e:	4933      	ldr	r1, [pc, #204]	; (daec <request_nb_iot_network_stats+0x30c>)
+    da20:	4833      	ldr	r0, [pc, #204]	; (daf0 <request_nb_iot_network_stats+0x310>)
+    da22:	f00e fd8f 	bl	1c544 <log_1>
 		return -1;
 	}
 	
 	k_sleep(K_SECONDS(2));
-    da34:	f44f 60fa 	mov.w	r0, #2000	; 0x7d0
-    da38:	f00e f9df 	bl	1bdfa <k_sleep>
+    da26:	f44f 60fa 	mov.w	r0, #2000	; 0x7d0
+    da2a:	f00e f9e6 	bl	1bdfa <k_sleep>
 
 	close(at_sock);
-    da3c:	4628      	mov	r0, r5
-    da3e:	f7ff f891 	bl	cb64 <close>
+    da2e:	4628      	mov	r0, r5
+    da30:	f7ff f898 	bl	cb64 <close>
 	LOG_INF("NB-IoT network stats requested.");
-    da42:	2303      	movs	r3, #3
-    da44:	f04f 0100 	mov.w	r1, #0
-    da48:	f363 0107 	bfi	r1, r3, #0, #8
-    da4c:	482b      	ldr	r0, [pc, #172]	; (dafc <request_nb_iot_network_stats+0x2f8>)
-    da4e:	f364 118f 	bfi	r1, r4, #6, #10
-    da52:	f00e fd6a 	bl	1c52a <log_0>
+    da34:	2303      	movs	r3, #3
+    da36:	f04f 0100 	mov.w	r1, #0
+    da3a:	f363 0107 	bfi	r1, r3, #0, #8
+    da3e:	482d      	ldr	r0, [pc, #180]	; (daf4 <request_nb_iot_network_stats+0x314>)
+    da40:	f364 118f 	bfi	r1, r4, #6, #10
+    da44:	f00e fd71 	bl	1c52a <log_0>
 	
 	return 0;
-    da56:	2000      	movs	r0, #0
+    da48:	2000      	movs	r0, #0
 }
-    da58:	b029      	add	sp, #164	; 0xa4
-    da5a:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+    da4a:	b029      	add	sp, #164	; 0xa4
+    da4c:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
 				neighbors[i] = pos1[i];
-    da5e:	f817 300a 	ldrb.w	r3, [r7, sl]
-    da62:	f80b 300a 	strb.w	r3, [fp, sl]
-    da66:	e7cb      	b.n	da00 <request_nb_iot_network_stats+0x1fc>
+    da50:	f817 300a 	ldrb.w	r3, [r7, sl]
+    da54:	f80b 300a 	strb.w	r3, [fp, sl]
+    da58:	e7cb      	b.n	d9f2 <request_nb_iot_network_stats+0x212>
 			LOG_INF("No neighbors found.");
-    da68:	2303      	movs	r3, #3
-    da6a:	f04f 0100 	mov.w	r1, #0
-    da6e:	f363 0107 	bfi	r1, r3, #0, #8
-    da72:	f364 118f 	bfi	r1, r4, #6, #10
-    da76:	4822      	ldr	r0, [pc, #136]	; (db00 <request_nb_iot_network_stats+0x2fc>)
-    da78:	f00e fd57 	bl	1c52a <log_0>
+    da5a:	2303      	movs	r3, #3
+    da5c:	f04f 0100 	mov.w	r1, #0
+    da60:	f363 0107 	bfi	r1, r3, #0, #8
+    da64:	f364 118f 	bfi	r1, r4, #6, #10
+    da68:	4823      	ldr	r0, [pc, #140]	; (daf8 <request_nb_iot_network_stats+0x318>)
+    da6a:	f00e fd5e 	bl	1c52a <log_0>
 			neighbors[0] = '\0';
-    da7c:	4b1d      	ldr	r3, [pc, #116]	; (daf4 <request_nb_iot_network_stats+0x2f0>)
-    da7e:	701e      	strb	r6, [r3, #0]
-    da80:	e7d8      	b.n	da34 <request_nb_iot_network_stats+0x230>
+    da6e:	4b1f      	ldr	r3, [pc, #124]	; (daec <request_nb_iot_network_stats+0x30c>)
+    da70:	701e      	strb	r6, [r3, #0]
+    da72:	e7d8      	b.n	da26 <request_nb_iot_network_stats+0x246>
 	else if (strstr(buf, "ERROR") != NULL) 
-    da82:	4912      	ldr	r1, [pc, #72]	; (dacc <request_nb_iot_network_stats+0x2c8>)
-    da84:	a802      	add	r0, sp, #8
-    da86:	f00f fa36 	bl	1cef6 <strstr>
-    da8a:	2800      	cmp	r0, #0
-    da8c:	d0d2      	beq.n	da34 <request_nb_iot_network_stats+0x230>
+    da74:	4912      	ldr	r1, [pc, #72]	; (dac0 <request_nb_iot_network_stats+0x2e0>)
+    da76:	a802      	add	r0, sp, #8
+    da78:	f00f fa3d 	bl	1cef6 <strstr>
+    da7c:	2800      	cmp	r0, #0
+    da7e:	d0d2      	beq.n	da26 <request_nb_iot_network_stats+0x246>
 		LOG_ERR("Error while getting neighbor data!");
-    da8e:	f04f 0100 	mov.w	r1, #0
-    da92:	2301      	movs	r3, #1
-    da94:	f363 0107 	bfi	r1, r3, #0, #8
-    da98:	f364 118f 	bfi	r1, r4, #6, #10
-    da9c:	4819      	ldr	r0, [pc, #100]	; (db04 <request_nb_iot_network_stats+0x300>)
-    da9e:	e6dd      	b.n	d85c <request_nb_iot_network_stats+0x58>
-    daa0:	0001eda8 	.word	0x0001eda8
-    daa4:	0001ed30 	.word	0x0001ed30
-    daa8:	0001f85f 	.word	0x0001f85f
-    daac:	0001f882 	.word	0x0001f882
-    dab0:	0001f88c 	.word	0x0001f88c
-    dab4:	0001fa91 	.word	0x0001fa91
-    dab8:	0001f89d 	.word	0x0001f89d
-    dabc:	20026380 	.word	0x20026380
-    dac0:	0001f8a1 	.word	0x0001f8a1
-    dac4:	0001f8e1 	.word	0x0001f8e1
-    dac8:	0001f8e9 	.word	0x0001f8e9
-    dacc:	0001f8b6 	.word	0x0001f8b6
-    dad0:	0001f8bc 	.word	0x0001f8bc
-    dad4:	0001f726 	.word	0x0001f726
-    dad8:	2002638a 	.word	0x2002638a
-    dadc:	0001f8f9 	.word	0x0001f8f9
-    dae0:	0001f92d 	.word	0x0001f92d
-    dae4:	0001f939 	.word	0x0001f939
-    dae8:	0001f90b 	.word	0x0001f90b
-    daec:	0001f930 	.word	0x0001f930
-    daf0:	0001f94d 	.word	0x0001f94d
-    daf4:	2002638b 	.word	0x2002638b
-    daf8:	0001f959 	.word	0x0001f959
-    dafc:	0001f99f 	.word	0x0001f99f
-    db00:	0001f968 	.word	0x0001f968
-    db04:	0001f97c 	.word	0x0001f97c
+    da80:	f04f 0100 	mov.w	r1, #0
+    da84:	2301      	movs	r3, #1
+    da86:	f363 0107 	bfi	r1, r3, #0, #8
+    da8a:	f364 118f 	bfi	r1, r4, #6, #10
+    da8e:	481b      	ldr	r0, [pc, #108]	; (dafc <request_nb_iot_network_stats+0x31c>)
+    da90:	e6d2      	b.n	d838 <request_nb_iot_network_stats+0x58>
+    da92:	bf00      	nop
+    da94:	0001eda8 	.word	0x0001eda8
+    da98:	0001ed30 	.word	0x0001ed30
+    da9c:	0001f85f 	.word	0x0001f85f
+    daa0:	0001f882 	.word	0x0001f882
+    daa4:	0001f88c 	.word	0x0001f88c
+    daa8:	0001fa7b 	.word	0x0001fa7b
+    daac:	0001f89d 	.word	0x0001f89d
+    dab0:	20026380 	.word	0x20026380
+    dab4:	0001f8a1 	.word	0x0001f8a1
+    dab8:	0001f8e1 	.word	0x0001f8e1
+    dabc:	0001f8e9 	.word	0x0001f8e9
+    dac0:	0001f8b6 	.word	0x0001f8b6
+    dac4:	0001f8bc 	.word	0x0001f8bc
+    dac8:	0001f8f9 	.word	0x0001f8f9
+    dacc:	0001f700 	.word	0x0001f700
+    dad0:	2002638a 	.word	0x2002638a
+    dad4:	0001f90b 	.word	0x0001f90b
+    dad8:	0001f93f 	.word	0x0001f93f
+    dadc:	0001f94b 	.word	0x0001f94b
+    dae0:	0001f91d 	.word	0x0001f91d
+    dae4:	0001f942 	.word	0x0001f942
+    dae8:	0001f95f 	.word	0x0001f95f
+    daec:	2002638b 	.word	0x2002638b
+    daf0:	0001f96b 	.word	0x0001f96b
+    daf4:	0001f9b1 	.word	0x0001f9b1
+    daf8:	0001f97a 	.word	0x0001f97a
+    dafc:	0001f98e 	.word	0x0001f98e
 
-0000db08 <slm_at_tcpip_init>:
+0000db00 <slm_at_tcpip_init>:
 
 
 /**@brief API to initialize TCP/IP AT commands handler
  */
 int slm_at_tcpip_init(at_cmd_handler_t callback)
 {
-    db08:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
-    db0c:	4b4a      	ldr	r3, [pc, #296]	; (dc38 <slm_at_tcpip_init+0x130>)
-    db0e:	4c4b      	ldr	r4, [pc, #300]	; (dc3c <slm_at_tcpip_init+0x134>)
-    db10:	b0a7      	sub	sp, #156	; 0x9c
-    db12:	1ae4      	subs	r4, r4, r3
-    db14:	f3c4 04c9 	ubfx	r4, r4, #3, #10
+    db00:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+    db04:	4b4a      	ldr	r3, [pc, #296]	; (dc30 <slm_at_tcpip_init+0x130>)
+    db06:	4c4b      	ldr	r4, [pc, #300]	; (dc34 <slm_at_tcpip_init+0x134>)
+    db08:	b0a7      	sub	sp, #156	; 0x9c
+    db0a:	1ae4      	subs	r4, r4, r3
+    db0c:	f3c4 04c9 	ubfx	r4, r4, #3, #10
 	if (callback == NULL) {
-    db18:	b970      	cbnz	r0, db38 <slm_at_tcpip_init+0x30>
+    db10:	b970      	cbnz	r0, db30 <slm_at_tcpip_init+0x30>
 		LOG_ERR("No callback");
-    db1a:	2301      	movs	r3, #1
-    db1c:	f04f 0100 	mov.w	r1, #0
-    db20:	f363 0107 	bfi	r1, r3, #0, #8
-    db24:	4846      	ldr	r0, [pc, #280]	; (dc40 <slm_at_tcpip_init+0x138>)
-    db26:	f364 118f 	bfi	r1, r4, #6, #10
-    db2a:	f00e fcfe 	bl	1c52a <log_0>
+    db12:	2301      	movs	r3, #1
+    db14:	f04f 0100 	mov.w	r1, #0
+    db18:	f363 0107 	bfi	r1, r3, #0, #8
+    db1c:	4846      	ldr	r0, [pc, #280]	; (dc38 <slm_at_tcpip_init+0x138>)
+    db1e:	f364 118f 	bfi	r1, r4, #6, #10
+    db22:	f00e fd02 	bl	1c52a <log_0>
 		return -EINVAL;
-    db2e:	f06f 0015 	mvn.w	r0, #21
+    db26:	f06f 0015 	mvn.w	r0, #21
 	init_nb_iot_parameters();
 	do_socket_open(2);
 	////////////////////////////////////////////////////////////////////
 
 	return 0;
 }
-    db32:	b027      	add	sp, #156	; 0x9c
-    db34:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+    db2a:	b027      	add	sp, #156	; 0x9c
+    db2c:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
 	client.sock = INVALID_SOCKET;
-    db38:	f04f 32ff 	mov.w	r2, #4294967295	; 0xffffffff
+    db30:	f04f 32ff 	mov.w	r2, #4294967295	; 0xffffffff
 	client.ip_proto = IPPROTO_IP;
-    db3c:	2500      	movs	r5, #0
+    db34:	2500      	movs	r5, #0
 	client.sock = INVALID_SOCKET;
-    db3e:	4b41      	ldr	r3, [pc, #260]	; (dc44 <slm_at_tcpip_init+0x13c>)
+    db36:	4b41      	ldr	r3, [pc, #260]	; (dc3c <slm_at_tcpip_init+0x13c>)
 	LOG_INF("Initializing NB-IoT Parameters");
-    db40:	f04f 0100 	mov.w	r1, #0
+    db38:	f04f 0100 	mov.w	r1, #0
 	client.sock = INVALID_SOCKET;
-    db44:	601a      	str	r2, [r3, #0]
+    db3c:	601a      	str	r2, [r3, #0]
 	client.callback = callback;
-    db46:	6098      	str	r0, [r3, #8]
+    db3e:	6098      	str	r0, [r3, #8]
 	client.ip_proto = IPPROTO_IP;
-    db48:	809d      	strh	r5, [r3, #4]
+    db40:	809d      	strh	r5, [r3, #4]
 	LOG_INF("Initializing NB-IoT Parameters");
-    db4a:	2303      	movs	r3, #3
-    db4c:	f363 0107 	bfi	r1, r3, #0, #8
-    db50:	f364 118f 	bfi	r1, r4, #6, #10
-    db54:	483c      	ldr	r0, [pc, #240]	; (dc48 <slm_at_tcpip_init+0x140>)
-    db56:	f00e fce8 	bl	1c52a <log_0>
+    db42:	2303      	movs	r3, #3
+    db44:	f363 0107 	bfi	r1, r3, #0, #8
+    db48:	f364 118f 	bfi	r1, r4, #6, #10
+    db4c:	483c      	ldr	r0, [pc, #240]	; (dc40 <slm_at_tcpip_init+0x140>)
+    db4e:	f00e fcec 	bl	1c52a <log_0>
 	at_sock = socket(AF_LTE, 0, NPROTO_AT);
-    db5a:	f240 2201 	movw	r2, #513	; 0x201
-    db5e:	4629      	mov	r1, r5
-    db60:	2066      	movs	r0, #102	; 0x66
-    db62:	f7fe fff9 	bl	cb58 <socket>
+    db52:	f240 2201 	movw	r2, #513	; 0x201
+    db56:	4629      	mov	r1, r5
+    db58:	2066      	movs	r0, #102	; 0x66
+    db5a:	f7fe fffd 	bl	cb58 <socket>
 	if (at_sock < 0) {
-    db66:	1e06      	subs	r6, r0, #0
-    db68:	db28      	blt.n	dbbc <slm_at_tcpip_init+0xb4>
-    db6a:	4f38      	ldr	r7, [pc, #224]	; (dc4c <slm_at_tcpip_init+0x144>)
+    db5e:	1e06      	subs	r6, r0, #0
+    db60:	db28      	blt.n	dbb4 <slm_at_tcpip_init+0xb4>
+    db62:	4f38      	ldr	r7, [pc, #224]	; (dc44 <slm_at_tcpip_init+0x144>)
 		LOG_INF("%s",nb_init_at_commands[i]);
-    db6c:	f8df a0ec 	ldr.w	sl, [pc, #236]	; dc5c <slm_at_tcpip_init+0x154>
+    db64:	f8df a0ec 	ldr.w	sl, [pc, #236]	; dc54 <slm_at_tcpip_init+0x154>
 		if (memcmp(buf, "OK", 2) != 0) {
-    db70:	f8df 90ec 	ldr.w	r9, [pc, #236]	; dc60 <slm_at_tcpip_init+0x158>
+    db68:	f8df 90ec 	ldr.w	r9, [pc, #236]	; dc58 <slm_at_tcpip_init+0x158>
 		LOG_INF("%s",nb_init_at_commands[i]);
-    db74:	f02b 033f 	bic.w	r3, fp, #63	; 0x3f
-    db78:	f043 0303 	orr.w	r3, r3, #3
-    db7c:	f363 0b07 	bfi	fp, r3, #0, #8
-    db80:	f364 1b8f 	bfi	fp, r4, #6, #10
-    db84:	465a      	mov	r2, fp
-    db86:	4639      	mov	r1, r7
-    db88:	4650      	mov	r0, sl
-    db8a:	f00e fcdb 	bl	1c544 <log_1>
+    db6c:	f02b 033f 	bic.w	r3, fp, #63	; 0x3f
+    db70:	f043 0303 	orr.w	r3, r3, #3
+    db74:	f363 0b07 	bfi	fp, r3, #0, #8
+    db78:	f364 1b8f 	bfi	fp, r4, #6, #10
+    db7c:	465a      	mov	r2, fp
+    db7e:	4639      	mov	r1, r7
+    db80:	4650      	mov	r0, sl
+    db82:	f00e fcdf 	bl	1c544 <log_1>
 		bytes_sent = send(at_sock, nb_init_at_commands[i],
-    db8e:	4638      	mov	r0, r7
-    db90:	f00f fa06 	bl	1cfa0 <strlen>
-    db94:	4639      	mov	r1, r7
-    db96:	4602      	mov	r2, r0
-    db98:	4630      	mov	r0, r6
-    db9a:	f7ff f8f7 	bl	cd8c <send.constprop.11>
+    db86:	4638      	mov	r0, r7
+    db88:	f00f fa0a 	bl	1cfa0 <strlen>
+    db8c:	4639      	mov	r1, r7
+    db8e:	4602      	mov	r2, r0
+    db90:	4630      	mov	r0, r6
+    db92:	f7ff f8fb 	bl	cd8c <send.constprop.10>
 		if (bytes_sent < 0) {
-    db9e:	2800      	cmp	r0, #0
-    dba0:	da11      	bge.n	dbc6 <slm_at_tcpip_init+0xbe>
+    db96:	2800      	cmp	r0, #0
+    db98:	da11      	bge.n	dbbe <slm_at_tcpip_init+0xbe>
 			LOG_INF("NO BYTES SENT");
-    dba2:	f04f 0100 	mov.w	r1, #0
-    dba6:	2303      	movs	r3, #3
-    dba8:	4829      	ldr	r0, [pc, #164]	; (dc50 <slm_at_tcpip_init+0x148>)
-    dbaa:	f363 0107 	bfi	r1, r3, #0, #8
-    dbae:	f364 118f 	bfi	r1, r4, #6, #10
+    db9a:	f04f 0100 	mov.w	r1, #0
+    db9e:	2303      	movs	r3, #3
+    dba0:	4829      	ldr	r0, [pc, #164]	; (dc48 <slm_at_tcpip_init+0x148>)
+    dba2:	f363 0107 	bfi	r1, r3, #0, #8
+    dba6:	f364 118f 	bfi	r1, r4, #6, #10
 			LOG_INF("NOK");
-    dbb2:	f00e fcba 	bl	1c52a <log_0>
+    dbaa:	f00e fcbe 	bl	1c52a <log_0>
 			close(at_sock);
-    dbb6:	4630      	mov	r0, r6
-    dbb8:	f7fe ffd4 	bl	cb64 <close>
+    dbae:	4630      	mov	r0, r6
+    dbb0:	f7fe ffd8 	bl	cb64 <close>
 	do_socket_open(2);
-    dbbc:	2002      	movs	r0, #2
-    dbbe:	f7ff f815 	bl	cbec <do_socket_open>
+    dbb4:	2002      	movs	r0, #2
+    dbb6:	f7ff f819 	bl	cbec <do_socket_open>
 	return 0;
-    dbc2:	2000      	movs	r0, #0
-    dbc4:	e7b5      	b.n	db32 <slm_at_tcpip_init+0x2a>
+    dbba:	2000      	movs	r0, #0
+    dbbc:	e7b5      	b.n	db2a <slm_at_tcpip_init+0x2a>
 			bytes_received = recv(at_sock, buf, 2, 0);
-    dbc6:	2202      	movs	r2, #2
-    dbc8:	4669      	mov	r1, sp
-    dbca:	4630      	mov	r0, r6
-    dbcc:	f7ff f95c 	bl	ce88 <recv.constprop.13>
+    dbbe:	2202      	movs	r2, #2
+    dbc0:	4669      	mov	r1, sp
+    dbc2:	4630      	mov	r0, r6
+    dbc4:	f7ff f960 	bl	ce88 <recv.constprop.12>
 		} while (bytes_received == 0);
-    dbd0:	2800      	cmp	r0, #0
-    dbd2:	d0f8      	beq.n	dbc6 <slm_at_tcpip_init+0xbe>
+    dbc8:	2800      	cmp	r0, #0
+    dbca:	d0f8      	beq.n	dbbe <slm_at_tcpip_init+0xbe>
 		if (memcmp(buf, "OK", 2) != 0) {
-    dbd4:	2202      	movs	r2, #2
-    dbd6:	4649      	mov	r1, r9
-    dbd8:	4668      	mov	r0, sp
-    dbda:	f00f fa0c 	bl	1cff6 <memcmp>
-    dbde:	b140      	cbz	r0, dbf2 <slm_at_tcpip_init+0xea>
+    dbcc:	2202      	movs	r2, #2
+    dbce:	4649      	mov	r1, r9
+    dbd0:	4668      	mov	r0, sp
+    dbd2:	f00f fa10 	bl	1cff6 <memcmp>
+    dbd6:	b140      	cbz	r0, dbea <slm_at_tcpip_init+0xea>
 			LOG_INF("NOK");
-    dbe0:	f04f 0100 	mov.w	r1, #0
-    dbe4:	2303      	movs	r3, #3
-    dbe6:	f363 0107 	bfi	r1, r3, #0, #8
-    dbea:	f364 118f 	bfi	r1, r4, #6, #10
-    dbee:	4819      	ldr	r0, [pc, #100]	; (dc54 <slm_at_tcpip_init+0x14c>)
-    dbf0:	e7df      	b.n	dbb2 <slm_at_tcpip_init+0xaa>
+    dbd8:	f04f 0100 	mov.w	r1, #0
+    dbdc:	2303      	movs	r3, #3
+    dbde:	f363 0107 	bfi	r1, r3, #0, #8
+    dbe2:	f364 118f 	bfi	r1, r4, #6, #10
+    dbe6:	4819      	ldr	r0, [pc, #100]	; (dc4c <slm_at_tcpip_init+0x14c>)
+    dbe8:	e7df      	b.n	dbaa <slm_at_tcpip_init+0xaa>
 			LOG_INF("OK");
-    dbf2:	f028 033f 	bic.w	r3, r8, #63	; 0x3f
-    dbf6:	f043 0303 	orr.w	r3, r3, #3
-    dbfa:	f363 0807 	bfi	r8, r3, #0, #8
-    dbfe:	f364 188f 	bfi	r8, r4, #6, #10
-    dc02:	4641      	mov	r1, r8
-    dc04:	4648      	mov	r0, r9
-    dc06:	f00e fc90 	bl	1c52a <log_0>
+    dbea:	f028 033f 	bic.w	r3, r8, #63	; 0x3f
+    dbee:	f043 0303 	orr.w	r3, r3, #3
+    dbf2:	f363 0807 	bfi	r8, r3, #0, #8
+    dbf6:	f364 188f 	bfi	r8, r4, #6, #10
+    dbfa:	4641      	mov	r1, r8
+    dbfc:	4648      	mov	r0, r9
+    dbfe:	f00e fc94 	bl	1c52a <log_0>
 	for (int i = 0; i < ARRAY_SIZE(nb_init_at_commands); i++) {
-    dc0a:	3501      	adds	r5, #1
+    dc02:	3501      	adds	r5, #1
 		k_sleep(K_SECONDS(3));
-    dc0c:	f640 30b8 	movw	r0, #3000	; 0xbb8
-    dc10:	f00e f8f3 	bl	1bdfa <k_sleep>
+    dc04:	f640 30b8 	movw	r0, #3000	; 0xbb8
+    dc08:	f00e f8f7 	bl	1bdfa <k_sleep>
 	for (int i = 0; i < ARRAY_SIZE(nb_init_at_commands); i++) {
-    dc14:	2d04      	cmp	r5, #4
-    dc16:	f107 0722 	add.w	r7, r7, #34	; 0x22
-    dc1a:	d1ab      	bne.n	db74 <slm_at_tcpip_init+0x6c>
+    dc0c:	2d04      	cmp	r5, #4
+    dc0e:	f107 0722 	add.w	r7, r7, #34	; 0x22
+    dc12:	d1ab      	bne.n	db6c <slm_at_tcpip_init+0x6c>
 	close(at_sock);
-    dc1c:	4630      	mov	r0, r6
-    dc1e:	f7fe ffa1 	bl	cb64 <close>
+    dc14:	4630      	mov	r0, r6
+    dc16:	f7fe ffa5 	bl	cb64 <close>
 	LOG_INF("NB-IoT Parameters Initialized");
-    dc22:	2303      	movs	r3, #3
-    dc24:	f04f 0100 	mov.w	r1, #0
-    dc28:	f363 0107 	bfi	r1, r3, #0, #8
-    dc2c:	f364 118f 	bfi	r1, r4, #6, #10
-    dc30:	4809      	ldr	r0, [pc, #36]	; (dc58 <slm_at_tcpip_init+0x150>)
-    dc32:	f00e fc7a 	bl	1c52a <log_0>
+    dc1a:	2303      	movs	r3, #3
+    dc1c:	f04f 0100 	mov.w	r1, #0
+    dc20:	f363 0107 	bfi	r1, r3, #0, #8
+    dc24:	f364 118f 	bfi	r1, r4, #6, #10
+    dc28:	4809      	ldr	r0, [pc, #36]	; (dc50 <slm_at_tcpip_init+0x150>)
+    dc2a:	f00e fc7e 	bl	1c52a <log_0>
 	return 0;
-    dc36:	e7c1      	b.n	dbbc <slm_at_tcpip_init+0xb4>
-    dc38:	0001ed30 	.word	0x0001ed30
-    dc3c:	0001eda8 	.word	0x0001eda8
-    dc40:	0001fa57 	.word	0x0001fa57
-    dc44:	20020108 	.word	0x20020108
-    dc48:	0001fa63 	.word	0x0001fa63
-    dc4c:	0001f7a0 	.word	0x0001f7a0
-    dc50:	0001fa82 	.word	0x0001fa82
-    dc54:	0001fa90 	.word	0x0001fa90
-    dc58:	0001fa94 	.word	0x0001fa94
-    dc5c:	0001fa10 	.word	0x0001fa10
-    dc60:	0001fa91 	.word	0x0001fa91
+    dc2e:	e7c1      	b.n	dbb4 <slm_at_tcpip_init+0xb4>
+    dc30:	0001ed30 	.word	0x0001ed30
+    dc34:	0001eda8 	.word	0x0001eda8
+    dc38:	0001fa41 	.word	0x0001fa41
+    dc3c:	20020108 	.word	0x20020108
+    dc40:	0001fa4d 	.word	0x0001fa4d
+    dc44:	0001f7a0 	.word	0x0001f7a0
+    dc48:	0001fa6c 	.word	0x0001fa6c
+    dc4c:	0001fa7a 	.word	0x0001fa7a
+    dc50:	0001fa7e 	.word	0x0001fa7e
+    dc54:	0001f908 	.word	0x0001f908
+    dc58:	0001fa7b 	.word	0x0001fa7b
 
-0000dc64 <send_message>:
+0000dc5c <send_message>:
 	return do_socket_close(0);
 }
 
 ////////////////////////////////////////////////////////////////////////
 void send_message(void)
 {
-    dc64:	b510      	push	{r4, lr}
-    dc66:	4b38      	ldr	r3, [pc, #224]	; (dd48 <send_message+0xe4>)
-    dc68:	4c38      	ldr	r4, [pc, #224]	; (dd4c <send_message+0xe8>)
-    dc6a:	b0cc      	sub	sp, #304	; 0x130
-    dc6c:	1ae4      	subs	r4, r4, r3
+    dc5c:	b5f0      	push	{r4, r5, r6, r7, lr}
+    dc5e:	4b3b      	ldr	r3, [pc, #236]	; (dd4c <send_message+0xf0>)
+    dc60:	4c3b      	ldr	r4, [pc, #236]	; (dd50 <send_message+0xf4>)
+    dc62:	b0e5      	sub	sp, #404	; 0x194
+    dc64:	1ae4      	subs	r4, r4, r3
 	// If GPS has fix, request network stats: Current and neighbor's Cell ID + RSRP.
 	if(gps_client_inst.has_fix == 1)
-    dc6e:	4b38      	ldr	r3, [pc, #224]	; (dd50 <send_message+0xec>)
-    dc70:	f3c4 04c9 	ubfx	r4, r4, #3, #10
-    dc74:	79db      	ldrb	r3, [r3, #7]
+    dc66:	4b3b      	ldr	r3, [pc, #236]	; (dd54 <send_message+0xf8>)
+    dc68:	f3c4 04c9 	ubfx	r4, r4, #3, #10
+    dc6c:	79db      	ldrb	r3, [r3, #7]
 	{
 		LOG_INF("GPS fix found!");
-    dc76:	f04f 0100 	mov.w	r1, #0
+    dc6e:	f04f 0100 	mov.w	r1, #0
 	if(gps_client_inst.has_fix == 1)
-    dc7a:	2b00      	cmp	r3, #0
-    dc7c:	d05d      	beq.n	dd3a <send_message+0xd6>
+    dc72:	2b00      	cmp	r3, #0
+    dc74:	d062      	beq.n	dd3c <send_message+0xe0>
 		LOG_INF("GPS fix found!");
-    dc7e:	2303      	movs	r3, #3
-    dc80:	f363 0107 	bfi	r1, r3, #0, #8
-    dc84:	f364 118f 	bfi	r1, r4, #6, #10
-    dc88:	4832      	ldr	r0, [pc, #200]	; (dd54 <send_message+0xf0>)
-    dc8a:	f00e fc4e 	bl	1c52a <log_0>
-		LOG_INF("NMEA = %s", gps_data.nmea);
-    dc8e:	2303      	movs	r3, #3
-    dc90:	f04f 0200 	mov.w	r2, #0
-    dc94:	f363 0207 	bfi	r2, r3, #0, #8
-    dc98:	492f      	ldr	r1, [pc, #188]	; (dd58 <send_message+0xf4>)
-    dc9a:	f364 128f 	bfi	r2, r4, #6, #10
-    dc9e:	482f      	ldr	r0, [pc, #188]	; (dd5c <send_message+0xf8>)
-    dca0:	f00e fc50 	bl	1c544 <log_1>
+    dc76:	2303      	movs	r3, #3
+    dc78:	f363 0107 	bfi	r1, r3, #0, #8
+    dc7c:	f364 118f 	bfi	r1, r4, #6, #10
+    dc80:	4835      	ldr	r0, [pc, #212]	; (dd58 <send_message+0xfc>)
+    dc82:	f00e fc52 	bl	1c52a <log_0>
 
 		int error = request_nb_iot_network_stats();
-    dca4:	f7ff fdae 	bl	d804 <request_nb_iot_network_stats>
+    dc86:	f7ff fdab 	bl	d7e0 <request_nb_iot_network_stats>
 		if(error == 0)
-    dca8:	4601      	mov	r1, r0
-    dcaa:	2800      	cmp	r0, #0
-    dcac:	d13a      	bne.n	dd24 <send_message+0xc0>
+    dc8a:	4601      	mov	r1, r0
+    dc8c:	2800      	cmp	r0, #0
+    dc8e:	d14a      	bne.n	dd26 <send_message+0xca>
 		{
 			// Put all data in a buffer
 			char payloadstring[300] = "";
-    dcae:	f44f 7294 	mov.w	r2, #296	; 0x128
-    dcb2:	9001      	str	r0, [sp, #4]
-    dcb4:	a802      	add	r0, sp, #8
-    dcb6:	f00f f9d8 	bl	1d06a <memset>
+    dc90:	f44f 7294 	mov.w	r2, #296	; 0x128
+    dc94:	9019      	str	r0, [sp, #100]	; 0x64
+    dc96:	a81a      	add	r0, sp, #104	; 0x68
+    dc98:	f00f f9e7 	bl	1d06a <memset>
 
 			strcat(payloadstring, current_cell_id);
-    dcba:	4929      	ldr	r1, [pc, #164]	; (dd60 <send_message+0xfc>)
-    dcbc:	a801      	add	r0, sp, #4
-    dcbe:	f00f f991 	bl	1cfe4 <strcat>
+    dc9c:	492f      	ldr	r1, [pc, #188]	; (dd5c <send_message+0x100>)
+    dc9e:	a819      	add	r0, sp, #100	; 0x64
+    dca0:	f00f f9a0 	bl	1cfe4 <strcat>
 			strcat(payloadstring, ";");
-    dcc2:	4928      	ldr	r1, [pc, #160]	; (dd64 <send_message+0x100>)
-    dcc4:	a801      	add	r0, sp, #4
-    dcc6:	f00f f98d 	bl	1cfe4 <strcat>
+    dca4:	492e      	ldr	r1, [pc, #184]	; (dd60 <send_message+0x104>)
+    dca6:	a819      	add	r0, sp, #100	; 0x64
+    dca8:	f00f f99c 	bl	1cfe4 <strcat>
 
 			char* rsrp = (char*) &current_rsrp;
 			strcat(payloadstring, rsrp);
-    dcca:	4927      	ldr	r1, [pc, #156]	; (dd68 <send_message+0x104>)
-    dccc:	a801      	add	r0, sp, #4
-    dcce:	f00f f989 	bl	1cfe4 <strcat>
+    dcac:	492d      	ldr	r1, [pc, #180]	; (dd64 <send_message+0x108>)
+    dcae:	a819      	add	r0, sp, #100	; 0x64
+    dcb0:	f00f f998 	bl	1cfe4 <strcat>
 			strcat(payloadstring, ";");
-    dcd2:	4924      	ldr	r1, [pc, #144]	; (dd64 <send_message+0x100>)
-    dcd4:	a801      	add	r0, sp, #4
-    dcd6:	f00f f985 	bl	1cfe4 <strcat>
+    dcb4:	492a      	ldr	r1, [pc, #168]	; (dd60 <send_message+0x104>)
+    dcb6:	a819      	add	r0, sp, #100	; 0x64
+    dcb8:	f00f f994 	bl	1cfe4 <strcat>
 
 			if(neighbors[0] != '\0')
-    dcda:	4924      	ldr	r1, [pc, #144]	; (dd6c <send_message+0x108>)
-    dcdc:	780b      	ldrb	r3, [r1, #0]
-    dcde:	b113      	cbz	r3, dce6 <send_message+0x82>
+    dcbc:	492a      	ldr	r1, [pc, #168]	; (dd68 <send_message+0x10c>)
+    dcbe:	780b      	ldrb	r3, [r1, #0]
+    dcc0:	b113      	cbz	r3, dcc8 <send_message+0x6c>
 			{
 				strcat(payloadstring, neighbors);
-    dce0:	a801      	add	r0, sp, #4
-    dce2:	f00f f97f 	bl	1cfe4 <strcat>
+    dcc2:	a819      	add	r0, sp, #100	; 0x64
+    dcc4:	f00f f98e 	bl	1cfe4 <strcat>
 			}
 			strcat(payloadstring, ";");
-    dce6:	491f      	ldr	r1, [pc, #124]	; (dd64 <send_message+0x100>)
-    dce8:	a801      	add	r0, sp, #4
-    dcea:	f00f f97b 	bl	1cfe4 <strcat>
+    dcc8:	4925      	ldr	r1, [pc, #148]	; (dd60 <send_message+0x104>)
+    dcca:	a819      	add	r0, sp, #100	; 0x64
+    dccc:	f00f f98a 	bl	1cfe4 <strcat>
 
-			strcat(payloadstring, gps_data.nmea);
-    dcee:	491a      	ldr	r1, [pc, #104]	; (dd58 <send_message+0xf4>)
-    dcf0:	a801      	add	r0, sp, #4
-    dcf2:	f00f f977 	bl	1cfe4 <strcat>
+			char nmea_sentence[100];
+			char *pos1 = strstr(gps_data.nmea, "$GPGGA,") + 7;
+    dcd0:	4926      	ldr	r1, [pc, #152]	; (dd6c <send_message+0x110>)
+    dcd2:	4827      	ldr	r0, [pc, #156]	; (dd70 <send_message+0x114>)
+    dcd4:	f00f f90f 	bl	1cef6 <strstr>
+    dcd8:	1dc5      	adds	r5, r0, #7
+			char *pos2 = strstr(pos1, "\n");
+    dcda:	4926      	ldr	r1, [pc, #152]	; (dd74 <send_message+0x118>)
+    dcdc:	4628      	mov	r0, r5
+    dcde:	f00f f90a 	bl	1cef6 <strstr>
+    dce2:	4607      	mov	r7, r0
+			memcpy(nmea_sentence, pos1, strlen(pos1)-strlen(pos2));
+    dce4:	4628      	mov	r0, r5
+    dce6:	f00f f95b 	bl	1cfa0 <strlen>
+    dcea:	4606      	mov	r6, r0
+    dcec:	4638      	mov	r0, r7
+    dcee:	f00f f957 	bl	1cfa0 <strlen>
+    dcf2:	4629      	mov	r1, r5
+    dcf4:	1a32      	subs	r2, r6, r0
+    dcf6:	4668      	mov	r0, sp
+    dcf8:	f00f f98d 	bl	1d016 <memcpy>
+			strcat(payloadstring, nmea_sentence);
+    dcfc:	4669      	mov	r1, sp
+    dcfe:	a819      	add	r0, sp, #100	; 0x64
+    dd00:	f00f f970 	bl	1cfe4 <strcat>
 			strcat(payloadstring, ";");
-    dcf6:	491b      	ldr	r1, [pc, #108]	; (dd64 <send_message+0x100>)
-    dcf8:	a801      	add	r0, sp, #4
-    dcfa:	f00f f973 	bl	1cfe4 <strcat>
+    dd04:	4916      	ldr	r1, [pc, #88]	; (dd60 <send_message+0x104>)
+    dd06:	a819      	add	r0, sp, #100	; 0x64
+    dd08:	f00f f96c 	bl	1cfe4 <strcat>
 
 			// Send message to UDP server
-			do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, "payloadstring");
-    dcfe:	4a1c      	ldr	r2, [pc, #112]	; (dd70 <send_message+0x10c>)
-    dd00:	f240 41f6 	movw	r1, #1270	; 0x4f6
-    dd04:	481b      	ldr	r0, [pc, #108]	; (dd74 <send_message+0x110>)
-    dd06:	f7ff fc63 	bl	d5d0 <do_udp_sendto>
-			LOG_INF("MESSAGE SENT: %s", payloadstring);
-    dd0a:	f04f 0200 	mov.w	r2, #0
-    dd0e:	2303      	movs	r3, #3
-    dd10:	f363 0207 	bfi	r2, r3, #0, #8
-    dd14:	f364 128f 	bfi	r2, r4, #6, #10
-    dd18:	a901      	add	r1, sp, #4
-    dd1a:	4817      	ldr	r0, [pc, #92]	; (dd78 <send_message+0x114>)
-    dd1c:	f00e fc12 	bl	1c544 <log_1>
+			//do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring);
+			LOG_INF("MESSAGE SENT: \"%s\"", payloadstring);
+    dd0c:	f04f 0200 	mov.w	r2, #0
+    dd10:	2303      	movs	r3, #3
+    dd12:	f363 0207 	bfi	r2, r3, #0, #8
+    dd16:	f364 128f 	bfi	r2, r4, #6, #10
+    dd1a:	a919      	add	r1, sp, #100	; 0x64
+    dd1c:	4816      	ldr	r0, [pc, #88]	; (dd78 <send_message+0x11c>)
+    dd1e:	f00e fc11 	bl	1c544 <log_1>
 			
 	} else 
 	{
 		LOG_INF("Waiting for GPS fix ...");
 	}
 }
-    dd20:	b04c      	add	sp, #304	; 0x130
-    dd22:	bd10      	pop	{r4, pc}
+    dd22:	b065      	add	sp, #404	; 0x194
+    dd24:	bdf0      	pop	{r4, r5, r6, r7, pc}
 			LOG_ERR("Unexpected ERROR, try rebooting the device.");
-    dd24:	f04f 0100 	mov.w	r1, #0
-    dd28:	2301      	movs	r3, #1
-    dd2a:	4814      	ldr	r0, [pc, #80]	; (dd7c <send_message+0x118>)
-    dd2c:	f363 0107 	bfi	r1, r3, #0, #8
-    dd30:	f364 118f 	bfi	r1, r4, #6, #10
+    dd26:	f04f 0100 	mov.w	r1, #0
+    dd2a:	2301      	movs	r3, #1
+    dd2c:	4813      	ldr	r0, [pc, #76]	; (dd7c <send_message+0x120>)
+    dd2e:	f363 0107 	bfi	r1, r3, #0, #8
+    dd32:	f364 118f 	bfi	r1, r4, #6, #10
 		LOG_INF("Waiting for GPS fix ...");
-    dd34:	f00e fbf9 	bl	1c52a <log_0>
+    dd36:	f00e fbf8 	bl	1c52a <log_0>
 }
-    dd38:	e7f2      	b.n	dd20 <send_message+0xbc>
+    dd3a:	e7f2      	b.n	dd22 <send_message+0xc6>
 		LOG_INF("Waiting for GPS fix ...");
-    dd3a:	2303      	movs	r3, #3
-    dd3c:	f363 0107 	bfi	r1, r3, #0, #8
-    dd40:	f364 118f 	bfi	r1, r4, #6, #10
-    dd44:	480e      	ldr	r0, [pc, #56]	; (dd80 <send_message+0x11c>)
-    dd46:	e7f5      	b.n	dd34 <send_message+0xd0>
-    dd48:	0001ed30 	.word	0x0001ed30
-    dd4c:	0001eda8 	.word	0x0001eda8
-    dd50:	20020114 	.word	0x20020114
-    dd54:	0001f9bf 	.word	0x0001f9bf
-    dd58:	20020008 	.word	0x20020008
-    dd5c:	0001f9ce 	.word	0x0001f9ce
-    dd60:	20026380 	.word	0x20026380
-    dd64:	0001f9d8 	.word	0x0001f9d8
-    dd68:	2002638a 	.word	0x2002638a
-    dd6c:	2002638b 	.word	0x2002638b
-    dd70:	0001f9da 	.word	0x0001f9da
-    dd74:	0001f9e8 	.word	0x0001f9e8
-    dd78:	0001fa02 	.word	0x0001fa02
-    dd7c:	0001fa13 	.word	0x0001fa13
-    dd80:	0001fa3f 	.word	0x0001fa3f
+    dd3c:	2303      	movs	r3, #3
+    dd3e:	f363 0107 	bfi	r1, r3, #0, #8
+    dd42:	f364 118f 	bfi	r1, r4, #6, #10
+    dd46:	480e      	ldr	r0, [pc, #56]	; (dd80 <send_message+0x124>)
+    dd48:	e7f5      	b.n	dd36 <send_message+0xda>
+    dd4a:	bf00      	nop
+    dd4c:	0001ed30 	.word	0x0001ed30
+    dd50:	0001eda8 	.word	0x0001eda8
+    dd54:	20020114 	.word	0x20020114
+    dd58:	0001f9d1 	.word	0x0001f9d1
+    dd5c:	20026380 	.word	0x20026380
+    dd60:	0001f9e0 	.word	0x0001f9e0
+    dd64:	2002638a 	.word	0x2002638a
+    dd68:	2002638b 	.word	0x2002638b
+    dd6c:	0001f9e2 	.word	0x0001f9e2
+    dd70:	20020008 	.word	0x20020008
+    dd74:	0001f700 	.word	0x0001f700
+    dd78:	0001f9ea 	.word	0x0001f9ea
+    dd7c:	0001f9fd 	.word	0x0001f9fd
+    dd80:	0001fa29 	.word	0x0001fa29
 
 0000dd84 <close>:
 	return socket_ops->close(sock);
@@ -3797,9 +3794,9 @@ static int do_gps_stop(void)
     de00:	20020114 	.word	0x20020114
     de04:	0001ed30 	.word	0x0001ed30
     de08:	0001ed68 	.word	0x0001ed68
-    de0c:	0001fbf6 	.word	0x0001fbf6
+    de0c:	0001fbe0 	.word	0x0001fbe0
     de10:	200201d0 	.word	0x200201d0
-    de14:	0001fc13 	.word	0x0001fc13
+    de14:	0001fbfd 	.word	0x0001fbfd
 
 0000de18 <do_gps_start>:
 	nrf_gnss_fix_retry_t    fix_retry    = 0; /* unlimited retry period */
@@ -4038,16 +4035,16 @@ static int do_gps_stop(void)
     dfe0:	20020114 	.word	0x20020114
     dfe4:	0001ed30 	.word	0x0001ed30
     dfe8:	0001ed68 	.word	0x0001ed68
-    dfec:	0001fb0e 	.word	0x0001fb0e
-    dff0:	0001fbd2 	.word	0x0001fbd2
-    dff4:	0001fbe7 	.word	0x0001fbe7
+    dfec:	0001faf8 	.word	0x0001faf8
+    dff0:	0001fbbc 	.word	0x0001fbbc
+    dff4:	0001fbd1 	.word	0x0001fbd1
     dff8:	200263ef 	.word	0x200263ef
-    dffc:	0001fb2e 	.word	0x0001fb2e
-    e000:	0001fb56 	.word	0x0001fb56
-    e004:	0001fb81 	.word	0x0001fb81
-    e008:	0001fba3 	.word	0x0001fba3
+    dffc:	0001fb18 	.word	0x0001fb18
+    e000:	0001fb40 	.word	0x0001fb40
+    e004:	0001fb6b 	.word	0x0001fb6b
+    e008:	0001fb8d 	.word	0x0001fb8d
     e00c:	200201d0 	.word	0x200201d0
-    e010:	0001fbc1 	.word	0x0001fbc1
+    e010:	0001fbab 	.word	0x0001fbab
     e014:	200200d8 	.word	0x200200d8
     e018:	0000e119 	.word	0x0000e119
     e01c:	200265a0 	.word	0x200265a0
@@ -4194,11 +4191,11 @@ static int handle_at_gpsrun(enum at_cmd_type cmd_type)
     e0f8:	20020114 	.word	0x20020114
     e0fc:	0001ed30 	.word	0x0001ed30
     e100:	0001ed68 	.word	0x0001ed68
-    e104:	0001fd3c 	.word	0x0001fd3c
-    e108:	0001fd4b 	.word	0x0001fd4b
-    e10c:	0001fbc1 	.word	0x0001fbc1
+    e104:	0001fd26 	.word	0x0001fd26
+    e108:	0001fd35 	.word	0x0001fd35
+    e10c:	0001fbab 	.word	0x0001fbab
     e110:	200263ef 	.word	0x200263ef
-    e114:	0001fc13 	.word	0x0001fc13
+    e114:	0001fbfd 	.word	0x0001fbfd
 
 0000e118 <gps_thread_fn>:
 {
@@ -4394,16 +4391,16 @@ static int handle_at_gpsrun(enum at_cmd_type cmd_type)
     e284:	20020000 	.word	0x20020000
     e288:	0001ed30 	.word	0x0001ed30
     e28c:	0001ed68 	.word	0x0001ed68
-    e290:	0001fc9d 	.word	0x0001fc9d
-    e294:	0001fbe7 	.word	0x0001fbe7
+    e290:	0001fc87 	.word	0x0001fc87
+    e294:	0001fbd1 	.word	0x0001fbd1
     e298:	200263ef 	.word	0x200263ef
-    e29c:	0001fcb0 	.word	0x0001fcb0
-    e2a0:	0001fd33 	.word	0x0001fd33
+    e29c:	0001fc9a 	.word	0x0001fc9a
+    e2a0:	0001fd1d 	.word	0x0001fd1d
     e2a4:	20020008 	.word	0x20020008
-    e2a8:	0001fcdc 	.word	0x0001fcdc
-    e2ac:	0001fcf5 	.word	0x0001fcf5
+    e2a8:	0001fcc6 	.word	0x0001fcc6
+    e2ac:	0001fcdf 	.word	0x0001fcdf
     e2b0:	200200d8 	.word	0x200200d8
-    e2b4:	0001fd1d 	.word	0x0001fd1d
+    e2b4:	0001fd07 	.word	0x0001fd07
     e2b8:	2002642f 	.word	0x2002642f
 
 0000e2bc <slm_at_gps_parse>:
@@ -4479,7 +4476,7 @@ int slm_at_gps_parse(const char *at_cmd)
 	int ret = -ENOTSUP;
     e326:	f06f 0022 	mvn.w	r0, #34	; 0x22
     e32a:	e7e8      	b.n	e2fe <slm_at_gps_parse+0x42>
-    e32c:	0001fd82 	.word	0x0001fd82
+    e32c:	0001fd6c 	.word	0x0001fd6c
     e330:	200200e8 	.word	0x200200e8
     e334:	0001ed30 	.word	0x0001ed30
     e338:	0001ed68 	.word	0x0001ed68
@@ -4510,13 +4507,13 @@ int slm_at_gps_init(at_cmd_handler_t callback)
     e364:	f06f 0015 	mvn.w	r0, #21
 	enable_gps();
 	do_gps_start();
-	/////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////
 
 	return 0;
 }
     e368:	b003      	add	sp, #12
     e36a:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
-	gps_client_inst.mask = NRF_GNSS_NMEA_GGA_MASK;
+	gps_client_inst.mask = NRF_GNSS_NMEA_GGA_MASK; ///////////////////////
     e36e:	2201      	movs	r2, #1
     e370:	f04f 31ff 	mov.w	r1, #4294967295	; 0xffffffff
 	gps_thread_id = NULL;
@@ -4525,7 +4522,7 @@ int slm_at_gps_init(at_cmd_handler_t callback)
     e376:	4b37      	ldr	r3, [pc, #220]	; (e454 <slm_at_gps_init+0x114>)
 	return socket_ops->socket(family, type, proto);
     e378:	4f37      	ldr	r7, [pc, #220]	; (e458 <slm_at_gps_init+0x118>)
-	gps_client_inst.mask = NRF_GNSS_NMEA_GGA_MASK;
+	gps_client_inst.mask = NRF_GNSS_NMEA_GGA_MASK; ///////////////////////
     e37a:	e9c3 1200 	strd	r1, r2, [r3]
 	gps_client_inst.callback = callback;
     e37e:	6098      	str	r0, [r3, #8]
@@ -4625,15 +4622,15 @@ int slm_at_gps_init(at_cmd_handler_t callback)
     e446:	e7d2      	b.n	e3ee <slm_at_gps_init+0xae>
     e448:	0001ed30 	.word	0x0001ed30
     e44c:	0001ed68 	.word	0x0001ed68
-    e450:	0001fa57 	.word	0x0001fa57
+    e450:	0001fa41 	.word	0x0001fa41
     e454:	20020114 	.word	0x20020114
     e458:	2002031c 	.word	0x2002031c
     e45c:	200201d0 	.word	0x200201d0
-    e460:	0001fd5e 	.word	0x0001fd5e
-    e464:	0001fc21 	.word	0x0001fc21
-    e468:	0001fa10 	.word	0x0001fa10
-    e46c:	0001fd76 	.word	0x0001fd76
-    e470:	0001fa91 	.word	0x0001fa91
+    e460:	0001fd48 	.word	0x0001fd48
+    e464:	0001fc0b 	.word	0x0001fc0b
+    e468:	0001f908 	.word	0x0001f908
+    e46c:	0001fd60 	.word	0x0001fd60
+    e470:	0001fa7b 	.word	0x0001fa7b
 
 0000e474 <slm_at_gps_uninit>:
 
@@ -4907,7 +4904,7 @@ static int enable_logger(struct device *arg)
     e5d0:	20020230 	.word	0x20020230
     e5d4:	0000e8c1 	.word	0x0000e8c1
     e5d8:	200269a0 	.word	0x200269a0
-    e5dc:	0001fda4 	.word	0x0001fda4
+    e5dc:	0001fd8e 	.word	0x0001fd8e
 
 0000e5e0 <log_process_thread_timer_expiry_fn>:
 		arch_syscall_invoke1(*(uintptr_t *)&sem, K_SYSCALL_K_SEM_GIVE);
@@ -5417,9 +5414,9 @@ static inline bool log_backend_is_active(
     e954:	e7fa      	b.n	e94c <log_strdup+0x48>
     e956:	bf00      	nop
     e958:	0001ea44 	.word	0x0001ea44
-    e95c:	00020808 	.word	0x00020808
+    e95c:	000207f0 	.word	0x000207f0
     e960:	20020214 	.word	0x20020214
-    e964:	0001fdac 	.word	0x0001fdac
+    e964:	0001fd96 	.word	0x0001fd96
 
 0000e968 <log_is_strdup>:
 	return PART_OF_ARRAY(log_strdup_pool_buf, (u8_t *)buf);
@@ -5790,17 +5787,17 @@ static u32_t prefix_print(const struct log_output *log_output,
     eb8a:	4f08      	ldr	r7, [pc, #32]	; (ebac <prefix_print+0x10c>)
     eb8c:	e7c1      	b.n	eb12 <prefix_print+0x72>
     eb8e:	bf00      	nop
-    eb90:	0001fe11 	.word	0x0001fe11
+    eb90:	0001fdfb 	.word	0x0001fdfb
     eb94:	0001ee64 	.word	0x0001ee64
-    eb98:	0001fa10 	.word	0x0001fa10
-    eb9c:	0001fe03 	.word	0x0001fe03
+    eb98:	0001f908 	.word	0x0001f908
+    eb9c:	0001fded 	.word	0x0001fded
     eba0:	0001ee78 	.word	0x0001ee78
-    eba4:	0001fe36 	.word	0x0001fe36
-    eba8:	0001fe0d 	.word	0x0001fe0d
-    ebac:	0001fe08 	.word	0x0001fe08
+    eba4:	0001fe20 	.word	0x0001fe20
+    eba8:	0001fdf7 	.word	0x0001fdf7
+    ebac:	0001fdf2 	.word	0x0001fdf2
     ebb0:	20020300 	.word	0x20020300
     ebb4:	20020304 	.word	0x20020304
-    ebb8:	0001fe1a 	.word	0x0001fe1a
+    ebb8:	0001fe04 	.word	0x0001fe04
 
 0000ebbc <postfix_print>:
 
@@ -5840,10 +5837,10 @@ static void postfix_print(const struct log_output *log_output,
 }
     ebe4:	bd38      	pop	{r3, r4, r5, pc}
     ebe6:	bf00      	nop
-    ebe8:	0001fe03 	.word	0x0001fe03
-    ebec:	0001fa10 	.word	0x0001fa10
-    ebf0:	0001f726 	.word	0x0001f726
-    ebf4:	0001f725 	.word	0x0001f725
+    ebe8:	0001fded 	.word	0x0001fded
+    ebec:	0001f908 	.word	0x0001f908
+    ebf0:	0001f700 	.word	0x0001f700
+    ebf4:	0001f6ff 	.word	0x0001f6ff
 
 0000ebf8 <hexdump_line_print>:
 {
@@ -5957,13 +5954,13 @@ static void postfix_print(const struct log_output *log_output,
     ecac:	f7ff fee6 	bl	ea7c <print_formatted>
     ecb0:	e7dc      	b.n	ec6c <hexdump_line_print+0x74>
     ecb2:	bf00      	nop
-    ecb4:	0001f726 	.word	0x0001f726
-    ecb8:	0001f725 	.word	0x0001f725
-    ecbc:	0001fdd4 	.word	0x0001fdd4
-    ecc0:	0001fdd2 	.word	0x0001fdd2
-    ecc4:	0001fdd0 	.word	0x0001fdd0
-    ecc8:	0001fdca 	.word	0x0001fdca
-    eccc:	0001fdd6 	.word	0x0001fdd6
+    ecb4:	0001f700 	.word	0x0001f700
+    ecb8:	0001f6ff 	.word	0x0001f6ff
+    ecbc:	0001fdbe 	.word	0x0001fdbe
+    ecc0:	0001fdbc 	.word	0x0001fdbc
+    ecc4:	0001fdba 	.word	0x0001fdba
+    ecc8:	0001fdb4 	.word	0x0001fdb4
+    eccc:	0001fdc0 	.word	0x0001fdc0
 
 0000ecd0 <log_output_msg_process>:
 
@@ -6114,8 +6111,8 @@ void log_output_msg_process(const struct log_output *log_output,
     edae:	9b05      	ldr	r3, [sp, #20]
     edb0:	4498      	add	r8, r3
     edb2:	e7eb      	b.n	ed8c <log_output_msg_process+0xbc>
-    edb4:	0001fdd9 	.word	0x0001fdd9
-    edb8:	0001fa10 	.word	0x0001fa10
+    edb4:	0001fdc3 	.word	0x0001fdc3
+    edb8:	0001f908 	.word	0x0001f908
 
 0000edbc <log_output_dropped_process>:
 	postfix_print(log_output, flags, level);
@@ -6168,9 +6165,9 @@ void log_output_dropped_process(const struct log_output *log_output, u32_t cnt)
     edfe:	b002      	add	sp, #8
     ee00:	bd70      	pop	{r4, r5, r6, pc}
     ee02:	bf00      	nop
-    ee04:	0001fcad 	.word	0x0001fcad
-    ee08:	0001fdf7 	.word	0x0001fdf7
-    ee0c:	0001fddb 	.word	0x0001fddb
+    ee04:	0001fc97 	.word	0x0001fc97
+    ee08:	0001fde1 	.word	0x0001fde1
+    ee0c:	0001fdc5 	.word	0x0001fdc5
 
 0000ee10 <log_output_timestamp_freq_set>:
 
@@ -6670,7 +6667,7 @@ NRF_STATIC_INLINE void nrf_rtc_task_trigger(NRF_RTC_Type * p_reg, nrf_rtc_task_t
 		return -1;
     f022:	f04f 30ff 	mov.w	r0, #4294967295	; 0xffffffff
     f026:	e7fb      	b.n	f020 <z_clock_driver_init+0x5c>
-    f028:	0001fe73 	.word	0x0001fe73
+    f028:	0001fe5d 	.word	0x0001fe5d
     f02c:	40015000 	.word	0x40015000
     f030:	40015140 	.word	0x40015140
     f034:	e000e100 	.word	0xe000e100
@@ -7685,12 +7682,12 @@ void z_arm_fatal_error(unsigned int reason, const z_arch_esf_t *esf)
     f4c2:	bf00      	nop
     f4c4:	0001ed90 	.word	0x0001ed90
     f4c8:	0001ed30 	.word	0x0001ed30
-    f4cc:	0001fe9f 	.word	0x0001fe9f
-    f4d0:	0001fece 	.word	0x0001fece
-    f4d4:	0001fefd 	.word	0x0001fefd
-    f4d8:	0001ff4f 	.word	0x0001ff4f
-    f4dc:	0001ff5e 	.word	0x0001ff5e
-    f4e0:	0001ff0c 	.word	0x0001ff0c
+    f4cc:	0001fe89 	.word	0x0001fe89
+    f4d0:	0001feb8 	.word	0x0001feb8
+    f4d4:	0001fee7 	.word	0x0001fee7
+    f4d8:	0001ff39 	.word	0x0001ff39
+    f4dc:	0001ff48 	.word	0x0001ff48
+    f4e0:	0001fef6 	.word	0x0001fef6
 
 0000f4e4 <z_SysNmiOnReset>:
 _ASM_FILE_PROLOGUE
@@ -8058,15 +8055,15 @@ static u32_t usage_fault(const z_arch_esf_t *esf)
     f6a2:	bf00      	nop
     f6a4:	0001ed90 	.word	0x0001ed90
     f6a8:	0001ed30 	.word	0x0001ed30
-    f6ac:	000200ec 	.word	0x000200ec
+    f6ac:	000200d6 	.word	0x000200d6
     f6b0:	e000ed00 	.word	0xe000ed00
-    f6b4:	00020104 	.word	0x00020104
-    f6b8:	00020117 	.word	0x00020117
-    f6bc:	00020131 	.word	0x00020131
-    f6c0:	0002015b 	.word	0x0002015b
-    f6c4:	00020179 	.word	0x00020179
-    f6c8:	0002019e 	.word	0x0002019e
-    f6cc:	000201b8 	.word	0x000201b8
+    f6b4:	000200ee 	.word	0x000200ee
+    f6b8:	00020101 	.word	0x00020101
+    f6bc:	0002011b 	.word	0x0002011b
+    f6c0:	00020145 	.word	0x00020145
+    f6c4:	00020163 	.word	0x00020163
+    f6c8:	00020188 	.word	0x00020188
+    f6cc:	000201a2 	.word	0x000201a2
 
 0000f6d0 <mem_manage_fault.isra.4>:
 static u32_t mem_manage_fault(z_arch_esf_t *esf, int from_hard_fault,
@@ -8182,14 +8179,14 @@ static u32_t mem_manage_fault(z_arch_esf_t *esf, int from_hard_fault,
     f7b6:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
     f7b8:	0001ed90 	.word	0x0001ed90
     f7bc:	0001ed30 	.word	0x0001ed30
-    f7c0:	00020014 	.word	0x00020014
+    f7c0:	0001fffe 	.word	0x0001fffe
     f7c4:	e000ed00 	.word	0xe000ed00
-    f7c8:	0002002a 	.word	0x0002002a
-    f7cc:	0002005d 	.word	0x0002005d
-    f7d0:	00020070 	.word	0x00020070
-    f7d4:	00020088 	.word	0x00020088
-    f7d8:	0002009e 	.word	0x0002009e
-    f7dc:	000200bd 	.word	0x000200bd
+    f7c8:	00020014 	.word	0x00020014
+    f7cc:	00020047 	.word	0x00020047
+    f7d0:	0002005a 	.word	0x0002005a
+    f7d4:	00020072 	.word	0x00020072
+    f7d8:	00020088 	.word	0x00020088
+    f7dc:	000200a7 	.word	0x000200a7
 
 0000f7e0 <bus_fault.isra.5>:
 static int bus_fault(z_arch_esf_t *esf, int from_hard_fault, bool *recoverable)
@@ -8316,15 +8313,15 @@ static int bus_fault(z_arch_esf_t *esf, int from_hard_fault, bool *recoverable)
     f8de:	bf00      	nop
     f8e0:	0001ed90 	.word	0x0001ed90
     f8e4:	0001ed30 	.word	0x0001ed30
-    f8e8:	0001ff8c 	.word	0x0001ff8c
+    f8e8:	0001ff76 	.word	0x0001ff76
     f8ec:	e000ed00 	.word	0xe000ed00
-    f8f0:	0001ffa2 	.word	0x0001ffa2
-    f8f4:	0002005d 	.word	0x0002005d
-    f8f8:	0001ffb3 	.word	0x0001ffb3
-    f8fc:	0001ffcc 	.word	0x0001ffcc
-    f900:	0001ffe1 	.word	0x0001ffe1
-    f904:	0001fffc 	.word	0x0001fffc
-    f908:	000200bd 	.word	0x000200bd
+    f8f0:	0001ff8c 	.word	0x0001ff8c
+    f8f4:	00020047 	.word	0x00020047
+    f8f8:	0001ff9d 	.word	0x0001ff9d
+    f8fc:	0001ffb6 	.word	0x0001ffb6
+    f900:	0001ffcb 	.word	0x0001ffcb
+    f904:	0001ffe6 	.word	0x0001ffe6
+    f908:	000200a7 	.word	0x000200a7
 
 0000f90c <z_arm_fault>:
  * @param psp PSP value immediately after the exception occurred
@@ -8561,17 +8558,17 @@ void z_arm_fault(u32_t msp, u32_t psp, u32_t exc_return)
     fab8:	e000ed00 	.word	0xe000ed00
     fabc:	0001ed30 	.word	0x0001ed30
     fac0:	0001ed90 	.word	0x0001ed90
-    fac4:	000201e3 	.word	0x000201e3
-    fac8:	00020206 	.word	0x00020206
-    facc:	0002021d 	.word	0x0002021d
-    fad0:	0002023e 	.word	0x0002023e
+    fac4:	000201cd 	.word	0x000201cd
+    fac8:	000201f0 	.word	0x000201f0
+    facc:	00020207 	.word	0x00020207
+    fad0:	00020228 	.word	0x00020228
     fad4:	e000ed28 	.word	0xe000ed28
     fad8:	e000ed29 	.word	0xe000ed29
     fadc:	e000ed2a 	.word	0xe000ed2a
-    fae0:	0002025d 	.word	0x0002025d
-    fae4:	000202a8 	.word	0x000202a8
-    fae8:	00020293 	.word	0x00020293
-    faec:	000202c1 	.word	0x000202c1
+    fae0:	00020247 	.word	0x00020247
+    fae4:	00020292 	.word	0x00020292
+    fae8:	0002027d 	.word	0x0002027d
+    faec:	000202ab 	.word	0x000202ab
 
 0000faf0 <z_arm_fault_init>:
  */
@@ -8887,7 +8884,7 @@ static int region_allocate_and_init(const u8_t index,
     fc36:	bf00      	nop
     fc38:	0001ed30 	.word	0x0001ed30
     fc3c:	0001ed80 	.word	0x0001ed80
-    fc40:	0002031e 	.word	0x0002031e
+    fc40:	00020308 	.word	0x00020308
 
 0000fc44 <mpu_configure_regions_and_partition.constprop.2>:
  * sanity check of the memory regions to be programmed.
@@ -9129,8 +9126,8 @@ static int mpu_configure_regions_and_partition(const struct k_mem_partition
     fdcc:	e000ed90 	.word	0xe000ed90
     fdd0:	0001ed30 	.word	0x0001ed30
     fdd4:	0001ed80 	.word	0x0001ed80
-    fdd8:	000202fb 	.word	0x000202fb
-    fddc:	000202d8 	.word	0x000202d8
+    fdd8:	000202e5 	.word	0x000202e5
+    fddc:	000202c2 	.word	0x000202c2
 
 0000fde0 <arm_core_mpu_enable>:
 void arm_core_mpu_enable(void)
@@ -9884,8 +9881,8 @@ int z_prf(int (*func)(), void *dest, const char *format, va_list vargs)
    1027a:	4639      	mov	r1, r7
    1027c:	ae1b      	add	r6, sp, #108	; 0x6c
    1027e:	e75d      	b.n	1013c <z_prf+0x1f0>
-   10280:	00020344 	.word	0x00020344
-   10284:	0002034a 	.word	0x0002034a
+   10280:	0002032e 	.word	0x0002032e
+   10284:	00020334 	.word	0x00020334
 				u.d = va_arg(vargs, double);
    10288:	f106 0907 	add.w	r9, r6, #7
    1028c:	f029 0907 	bic.w	r9, r9, #7
@@ -12736,7 +12733,7 @@ Z_GENLIST_FIND_AND_REMOVE(slist, snode)
    114c2:	e7ce      	b.n	11462 <bsd_os_errno_set+0xe6>
    114c4:	0001ed30 	.word	0x0001ed30
    114c8:	0001ed50 	.word	0x0001ed50
-   114cc:	0002037e 	.word	0x0002037e
+   114cc:	00020368 	.word	0x00020368
    114d0:	baadbaad 	.word	0xbaadbaad
 
 000114d4 <bsd_os_application_irq_set>:
@@ -13172,13 +13169,13 @@ static int at_cmd_driver_init(struct device *dev)
    1175e:	e7d9      	b.n	11714 <at_cmd_driver_init+0x28>
    11760:	0001ed38 	.word	0x0001ed38
    11764:	0001ed30 	.word	0x0001ed30
-   11768:	00020404 	.word	0x00020404
-   1176c:	000203f1 	.word	0x000203f1
-   11770:	00020426 	.word	0x00020426
+   11768:	000203ee 	.word	0x000203ee
+   1176c:	000203db 	.word	0x000203db
+   11770:	00020410 	.word	0x00020410
    11774:	20026ca0 	.word	0x20026ca0
    11778:	00011785 	.word	0x00011785
    1177c:	200203ec 	.word	0x200203ec
-   11780:	00020443 	.word	0x00020443
+   11780:	0002042d 	.word	0x0002042d
 
 00011784 <socket_thread_fn>:
 	LOG_DBG("AT socket thread started");
@@ -13509,25 +13506,25 @@ static int at_cmd_driver_init(struct device *dev)
    119fe:	bf00      	nop
    11a00:	0001ed30 	.word	0x0001ed30
    11a04:	0001ed38 	.word	0x0001ed38
-   11a08:	000203b7 	.word	0x000203b7
-   11a0c:	00020541 	.word	0x00020541
+   11a08:	000203a1 	.word	0x000203a1
+   11a0c:	0002052b 	.word	0x0002052b
    11a10:	2002c538 	.word	0x2002c538
    11a14:	2002031c 	.word	0x2002031c
    11a18:	200203d8 	.word	0x200203d8
-   11a1c:	0002055e 	.word	0x0002055e
-   11a20:	00020580 	.word	0x00020580
+   11a1c:	00020548 	.word	0x00020548
+   11a20:	0002056a 	.word	0x0002056a
    11a24:	2002c588 	.word	0x2002c588
    11a28:	200203dc 	.word	0x200203dc
    11a2c:	2002c5c8 	.word	0x2002c5c8
-   11a30:	00020594 	.word	0x00020594
-   11a34:	000205cb 	.word	0x000205cb
-   11a38:	00020615 	.word	0x00020615
-   11a3c:	0001fa91 	.word	0x0001fa91
-   11a40:	00020627 	.word	0x00020627
+   11a30:	0002057e 	.word	0x0002057e
+   11a34:	000205b5 	.word	0x000205b5
+   11a38:	000205ff 	.word	0x000205ff
+   11a3c:	0001fa7b 	.word	0x0001fa7b
+   11a40:	00020611 	.word	0x00020611
    11a44:	200203e4 	.word	0x200203e4
-   11a48:	00020633 	.word	0x00020633
+   11a48:	0002061d 	.word	0x0002061d
    11a4c:	0001f8b6 	.word	0x0001f8b6
-   11a50:	0002063f 	.word	0x0002063f
+   11a50:	00020629 	.word	0x00020629
    11a54:	0001169d 	.word	0x0001169d
    11a58:	20024d40 	.word	0x20024d40
    11a5c:	200203e0 	.word	0x200203e0
@@ -13636,14 +13633,14 @@ static int at_cmd_driver_init(struct device *dev)
    11b32:	bf00      	nop
    11b34:	0001ed38 	.word	0x0001ed38
    11b38:	0001ed30 	.word	0x0001ed30
-   11b3c:	000203c8 	.word	0x000203c8
-   11b40:	000204c2 	.word	0x000204c2
+   11b3c:	000203b2 	.word	0x000203b2
+   11b40:	000204ac 	.word	0x000204ac
    11b44:	2002031c 	.word	0x2002031c
    11b48:	200203d8 	.word	0x200203d8
-   11b4c:	000204d9 	.word	0x000204d9
+   11b4c:	000204c3 	.word	0x000204c3
    11b50:	2002c5c8 	.word	0x2002c5c8
-   11b54:	000204fc 	.word	0x000204fc
-   11b58:	0002050f 	.word	0x0002050f
+   11b54:	000204e6 	.word	0x000204e6
+   11b58:	000204f9 	.word	0x000204f9
 
 00011b5c <at_cmd_write>:
 {
@@ -13732,9 +13729,9 @@ static int at_cmd_driver_init(struct device *dev)
    11bfc:	0001ed38 	.word	0x0001ed38
    11c00:	0001ed30 	.word	0x0001ed30
    11c04:	200203e0 	.word	0x200203e0
-   11c08:	000203d1 	.word	0x000203d1
-   11c0c:	00020472 	.word	0x00020472
-   11c10:	00020499 	.word	0x00020499
+   11c08:	000203bb 	.word	0x000203bb
+   11c0c:	0002045c 	.word	0x0002045c
+   11c10:	00020483 	.word	0x00020483
    11c14:	2002c588 	.word	0x2002c588
 
 00011c18 <find_node>:
@@ -13932,7 +13929,7 @@ Z_GENLIST_APPEND(slist, snode)
    11d2e:	bf00      	nop
    11d30:	0001ed30 	.word	0x0001ed30
    11d34:	0001ed48 	.word	0x0001ed48
-   11d38:	0002068d 	.word	0x0002068d
+   11d38:	00020677 	.word	0x00020677
    11d3c:	2002c5b4 	.word	0x2002c5b4
    11d40:	2002049c 	.word	0x2002049c
 
@@ -14027,9 +14024,9 @@ Z_GENLIST_REMOVE(slist, snode)
    11dda:	e7f4      	b.n	11dc6 <at_notif_deregister_handler+0x82>
    11ddc:	0001ed48 	.word	0x0001ed48
    11de0:	0001ed30 	.word	0x0001ed30
-   11de4:	0002068d 	.word	0x0002068d
+   11de4:	00020677 	.word	0x00020677
    11de8:	2002c5b4 	.word	0x2002c5b4
-   11dec:	00020667 	.word	0x00020667
+   11dec:	00020651 	.word	0x00020651
    11df0:	2002049c 	.word	0x2002049c
 
 00011df4 <at_parse_process_element>:
@@ -14654,7 +14651,7 @@ int lte_lc_power_off(void)
    12184:	bf18      	it	ne
    12186:	f06f 0004 	mvnne.w	r0, #4
    1218a:	bd08      	pop	{r3, pc}
-   1218c:	000206c7 	.word	0x000206c7
+   1218c:	000206b1 	.word	0x000206b1
 
 00012190 <k_sys_fatal_error_handler>:
 
@@ -14689,7 +14686,7 @@ void k_sys_fatal_error_handler(unsigned int reason,
 	CODE_UNREACHABLE;
    121b8:	0001ed30 	.word	0x0001ed30
    121bc:	0001ed60 	.word	0x0001ed60
-   121c0:	000206d8 	.word	0x000206d8
+   121c0:	000206c2 	.word	0x000206c2
 
 000121c4 <ext_api_getter>:
 extern const struct fw_info_ext_api * const _ext_apis_start[];
@@ -14752,7 +14749,7 @@ int ext_api_getter(u32_t id, u32_t index, const struct fw_info_ext_api **out)
    12200:	f06f 000d 	mvn.w	r0, #13
    12204:	e7f7      	b.n	121f6 <ext_api_getter+0x32>
    12206:	bf00      	nop
-   12208:	00020808 	.word	0x00020808
+   12208:	000207f0 	.word	0x000207f0
    1220c:	00000000 	.word	0x00000000
 
 00012210 <rpc_logobj_client_evt_handler>:
@@ -18864,7 +18861,7 @@ int ext_api_getter(u32_t id, u32_t index, const struct fw_info_ext_api **out)
 00014940 <ipc_trace_handle>:
    14940:	2200      	movs	r2, #0
    14942:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
-   14946:	4bb0      	ldr	r3, [pc, #704]	; (14c08 <_flash_used+0x1b8>)
+   14946:	4bb0      	ldr	r3, [pc, #704]	; (14c08 <_flash_used+0x1d0>)
    14948:	b083      	sub	sp, #12
    1494a:	681b      	ldr	r3, [r3, #0]
    1494c:	6919      	ldr	r1, [r3, #16]
@@ -18896,7 +18893,7 @@ int ext_api_getter(u32_t id, u32_t index, const struct fw_info_ext_api **out)
    14986:	2003      	movs	r0, #3
    14988:	2200      	movs	r2, #0
    1498a:	f06f 015f 	mvn.w	r1, #95	; 0x5f
-   1498e:	4c9f      	ldr	r4, [pc, #636]	; (14c0c <_flash_used+0x1bc>)
+   1498e:	4c9f      	ldr	r4, [pc, #636]	; (14c0c <_flash_used+0x1d4>)
    14990:	7025      	strb	r5, [r4, #0]
    14992:	7a1c      	ldrb	r4, [r3, #8]
    14994:	7218      	strb	r0, [r3, #8]
@@ -18915,7 +18912,7 @@ int ext_api_getter(u32_t id, u32_t index, const struct fw_info_ext_api **out)
    149b2:	7219      	strb	r1, [r3, #8]
    149b4:	7a59      	ldrb	r1, [r3, #9]
    149b6:	725a      	strb	r2, [r3, #9]
-   149b8:	4994      	ldr	r1, [pc, #592]	; (14c0c <_flash_used+0x1bc>)
+   149b8:	4994      	ldr	r1, [pc, #592]	; (14c0c <_flash_used+0x1d4>)
    149ba:	7a9c      	ldrb	r4, [r3, #10]
    149bc:	729a      	strb	r2, [r3, #10]
    149be:	7adc      	ldrb	r4, [r3, #11]
@@ -18923,8 +18920,8 @@ int ext_api_getter(u32_t id, u32_t index, const struct fw_info_ext_api **out)
    149c2:	700a      	strb	r2, [r1, #0]
    149c4:	780b      	ldrb	r3, [r1, #0]
    149c6:	2b00      	cmp	r3, #0
-   149c8:	f000 8117 	beq.w	14bfa <_flash_used+0x1aa>
-   149cc:	4b90      	ldr	r3, [pc, #576]	; (14c10 <_flash_used+0x1c0>)
+   149c8:	f000 8117 	beq.w	14bfa <_flash_used+0x1c2>
+   149cc:	4b90      	ldr	r3, [pc, #576]	; (14c10 <_flash_used+0x1d8>)
    149ce:	681c      	ldr	r4, [r3, #0]
    149d0:	68a2      	ldr	r2, [r4, #8]
    149d2:	6863      	ldr	r3, [r4, #4]
@@ -18967,13 +18964,13 @@ int ext_api_getter(u32_t id, u32_t index, const struct fw_info_ext_api **out)
    14a2a:	bf08      	it	eq
    14a2c:	60a3      	streq	r3, [r4, #8]
    14a2e:	2d00      	cmp	r5, #0
-   14a30:	f040 80d2 	bne.w	14bd8 <_flash_used+0x188>
-   14a34:	4b77      	ldr	r3, [pc, #476]	; (14c14 <_flash_used+0x1c4>)
+   14a30:	f040 80d2 	bne.w	14bd8 <_flash_used+0x1a0>
+   14a34:	4b77      	ldr	r3, [pc, #476]	; (14c14 <_flash_used+0x1dc>)
    14a36:	681c      	ldr	r4, [r3, #0]
    14a38:	68a2      	ldr	r2, [r4, #8]
    14a3a:	6863      	ldr	r3, [r4, #4]
    14a3c:	429a      	cmp	r2, r3
-   14a3e:	d02d      	beq.n	14a9c <_flash_used+0x4c>
+   14a3e:	d02d      	beq.n	14a9c <_flash_used+0x64>
    14a40:	f64b 63ef 	movw	r3, #48879	; 0xbeef
    14a44:	f8ad 3000 	strh.w	r3, [sp]
    14a48:	7823      	ldrb	r3, [r4, #0]
@@ -19011,8 +19008,8 @@ int ext_api_getter(u32_t id, u32_t index, const struct fw_info_ext_api **out)
    14a92:	bf08      	it	eq
    14a94:	60a3      	streq	r3, [r4, #8]
    14a96:	2d00      	cmp	r5, #0
-   14a98:	f040 808d 	bne.w	14bb6 <_flash_used+0x166>
-   14a9c:	4b5e      	ldr	r3, [pc, #376]	; (14c18 <_flash_used+0x1c8>)
+   14a98:	f040 808d 	bne.w	14bb6 <_flash_used+0x17e>
+   14a9c:	4b5e      	ldr	r3, [pc, #376]	; (14c18 <_flash_used+0x1e0>)
    14a9e:	681c      	ldr	r4, [r3, #0]
    14aa0:	68a2      	ldr	r2, [r4, #8]
    14aa2:	6863      	ldr	r3, [r4, #4]
@@ -19068,56 +19065,56 @@ int ext_api_getter(u32_t id, u32_t index, const struct fw_info_ext_api **out)
    14b22:	4413      	add	r3, r2
    14b24:	60a3      	str	r3, [r4, #8]
    14b26:	e73c      	b.n	149a2 <ipc_trace_handle+0x62>
-   14b28:	4a38      	ldr	r2, [pc, #224]	; (14c0c <_flash_used+0x1bc>)
+   14b28:	4a38      	ldr	r2, [pc, #224]	; (14c0c <_flash_used+0x1d4>)
    14b2a:	7811      	ldrb	r1, [r2, #0]
-   14b2c:	b109      	cbz	r1, 14b32 <_flash_used+0xe2>
+   14b2c:	b109      	cbz	r1, 14b32 <_flash_used+0xfa>
    14b2e:	2100      	movs	r1, #0
    14b30:	7011      	strb	r1, [r2, #0]
    14b32:	68a5      	ldr	r5, [r4, #8]
    14b34:	2d00      	cmp	r5, #0
-   14b36:	d039      	beq.n	14bac <_flash_used+0x15c>
+   14b36:	d039      	beq.n	14bac <_flash_used+0x174>
    14b38:	f04f 0c00 	mov.w	ip, #0
-   14b3c:	f8df a0d4 	ldr.w	sl, [pc, #212]	; 14c14 <_flash_used+0x1c4>
-   14b40:	f8df b0cc 	ldr.w	fp, [pc, #204]	; 14c10 <_flash_used+0x1c0>
-   14b44:	4934      	ldr	r1, [pc, #208]	; (14c18 <_flash_used+0x1c8>)
+   14b3c:	f8df a0d4 	ldr.w	sl, [pc, #212]	; 14c14 <_flash_used+0x1dc>
+   14b40:	f8df b0cc 	ldr.w	fp, [pc, #204]	; 14c10 <_flash_used+0x1d8>
+   14b44:	4934      	ldr	r1, [pc, #208]	; (14c18 <_flash_used+0x1e0>)
    14b46:	46e1      	mov	r9, ip
    14b48:	4666      	mov	r6, ip
    14b4a:	4662      	mov	r2, ip
    14b4c:	f8d1 e000 	ldr.w	lr, [r1]
    14b50:	f8da 8000 	ldr.w	r8, [sl]
    14b54:	f8db 7000 	ldr.w	r7, [fp]
-   14b58:	e008      	b.n	14b6c <_flash_used+0x11c>
+   14b58:	e008      	b.n	14b6c <_flash_used+0x134>
    14b5a:	2963      	cmp	r1, #99	; 0x63
-   14b5c:	d016      	beq.n	14b8c <_flash_used+0x13c>
+   14b5c:	d016      	beq.n	14b8c <_flash_used+0x154>
    14b5e:	2961      	cmp	r1, #97	; 0x61
    14b60:	bf04      	itt	eq
    14b62:	4607      	moveq	r7, r0
    14b64:	2601      	moveq	r6, #1
    14b66:	3201      	adds	r2, #1
    14b68:	42aa      	cmp	r2, r5
-   14b6a:	d013      	beq.n	14b94 <_flash_used+0x144>
+   14b6a:	d013      	beq.n	14b94 <_flash_used+0x15c>
    14b6c:	1c91      	adds	r1, r2, #2
    14b6e:	eb04 0181 	add.w	r1, r4, r1, lsl #2
    14b72:	6848      	ldr	r0, [r1, #4]
    14b74:	7801      	ldrb	r1, [r0, #0]
    14b76:	2962      	cmp	r1, #98	; 0x62
-   14b78:	d1ef      	bne.n	14b5a <_flash_used+0x10a>
+   14b78:	d1ef      	bne.n	14b5a <_flash_used+0x122>
    14b7a:	4680      	mov	r8, r0
    14b7c:	f04f 0901 	mov.w	r9, #1
-   14b80:	e7f1      	b.n	14b66 <_flash_used+0x116>
+   14b80:	e7f1      	b.n	14b66 <_flash_used+0x12e>
    14b82:	f7fc fcb7 	bl	114f4 <bsd_os_trace_irq_set>
    14b86:	b003      	add	sp, #12
    14b88:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
    14b8c:	4686      	mov	lr, r0
    14b8e:	f04f 0c01 	mov.w	ip, #1
-   14b92:	e7e8      	b.n	14b66 <_flash_used+0x116>
-   14b94:	bba6      	cbnz	r6, 14c00 <_flash_used+0x1b0>
+   14b92:	e7e8      	b.n	14b66 <_flash_used+0x12e>
+   14b94:	bba6      	cbnz	r6, 14c00 <_flash_used+0x1c8>
    14b96:	f1b9 0f00 	cmp.w	r9, #0
-   14b9a:	d001      	beq.n	14ba0 <_flash_used+0x150>
+   14b9a:	d001      	beq.n	14ba0 <_flash_used+0x168>
    14b9c:	f8ca 8000 	str.w	r8, [sl]
    14ba0:	f1bc 0f00 	cmp.w	ip, #0
-   14ba4:	d002      	beq.n	14bac <_flash_used+0x15c>
-   14ba6:	4a1c      	ldr	r2, [pc, #112]	; (14c18 <_flash_used+0x1c8>)
+   14ba4:	d002      	beq.n	14bac <_flash_used+0x174>
+   14ba6:	4a1c      	ldr	r2, [pc, #112]	; (14c18 <_flash_used+0x1e0>)
    14ba8:	f8c2 e000 	str.w	lr, [r2]
    14bac:	2001      	movs	r0, #1
    14bae:	2200      	movs	r2, #0
@@ -19134,7 +19131,7 @@ int ext_api_getter(u32_t id, u32_t index, const struct fw_info_ext_api **out)
    14bd0:	68e3      	ldr	r3, [r4, #12]
    14bd2:	4413      	add	r3, r2
    14bd4:	60a3      	str	r3, [r4, #8]
-   14bd6:	e761      	b.n	14a9c <_flash_used+0x4c>
+   14bd6:	e761      	b.n	14a9c <_flash_used+0x64>
    14bd8:	2105      	movs	r1, #5
    14bda:	4630      	mov	r0, r6
    14bdc:	f8ad 5002 	strh.w	r5, [sp, #2]
@@ -19150,7 +19147,7 @@ int ext_api_getter(u32_t id, u32_t index, const struct fw_info_ext_api **out)
    14bfa:	f7fc fc83 	bl	11504 <bsd_os_trace_irq_clear>
    14bfe:	e6e5      	b.n	149cc <ipc_trace_handle+0x8c>
    14c00:	f8cb 7000 	str.w	r7, [fp]
-   14c04:	e7c7      	b.n	14b96 <_flash_used+0x146>
+   14c04:	e7c7      	b.n	14b96 <_flash_used+0x15e>
    14c06:	bf00      	nop
    14c08:	20020778 	.word	0x20020778
    14c0c:	2002647a 	.word	0x2002647a
@@ -28939,11 +28936,11 @@ static ALWAYS_INLINE bool arch_is_in_nested_exception(const z_arch_esf_t *esf)
    1aa04:	0001ed90 	.word	0x0001ed90
    1aa08:	0001ed30 	.word	0x0001ed30
    1aa0c:	0001f2e8 	.word	0x0001f2e8
-   1aa10:	0002073f 	.word	0x0002073f
-   1aa14:	00020755 	.word	0x00020755
-   1aa18:	0002077d 	.word	0x0002077d
-   1aa1c:	0002074d 	.word	0x0002074d
-   1aa20:	0002079e 	.word	0x0002079e
+   1aa10:	00020729 	.word	0x00020729
+   1aa14:	0002073f 	.word	0x0002073f
+   1aa18:	00020767 	.word	0x00020767
+   1aa1c:	00020737 	.word	0x00020737
+   1aa20:	00020788 	.word	0x00020788
 
 0001aa24 <idle>:
 #else
@@ -29029,9 +29026,9 @@ void z_data_copy(void)
    1aa84:	f002 bac7 	b.w	1d016 <memcpy>
    1aa88:	2002c3f4 	.word	0x2002c3f4
    1aa8c:	2002c63c 	.word	0x2002c63c
-   1aa90:	00020808 	.word	0x00020808
+   1aa90:	000207f0 	.word	0x000207f0
    1aa94:	00000000 	.word	0x00000000
-   1aa98:	00020808 	.word	0x00020808
+   1aa98:	000207f0 	.word	0x000207f0
    1aa9c:	20020000 	.word	0x20020000
 
 0001aaa0 <bg_thread_main>:
@@ -29094,9 +29091,9 @@ static void bg_thread_main(void *unused1, void *unused2, void *unused3)
 	gcov_coverage_dump();
 } /* LCOV_EXCL_LINE ... because we just dumped final coverage data */
    1aaca:	bd08      	pop	{r3, pc}
-   1aacc:	0001f727 	.word	0x0001f727
-   1aad0:	000207b6 	.word	0x000207b6
-   1aad4:	000207bc 	.word	0x000207bc
+   1aacc:	0001f701 	.word	0x0001f701
+   1aad0:	000207a0 	.word	0x000207a0
+   1aad4:	000207a6 	.word	0x000207a6
    1aad8:	20020bec 	.word	0x20020bec
 
 0001aadc <z_cstart>:
@@ -29285,10 +29282,10 @@ static inline void sys_dlist_init(sys_dlist_t *list)
    1abb8:	e000ed00 	.word	0xe000ed00
    1abbc:	20024d00 	.word	0x20024d00
    1abc0:	20020bec 	.word	0x20020bec
-   1abc4:	000207e8 	.word	0x000207e8
+   1abc4:	000207d2 	.word	0x000207d2
    1abc8:	0001aaa1 	.word	0x0001aaa1
    1abcc:	200270a0 	.word	0x200270a0
-   1abd0:	000207ed 	.word	0x000207ed
+   1abd0:	000207d7 	.word	0x000207d7
    1abd4:	20020b3c 	.word	0x20020b3c
    1abd8:	0001aa25 	.word	0x0001aa25
    1abdc:	200280a0 	.word	0x200280a0
@@ -31296,7 +31293,7 @@ static int k_sys_work_q_init(struct device *dev)
    1b76a:	bf00      	nop
    1b76c:	20024d40 	.word	0x20024d40
    1b770:	200289e0 	.word	0x200289e0
-   1b774:	000207f2 	.word	0x000207f2
+   1b774:	000207dc 	.word	0x000207dc
 
 0001b778 <z_check_stack_sentinel>:
  */
@@ -31758,7 +31755,7 @@ void k_work_q_start(struct k_work_q *work_q, k_thread_stack_t *stack,
    1ba1a:	f002 be43 	b.w	1e6a4 <z_impl_k_thread_name_set>
    1ba1e:	bf00      	nop
    1ba20:	0001c18f 	.word	0x0001c18f
-   1ba24:	000207fb 	.word	0x000207fb
+   1ba24:	000207e5 	.word	0x000207e5
 
 0001ba28 <elapsed>:
 	sys_dlist_remove(&t->node);
@@ -32428,7 +32425,7 @@ void main(void)
 	while(1)
 	{
 		send_message();
-   1bdb6:	f7f1 ff55 	bl	dc64 <send_message>
+   1bdb6:	f7f1 ff51 	bl	dc5c <send_message>
 	compiler_barrier();
    1bdba:	e7f8      	b.n	1bdae <main+0x6>
 
