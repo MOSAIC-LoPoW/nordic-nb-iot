@@ -1044,23 +1044,12 @@ void send_message(void)
 	if(gps_client_inst.has_fix == 1)
 	{
 		LOG_INF("GPS fix found!");
-		printf("Longitude:  %f\n", gps_data.pvt.longitude);
-		printf("Latitude:   %f\n", gps_data.pvt.latitude);
-		printf("Altitude:   %f\n", gps_data.pvt.altitude);
-		printf("Speed:      %f\n", gps_data.pvt.speed);
-		printf("Heading:    %f\n", gps_data.pvt.heading);
-		printk("Date:       %02u-%02u-%02u\n", gps_data.pvt.datetime.day,
-							gps_data.pvt.datetime.month,
-							gps_data.pvt.datetime.year);
-		printk("Time (UTC): %02u:%02u:%02u\n", gps_data.pvt.datetime.hour,
-							gps_data.pvt.datetime.minute,
-							gps_data.pvt.datetime.seconds);
-
+		LOG_INF("NMEA = %s", gps_data.nmea);
 
 		int error = request_nb_iot_network_stats();
 		if(error == 0)
 		{
-			// Put all stats in a buffer
+			// Put all data in a buffer
 			char payloadstring[300] = "";
 
 			strcat(payloadstring, current_cell_id);
@@ -1076,13 +1065,11 @@ void send_message(void)
 			}
 			strcat(payloadstring, ";");
 
-			//memcpy(payloadstring, gps_data.pvt.latitude, 8);
-			// memcpy(payloadstring+9, longitude, strlen(payloadstring)+1);
-			// memcpy(payloadstring, longitude, strlen(payloadstring)+1);
-
+			strcat(payloadstring, gps_data.nmea);
+			strcat(payloadstring, ";");
 
 			// Send message to UDP server
-			// do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, "payloadstring");
+			do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, "payloadstring");
 			LOG_INF("MESSAGE SENT: %s", payloadstring);
 		} else 
 		{

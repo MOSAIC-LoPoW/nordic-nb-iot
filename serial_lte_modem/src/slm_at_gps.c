@@ -258,7 +258,7 @@ static int do_gps_stop(void)
 	return ret;
 }
 
-/**@brief handle AT#XGPSRUN commands
+/**@brief handle AT#XPSRUN commands
  *  AT#XGPSRUN=<op>[,<mask>]
  *  AT#XGPSRUN?
  *  AT#XGPSRUN=? TEST command not supported
@@ -395,11 +395,12 @@ int slm_at_gps_init(at_cmd_handler_t callback)
 		return -EINVAL;
 	}
 	gps_client_inst.sock = INVALID_SOCKET;
-	gps_client_inst.mask =  NRF_GNSS_NMEA_GSV_MASK |
-		       NRF_GNSS_NMEA_GSA_MASK |
-		       NRF_GNSS_NMEA_GLL_MASK |
-		       NRF_GNSS_NMEA_GGA_MASK |
-		       NRF_GNSS_NMEA_RMC_MASK;
+	// gps_client_inst.mask =  NRF_GNSS_NMEA_GSV_MASK |
+	// 	       NRF_GNSS_NMEA_GSA_MASK |
+	// 	       NRF_GNSS_NMEA_GLL_MASK |
+	// 	       NRF_GNSS_NMEA_GGA_MASK |
+	// 	       NRF_GNSS_NMEA_RMC_MASK;
+	gps_client_inst.mask = NRF_GNSS_NMEA_GGA_MASK;
 	gps_client_inst.running = false;
 	gps_client_inst.has_fix = false;
 	gps_client_inst.callback = callback;
