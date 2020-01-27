@@ -855,26 +855,26 @@ static int init_nb_iot_parameters(void)
 		k_sleep(K_SECONDS(3));
 	}
 	
-	// // Keep requesting for neighboring cells until some are found.
-	// int neighbors_found = 0;
-	// while(neighbors_found == 0)
-	// {
-	// 	bytes_sent = send(at_sock, AT_NBRGRSRP, strlen(AT_NBRGRSRP), 0);
-	// 	if (bytes_sent < 0) {
-	// 		LOG_INF("NBRGRSRP send error");
-	// 		close(at_sock);
-	// 		return -1;
-	// 	}
-	// 	do {
-	// 		bytes_received = recv(at_sock, buf, 150, 0);
-	// 	} while (bytes_received == 0);
-	// 	LOG_INF("NBRGRSRP RESPONSE: %s", buf);
-	// 	if(strstr(buf, "NBRGRSRP:") != NULL)
-	// 	{
-	// 		neighbors_found = 1;
-	// 	}
-	// 	k_sleep(K_SECONDS(5));
-	// }
+	// Keep requesting for neighboring cells until some are found.
+	int neighbors_found = 0;
+	while(neighbors_found == 0)
+	{
+		bytes_sent = send(at_sock, AT_NBRGRSRP, strlen(AT_NBRGRSRP), 0);
+		if (bytes_sent < 0) {
+			LOG_INF("NBRGRSRP send error");
+			close(at_sock);
+			return -1;
+		}
+		do {
+			bytes_received = recv(at_sock, buf, 150, 0);
+		} while (bytes_received == 0);
+		LOG_INF("NBRGRSRP RESPONSE: %s", buf);
+		if(strstr(buf, "NBRGRSRP:") != NULL)
+		{
+			neighbors_found = 1;
+		}
+		k_sleep(K_SECONDS(5));
+	}
 
 	close(at_sock);
 	LOG_INF("NB-IoT Parameters Initialized");
@@ -972,7 +972,7 @@ int request_nb_iot_network_stats()
 		bytes_received = recv(at_sock, buf, 150, 0);
 	} while (bytes_received == 0);
 
-	//LOG_INF("NBRGRSRP RESPONSE: %s", buf); // %NBRGRSRP: 179,6447,57,11,6447,54
+	LOG_INF("NBRGRSRP RESPONSE: %s", buf); // %NBRGRSRP: 179,6447,57,11,6447,54
 	if(strstr(buf, "OK") != NULL)
 	{
 		if(strstr(buf, "NBRGRSRP") != NULL)

@@ -29,7 +29,7 @@ static const char     gps_at_commands[][31]  = {
 				AT_COEX0,
 #endif
 				AT_CFUN1,
-				AT_CPSMS
+				//AT_CPSMS // enable Power Save Mode for LTE
 			};
 ///////////////////////////////////////////////////////////////////////////
 
