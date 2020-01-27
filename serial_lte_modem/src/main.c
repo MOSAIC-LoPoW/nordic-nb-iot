@@ -105,7 +105,8 @@ void main(void)
 	k_sleep(K_SECONDS(10));
 	while(1)
 	{
-		send_message();
+		//send_message();
+		send_message_without_gps();
 		k_sleep(K_SECONDS(10));
 	}
 }

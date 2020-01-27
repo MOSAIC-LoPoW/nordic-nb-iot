@@ -15,7 +15,7 @@
 #define AT_XSYSTEMMODE "AT\%XSYSTEMMODE=0,1,1,0"  // enable NB1 and GNSS
 #define AT_CFUN0       "AT+CFUN=0" // off
 #define AT_CFUN1       "AT+CFUN=1" // on
-#define AT_CPSMS	   "AT+CPSMS=1" // enable PSM (to get GPS fix)
+#define AT_CPSMS	   "AT+CPSMS=1" // enable PSM for LTE (to get GPS fix)
 
 #ifdef CONFIG_BOARD_NRF9160_PCA10090NS
 #define AT_MAGPIO      "AT\%XMAGPIO=1,0,0,1,1,1574,1577"
@@ -29,7 +29,7 @@ static const char     gps_at_commands[][31]  = {
 				AT_COEX0,
 #endif
 				AT_CFUN1,
-				//AT_CPSMS // enable Power Save Mode for LTE
+				AT_CPSMS
 			};
 ///////////////////////////////////////////////////////////////////////////
 
