@@ -109,7 +109,7 @@ static struct tcpip_client {
 	at_cmd_handler_t callback;
 } client;
 
-static char buf[64];
+static char buf[150];
 
 /* global variable defined in different files */
 extern struct at_param_list m_param_list;
@@ -821,7 +821,8 @@ static int init_nb_iot_parameters(void)
 	int  at_sock;
 	int  bytes_sent;
 	int  bytes_received;
-	char buf[150];
+	//char buf[150];
+
 
 	at_sock = socket(AF_LTE, 0, NPROTO_AT);
 	if (at_sock < 0) {
@@ -889,7 +890,7 @@ void enable_PSM(void)
 	int  at_sock;
 	int  bytes_sent;
 	int  bytes_received;
-	char buf[150];
+	//char buf[150];
 
 	at_sock = socket(AF_LTE, 0, NPROTO_AT);
 	if (at_sock < 0) {
@@ -916,7 +917,7 @@ void disable_PSM(void)
 	int  at_sock;
 	int  bytes_sent;
 	int  bytes_received;
-	char buf[150];
+	//char buf[150];
 
 	at_sock = socket(AF_LTE, 0, NPROTO_AT);
 	if (at_sock < 0) {
@@ -946,7 +947,7 @@ int request_nb_iot_network_stats()
 	int  at_sock;
 	int  bytes_sent;
 	int  bytes_received;
-	char buf[150];
+	//char buf[150];
 
 	at_sock = socket(AF_LTE, 0, NPROTO_AT);
 	if (at_sock < 0) {
@@ -1093,11 +1094,13 @@ int slm_at_tcpip_uninit(void)
  */
 void send_message(void)
 {
+	char nmea_sentence[100];
+	char payloadstring[300];
+
 	LOG_INF("--------BEGIN-----------");
 	if(gps_client_inst.has_fix == 1)
 	{
 		LOG_INF("GPS fix found!");
-		char nmea_sentence[100];
 		char *pos1 = strstr(gps_data.nmea, "$GPGGA,") + 7;
 		char *pos2 = strstr(pos1, "\n");
 		memcpy(nmea_sentence, pos1, strlen(pos1)-strlen(pos2));
@@ -1110,8 +1113,6 @@ void send_message(void)
 		if(error == 0)
 		{
 			// Put all data in a buffer
-			char payloadstring[300] = "";
-
 			strcat(payloadstring, current_cell_id);
 			strcat(payloadstring, ";");
 
@@ -1150,12 +1151,11 @@ void send_message(void)
 
 void send_message_without_gps(void)
 {
+	char payloadstring[300];
 	int error = request_nb_iot_network_stats();
 	if(error == 0)
 		{
 			// Put all data in a buffer
-			char payloadstring[300] = "";
-
 			strcat(payloadstring, current_cell_id);
 			strcat(payloadstring, ";");
 
@@ -1170,7 +1170,7 @@ void send_message_without_gps(void)
 			strcat(payloadstring, ";");
 
 			// Send message to UDP server
-			do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring);
+			//do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring);
 			LOG_INF("MESSAGE SENT: \"%s\"", payloadstring);
 		}
 }
