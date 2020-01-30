@@ -29,6 +29,8 @@ LOG_MODULE_REGISTER(tcpip, CONFIG_SLM_LOG_LEVEL);
 #define AT_CEREG		"AT+CEREG?"
 #define AT_CESQ			"AT+CESQ"
 #define AT_NBRGRSRP		"AT\%NBRGRSRP"
+#define AT_CPSMS1	    "AT+CPSMS=1" // enable PSM for LTE (to get GPS fix)
+#define AT_CPSMS0	    "AT+CPSMS=0" // disable PSM for LTE (to get LTE RSRP)
 
 static const char nb_init_at_commands[][34] = {
 				// AT_CFUN0,
@@ -881,9 +883,62 @@ static int init_nb_iot_parameters(void)
 
 	return 0;
 }
-////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////
+void enable_PSM(void)
+{
+	int  at_sock;
+	int  bytes_sent;
+	int  bytes_received;
+	char buf[150];
+
+	at_sock = socket(AF_LTE, 0, NPROTO_AT);
+	if (at_sock < 0) {
+		LOG_ERR("Socket could not be opended.");
+	}
+	bytes_sent = send(at_sock, AT_CPSMS1, strlen(AT_CPSMS1), 0);
+	if (bytes_sent < 0) {
+		LOG_INF("CPSM send error");
+		close(at_sock);
+	}
+	do {
+		bytes_received = recv(at_sock, buf, 100, 0);
+	} while (bytes_received == 0);
+	if(strstr(buf, "OK") != NULL)
+	{
+		LOG_INF("PSM enabled!");
+	}
+	k_sleep(K_SECONDS(2));
+	close(at_sock);
+}
+
+void disable_PSM(void)
+{
+	int  at_sock;
+	int  bytes_sent;
+	int  bytes_received;
+	char buf[150];
+
+	at_sock = socket(AF_LTE, 0, NPROTO_AT);
+	if (at_sock < 0) {
+		LOG_ERR("Socket could not be opended.");
+	}
+	bytes_sent = send(at_sock, AT_CPSMS0, strlen(AT_CPSMS0), 0);
+	if (bytes_sent < 0) {
+		LOG_INF("CPSM send error");
+		close(at_sock);
+	}
+	do {
+		bytes_received = recv(at_sock, buf, 100, 0);
+	} while (bytes_received == 0);
+	if(strstr(buf, "OK") != NULL)
+	{
+		LOG_INF("PSM disabled!");
+	}
+	k_sleep(K_SECONDS(2));
+	close(at_sock);
+}
+
+
 int request_nb_iot_network_stats()
 {
 	LOG_INF("Requesting NB-IoT network stats...");
@@ -899,7 +954,6 @@ int request_nb_iot_network_stats()
 	}
 
 	// Get and parse current cell ID: AT+CEREG?
-	// LOG_INF("CEREG");
 	bytes_sent = send(at_sock, AT_CEREG, strlen(AT_CEREG), 0);
 	if (bytes_sent < 0) {
 		LOG_INF("CEREG send error");
@@ -929,7 +983,6 @@ int request_nb_iot_network_stats()
 	k_sleep(K_SECONDS(2));
 
 	// Get and parse current RSRP: AT+CESQ
-	// LOG_INF("CESQ");
 	bytes_sent = send(at_sock, AT_CESQ, strlen(AT_CESQ), 0);
 	if (bytes_sent < 0) {
 		LOG_INF("CESQ send error");
@@ -961,7 +1014,6 @@ int request_nb_iot_network_stats()
 	k_sleep(K_SECONDS(2));
 
 	// Get and parse neighboring cell IDs and RSRP values: AT+NBRGRSRP
-	// LOG_INF("NBRGRSRP");
 	bytes_sent = send(at_sock, AT_NBRGRSRP, strlen(AT_NBRGRSRP), 0);
 	if (bytes_sent < 0) {
 		LOG_INF("NBRGRSRP send error");
@@ -998,7 +1050,6 @@ int request_nb_iot_network_stats()
 		return -1;
 	}
 	k_sleep(K_SECONDS(2));
-
 	close(at_sock);
 	LOG_INF("NB-IoT network stats requested.");
 	
@@ -1037,12 +1088,23 @@ int slm_at_tcpip_uninit(void)
 }
 
 ////////////////////////////////////////////////////////////////////////
+/** If GPS has fix, save NMEA data and toggle PSM to request network stats:
+ *  Current and neighbor's Cell ID + RSRP.
+ */
 void send_message(void)
 {
-	// If GPS has fix, request network stats: Current and neighbor's Cell ID + RSRP.
+	LOG_INF("--------BEGIN-----------");
 	if(gps_client_inst.has_fix == 1)
 	{
 		LOG_INF("GPS fix found!");
+		char nmea_sentence[100];
+		char *pos1 = strstr(gps_data.nmea, "$GPGGA,") + 7;
+		char *pos2 = strstr(pos1, "\n");
+		memcpy(nmea_sentence, pos1, strlen(pos1)-strlen(pos2));
+		LOG_INF("NMEA = %s (LENGTH = %d)", nmea_sentence, strlen(nmea_sentence));
+
+		disable_PSM();
+		k_sleep(K_SECONDS(2));
 
 		int error = request_nb_iot_network_stats();
 		if(error == 0)
@@ -1063,16 +1125,17 @@ void send_message(void)
 			}
 			strcat(payloadstring, ";");
 
-			char nmea_sentence[100];
-			char *pos1 = strstr(gps_data.nmea, "$GPGGA,") + 7;
-			char *pos2 = strstr(pos1, "\n");
-			memcpy(nmea_sentence, pos1, strlen(pos1)-strlen(pos2));
+			
 			strcat(payloadstring, nmea_sentence);
 			strcat(payloadstring, ";");
 
 			// Send message to UDP server
 			//do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring);
-			LOG_INF("MESSAGE SENT: \"%s\"", payloadstring);
+			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
+
+			enable_PSM();
+			k_sleep(K_SECONDS(2));
+
 		} else 
 		{
 			LOG_ERR("Unexpected ERROR, try rebooting the device.");
@@ -1082,6 +1145,7 @@ void send_message(void)
 	{
 		LOG_INF("Waiting for GPS fix ...");
 	}
+	LOG_INF("---------END-----------");
 }
 
 void send_message_without_gps(void)

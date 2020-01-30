@@ -35,7 +35,7 @@ void start_execute(void)
 {
 	int err;
 
-	LOG_INF("Serial LTE Modem");
+	LOG_INF("NB-IoT DATA COLLECTION PROGRAM");
 	err = slm_at_host_init();
 	if (err != 0) {
 		LOG_ERR("Failed to init at_host: %d", err);
@@ -105,8 +105,8 @@ void main(void)
 	k_sleep(K_SECONDS(10));
 	while(1)
 	{
-		//send_message();
-		send_message_without_gps();
+		send_message();
+		//send_message_without_gps();
 		k_sleep(K_SECONDS(10));
 	}
 }

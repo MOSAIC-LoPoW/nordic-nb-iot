@@ -15,21 +15,22 @@
 #define AT_XSYSTEMMODE "AT\%XSYSTEMMODE=0,1,1,0"  // enable NB1 and GNSS
 #define AT_CFUN0       "AT+CFUN=0" // off
 #define AT_CFUN1       "AT+CFUN=1" // on
-#define AT_CPSMS	   "AT+CPSMS=1" // enable PSM for LTE (to get GPS fix)
+#define AT_CPSMS1	   "AT+CPSMS=1" // enable PSM for LTE (to get GPS fix)
+#define AT_CPSMS2	   "AT+CPSMS=1,\"\",\"\",\"10101010\",\"00100001\""
 
 #ifdef CONFIG_BOARD_NRF9160_PCA10090NS
 #define AT_MAGPIO      "AT\%XMAGPIO=1,0,0,1,1,1574,1577"
 #define AT_COEX0       "AT\%XCOEX0=1,1,1570,1580"
 #endif
 
-static const char     gps_at_commands[][31]  = {
+static const char     gps_at_commands[][40]  = {
 				//AT_XSYSTEMMODE, // already enabled both in TCP/IP
 #ifdef CONFIG_BOARD_NRF9160_PCA10090NS
 				AT_MAGPIO,
 				AT_COEX0,
 #endif
 				AT_CFUN1,
-				AT_CPSMS
+				AT_CPSMS1 /////////////////////////////////
 			};
 ///////////////////////////////////////////////////////////////////////////
 
@@ -176,6 +177,7 @@ static int do_gps_start(void)
 	nrf_gnss_fix_interval_t fix_interval = 1; /* 1s delay between fixes */
 	nrf_gnss_delete_mask_t  delete_mask  = 0;
 	nrf_gnss_nmea_mask_t    nmea_mask = (nrf_gnss_nmea_mask_t)gps_client_inst.mask;
+	//nrf_gnss_power_save_mode_t power_mode = 1; ////////////////////////////////////
 
 	gps_client_inst.sock = nrf_socket(NRF_AF_LOCAL, NRF_SOCK_DGRAM, NRF_PROTO_GNSS);
 	if (gps_client_inst.sock < 0) {
@@ -194,6 +196,18 @@ static int do_gps_start(void)
 		LOG_ERR("Failed to set fix interval value (err: %d)", -errno);
 		goto error;
 	}
+
+
+	//////////////////////////////////////////////////////////
+	// ret = nrf_setsockopt(gps_client_inst.sock, NRF_SOL_GNSS, NRF_SO_GNSS_POWER_SAVE_MODE,
+	// 		&power_mode, sizeof(power_mode));
+    // if (ret != 0) {
+    //     LOG_ERR("Failed to set GPS power mode policy (err: %d)", -errno);
+	// 	goto error;
+	// }
+	//////////////////////////////////////////////////////////
+
+
 	ret = nrf_setsockopt(gps_client_inst.sock, NRF_SOL_GNSS, NRF_SO_GNSS_NMEA_MASK,
 			&nmea_mask, sizeof(nmea_mask));
 	if (ret != 0) {
@@ -206,6 +220,7 @@ static int do_gps_start(void)
 		LOG_ERR("Failed to start GPS (err: %d)", -errno);
 		goto error;
 	}
+
 
 	/* Start GPS listening thread */
 	if (gps_thread_id != NULL) {
