@@ -109,7 +109,7 @@ static struct tcpip_client {
 	at_cmd_handler_t callback;
 } client;
 
-static char buf[150];
+static char buf[300];
 
 /* global variable defined in different files */
 extern struct at_param_list m_param_list;
@@ -1094,25 +1094,26 @@ int slm_at_tcpip_uninit(void)
  */
 void send_message(void)
 {
-	char nmea_sentence[100];
-	char payloadstring[300];
-
 	LOG_INF("--------BEGIN-----------");
 	if(gps_client_inst.has_fix == 1)
 	{
 		LOG_INF("GPS fix found!");
-		char *pos1 = strstr(gps_data.nmea, "$GPGGA,") + 7;
-		char *pos2 = strstr(pos1, "\n");
-		memcpy(nmea_sentence, pos1, strlen(pos1)-strlen(pos2));
+		char nmea_sentence[100];
+		char *cur1;
+		char *cur2;
+		cur1 = strstr(gps_data.nmea, "$GPGGA,") + 7;
+		cur2 = strstr(cur1, "\n");
+		memcpy(nmea_sentence, cur1, strlen(cur1)-strlen(cur2));
 		LOG_INF("NMEA = %s (LENGTH = %d)", nmea_sentence, strlen(nmea_sentence));
 
-		disable_PSM();
-		k_sleep(K_SECONDS(2));
+		// disable_PSM();
+		// k_sleep(K_SECONDS(2));
 
 		int error = request_nb_iot_network_stats();
 		if(error == 0)
 		{
 			// Put all data in a buffer
+			char payloadstring[300];
 			strcat(payloadstring, current_cell_id);
 			strcat(payloadstring, ";");
 
@@ -1127,15 +1128,15 @@ void send_message(void)
 			strcat(payloadstring, ";");
 
 			
-			strcat(payloadstring, nmea_sentence);
+			strcat(payloadstring, nmea_sentence); // #### NOT THE SAME OUTPUT AS NMEA PRINT?! #####
 			strcat(payloadstring, ";");
 
 			// Send message to UDP server
 			//do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring);
 			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
 
-			enable_PSM();
-			k_sleep(K_SECONDS(2));
+		// enable_PSM(); //##################### CRASH!! #########################
+		// k_sleep(K_SECONDS(2));
 
 		} else 
 		{
