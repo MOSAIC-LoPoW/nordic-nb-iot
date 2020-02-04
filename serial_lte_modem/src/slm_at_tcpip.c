@@ -29,10 +29,10 @@ LOG_MODULE_REGISTER(tcpip, CONFIG_SLM_LOG_LEVEL);
 #define AT_CEREG		"AT+CEREG?"
 #define AT_CESQ			"AT+CESQ"
 #define AT_NBRGRSRP		"AT\%NBRGRSRP"
-#define AT_CPSMS1	    "AT+CPSMS=1" // enable PSM for LTE (to get GPS fix)
+#define AT_CPSMS1	    "AT+CPSMS=1,\"\",\"\",\"10101010\",\"00000101\"" // enable PSM for LTE (to get GPS fix)
 #define AT_CPSMS0	    "AT+CPSMS=0" // disable PSM for LTE (to get LTE RSRP)
 
-static const char nb_init_at_commands[][34] = {
+static const char nb_init_at_commands[][40] = {
 				// AT_CFUN0,
 				// AT_XRFTEST,
 				AT_XSYSTEMMODE,
@@ -43,9 +43,9 @@ static const char nb_init_at_commands[][34] = {
 			};
 
 // Network stats
-char current_cell_id[10];
-uint8_t current_rsrp;
-char neighbors[100];
+char current_cell_id[10] = {0};
+uint8_t current_rsrp = 0;
+char neighbors[100] = {0};
 
 // GPS stats
 extern nrf_gnss_data_frame_t gps_data; 
@@ -109,7 +109,7 @@ static struct tcpip_client {
 	at_cmd_handler_t callback;
 } client;
 
-static char buf[300];
+static char buf[300] = {0};
 
 /* global variable defined in different files */
 extern struct at_param_list m_param_list;
@@ -821,7 +821,7 @@ static int init_nb_iot_parameters(void)
 	int  at_sock;
 	int  bytes_sent;
 	int  bytes_received;
-	//char buf[150];
+	char buffer[150] = {0};
 
 
 	at_sock = socket(AF_LTE, 0, NPROTO_AT);
@@ -841,10 +841,10 @@ static int init_nb_iot_parameters(void)
 		}
 
 		do {
-			bytes_received = recv(at_sock, buf, 2, 0);
+			bytes_received = recv(at_sock, buffer, 2, 0);
 		} while (bytes_received == 0);
 
-		if (memcmp(buf, "OK", 2) != 0) {
+		if (memcmp(buffer, "OK", 2) != 0) {
 			LOG_INF("NOK");
 			close(at_sock);
 			return -1;
@@ -890,7 +890,7 @@ void enable_PSM(void)
 	int  at_sock;
 	int  bytes_sent;
 	int  bytes_received;
-	//char buf[150];
+	char buffer[150] = {0};
 
 	at_sock = socket(AF_LTE, 0, NPROTO_AT);
 	if (at_sock < 0) {
@@ -902,9 +902,9 @@ void enable_PSM(void)
 		close(at_sock);
 	}
 	do {
-		bytes_received = recv(at_sock, buf, 100, 0);
+		bytes_received = recv(at_sock, buffer, 100, 0);
 	} while (bytes_received == 0);
-	if(strstr(buf, "OK") != NULL)
+	if(strstr(buffer, "OK") != NULL)
 	{
 		LOG_INF("PSM enabled!");
 	}
@@ -917,7 +917,7 @@ void disable_PSM(void)
 	int  at_sock;
 	int  bytes_sent;
 	int  bytes_received;
-	//char buf[150];
+	char buffer[150] = {0};
 
 	at_sock = socket(AF_LTE, 0, NPROTO_AT);
 	if (at_sock < 0) {
@@ -929,9 +929,9 @@ void disable_PSM(void)
 		close(at_sock);
 	}
 	do {
-		bytes_received = recv(at_sock, buf, 100, 0);
+		bytes_received = recv(at_sock, buffer, 100, 0);
 	} while (bytes_received == 0);
-	if(strstr(buf, "OK") != NULL)
+	if(strstr(buffer, "OK") != NULL)
 	{
 		LOG_INF("PSM disabled!");
 	}
@@ -947,7 +947,7 @@ int request_nb_iot_network_stats()
 	int  at_sock;
 	int  bytes_sent;
 	int  bytes_received;
-	//char buf[150];
+	char buffer[150] = {0};
 
 	at_sock = socket(AF_LTE, 0, NPROTO_AT);
 	if (at_sock < 0) {
@@ -962,26 +962,26 @@ int request_nb_iot_network_stats()
 		return -1;
 	}
 	do {
-		bytes_received = recv(at_sock, buf, 100, 0);
+		bytes_received = recv(at_sock, buffer, 100, 0);
 	} while (bytes_received == 0);
 	
 	//LOG_INF("CEREG RESPONSE: %s", buf); // +CEREG: 0,5,"5276","0101D268",9
-	if(strstr(buf, "OK") != NULL)
+	if(strstr(buffer, "OK") != NULL)
 	{
-		char* pos = strstr(buf, "\",\"")+3;		
+		char* pos = strstr(buffer, "\",\"")+3;		
 		for(uint8_t i=0; i<8; i++)
 		{
 			current_cell_id[i] = pos[i];
 		}
 		LOG_INF("Current cell ID = %s", current_cell_id);
 	} 
-	else if (strstr(buf, "ERROR") != NULL) 
+	else if (strstr(buffer, "ERROR") != NULL) 
 	{
 		LOG_ERR("Error while getting current cell ID!");
 		close(at_sock);
 		return -1;
 	}
-	k_sleep(K_SECONDS(2));
+	k_sleep(K_SECONDS(3));
 
 	// Get and parse current RSRP: AT+CESQ
 	bytes_sent = send(at_sock, AT_CESQ, strlen(AT_CESQ), 0);
@@ -991,13 +991,13 @@ int request_nb_iot_network_stats()
 		return -1;
 	}
 	do {
-		bytes_received = recv(at_sock, buf, 100, 0);
+		bytes_received = recv(at_sock, buffer, 100, 0);
 	} while (bytes_received == 0);
 
-	//LOG_INF("CESQ RESPONSE: %s", buf); // +CESQ: 99,99,255,255,17,54 \n OK		
-	if(strstr(buf, "OK") != NULL)
+	//LOG_INF("CESQ RESPONSE: %s", buffer); // +CESQ: 99,99,255,255,17,54 \n OK		
+	if(strstr(buffer, "OK") != NULL)
 	{
-		char *pos1 = strrchr(buf, ',') + 1;
+		char *pos1 = strrchr(buffer, ',') + 1;
 		char *pos2 = strstr(pos1, "\n");
 		char rsrp[2];
 		memcpy(rsrp, pos1, strlen(pos1)-strlen(pos2));
@@ -1005,7 +1005,7 @@ int request_nb_iot_network_stats()
 		current_rsrp = (uint8_t) strtol(rsrp, &ptr, 10);
 		LOG_INF("Current RSRP = %d", current_rsrp);
 	} 
-	else if (strstr(buf, "ERROR") != NULL) 
+	else if (strstr(buffer, "ERROR") != NULL) 
 	{
 		LOG_ERR("Error while getting current RSRP!");
 		close(at_sock);
@@ -1022,15 +1022,15 @@ int request_nb_iot_network_stats()
 		return -1;
 	}
 	do {
-		bytes_received = recv(at_sock, buf, 150, 0);
+		bytes_received = recv(at_sock, buffer, 150, 0);
 	} while (bytes_received == 0);
 
 	//LOG_INF("NBRGRSRP RESPONSE: %s", buf); // %NBRGRSRP: 179,6447,57,11,6447,54
-	if(strstr(buf, "OK") != NULL)
+	if(strstr(buffer, "OK") != NULL)
 	{
-		if(strstr(buf, "NBRGRSRP") != NULL)
+		if(strstr(buffer, "NBRGRSRP") != NULL)
 		{
-			char* pos1 = strstr(buf, "\%NBRGRSRP: ") + strlen("\%NBRGRSRP: ");
+			char* pos1 = strstr(buffer, "\%NBRGRSRP: ") + strlen("\%NBRGRSRP: ");
 			char* pos2 = strstr(pos1, "\n");
 			for(uint8_t i=0; i<strlen(pos1)-strlen(pos2); i++)
 			{
@@ -1044,7 +1044,7 @@ int request_nb_iot_network_stats()
 			neighbors[0] = '\0';
 		}	
 	}
-	else if (strstr(buf, "ERROR") != NULL) 
+	else if (strstr(buffer, "ERROR") != NULL) 
 	{
 		LOG_ERR("Error while getting neighbor data!");
 		close(at_sock);
@@ -1094,38 +1094,43 @@ int slm_at_tcpip_uninit(void)
  */
 void send_message(void)
 {
-	LOG_INF("--------BEGIN-----------");
+	LOG_INF("--------BEGIN-----------\r\n");
 	if(gps_client_inst.has_fix == 1)
 	{
 		LOG_INF("GPS fix found!");
-		char nmea_sentence[100];
+		char nmea_sentence[200]={0};
 		char *cur1;
 		char *cur2;
 		cur1 = strstr(gps_data.nmea, "$GPGGA,") + 7;
 		cur2 = strstr(cur1, "\n");
-		memcpy(nmea_sentence, cur1, strlen(cur1)-strlen(cur2));
+		memcpy(nmea_sentence, cur1, cur2-cur1);
 		LOG_INF("NMEA = %s (LENGTH = %d)", nmea_sentence, strlen(nmea_sentence));
 
-		// disable_PSM();
-		// k_sleep(K_SECONDS(2));
+		disable_PSM();
+		k_sleep(K_SECONDS(2));
 
 		int error = request_nb_iot_network_stats();
 		if(error == 0)
 		{
 			// Put all data in a buffer
-			char payloadstring[300];
+			char payloadstring[200] = {0};
+			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
+
 			strcat(payloadstring, current_cell_id);
 			strcat(payloadstring, ";");
+			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
 
 			char* rsrp = (char*) &current_rsrp;
 			strcat(payloadstring, rsrp);
 			strcat(payloadstring, ";");
+			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
 
 			if(neighbors[0] != '\0')
 			{
 				strcat(payloadstring, neighbors);
 			}
 			strcat(payloadstring, ";");
+			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
 
 			
 			strcat(payloadstring, nmea_sentence); // #### NOT THE SAME OUTPUT AS NMEA PRINT?! #####
@@ -1135,8 +1140,8 @@ void send_message(void)
 			//do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring);
 			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
 
-		// enable_PSM(); //##################### CRASH!! #########################
-		// k_sleep(K_SECONDS(2));
+		enable_PSM(); //##################### CRASH!! #########################
+		k_sleep(K_SECONDS(5));
 
 		} else 
 		{
@@ -1152,7 +1157,7 @@ void send_message(void)
 
 void send_message_without_gps(void)
 {
-	char payloadstring[300];
+	char payloadstring[300] = {0};
 	int error = request_nb_iot_network_stats();
 	if(error == 0)
 		{
