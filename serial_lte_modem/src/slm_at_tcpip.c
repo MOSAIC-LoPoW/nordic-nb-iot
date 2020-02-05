@@ -29,7 +29,7 @@ LOG_MODULE_REGISTER(tcpip, CONFIG_SLM_LOG_LEVEL);
 #define AT_CEREG		"AT+CEREG?"
 #define AT_CESQ			"AT+CESQ"
 #define AT_NBRGRSRP		"AT\%NBRGRSRP"
-#define AT_CPSMS1	    "AT+CPSMS=1,\"\",\"\",\"10101010\",\"00000101\"" // enable PSM for LTE (to get GPS fix)
+#define AT_CPSMS1	    "AT+CPSMS=1,\"\",\"\",\"10101010\",\"00000001\"" // enable PSM for LTE (to get GPS fix)
 #define AT_CPSMS0	    "AT+CPSMS=0" // disable PSM for LTE (to get LTE RSRP)
 
 static const char nb_init_at_commands[][40] = {
@@ -908,7 +908,7 @@ void enable_PSM(void)
 	{
 		LOG_INF("PSM enabled!");
 	}
-	k_sleep(K_SECONDS(2));
+	k_sleep(K_SECONDS(3));
 	close(at_sock);
 }
 
@@ -935,7 +935,7 @@ void disable_PSM(void)
 	{
 		LOG_INF("PSM disabled!");
 	}
-	k_sleep(K_SECONDS(2));
+	k_sleep(K_SECONDS(3));
 	close(at_sock);
 }
 
@@ -1094,63 +1094,59 @@ int slm_at_tcpip_uninit(void)
  */
 void send_message(void)
 {
-	LOG_INF("--------BEGIN-----------\r\n");
-	if(gps_client_inst.has_fix == 1)
+	LOG_INF("--------BEGIN-----------");
+
+	while (strstr(gps_data.nmea, "GPGGA") == NULL)
 	{
-		LOG_INF("GPS fix found!");
-		char nmea_sentence[200]={0};
-		char *cur1;
-		char *cur2;
-		cur1 = strstr(gps_data.nmea, "$GPGGA,") + 7;
-		cur2 = strstr(cur1, "\n");
-		memcpy(nmea_sentence, cur1, cur2-cur1);
-		LOG_INF("NMEA = %s (LENGTH = %d)", nmea_sentence, strlen(nmea_sentence));
-
-		disable_PSM();
 		k_sleep(K_SECONDS(2));
+		LOG_INF("NO FIX YET, NMEA = ", gps_data.nmea);
+	}
 
-		int error = request_nb_iot_network_stats();
-		if(error == 0)
-		{
-			// Put all data in a buffer
-			char payloadstring[200] = {0};
-			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
+	LOG_INF("GPS client running = %d", gps_client_inst.running);
+	LOG_INF("GPS client has fix = %d", gps_client_inst.has_fix);
+	LOG_INF("GPS data PVT flags = %d", gps_data.pvt.flags);
+	LOG_INF("NMEA = ", gps_data.nmea);
 
-			strcat(payloadstring, current_cell_id);
-			strcat(payloadstring, ";");
-			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
+	int temp = (int) gps_data.pvt.latitude;
+	LOG_INF("latitude = %d !!!", temp);
 
-			char* rsrp = (char*) &current_rsrp;
-			strcat(payloadstring, rsrp);
-			strcat(payloadstring, ";");
-			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
+	char nmea_sentence[200]={0}; // "$GPGGA,092204.999,4250.5589,S,14718.5084,E,1,04,24.4,19.7,M,,,,0000*1F";
+	strncpy(nmea_sentence, gps_data.nmea, strlen(gps_data.nmea));
+	LOG_INF("NMEA sentence = %s (LENGTH = %d)", nmea_sentence, strlen(nmea_sentence));
 
-			if(neighbors[0] != '\0')
-			{
-				strcat(payloadstring, neighbors);
-			}
-			strcat(payloadstring, ";");
-			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
+	disable_PSM();
+	k_sleep(K_SECONDS(2));
 
-			
-			strcat(payloadstring, nmea_sentence); // #### NOT THE SAME OUTPUT AS NMEA PRINT?! #####
-			strcat(payloadstring, ";");
+	int error = request_nb_iot_network_stats();
+	if(error == 0)
+	{
+		// Put all data in a buffer
+		char payloadstring[500] = {0};
 
-			// Send message to UDP server
-			//do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring);
-			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
+		strcat(payloadstring, current_cell_id);
+		strcat(payloadstring, ";");
 
-		enable_PSM(); //##################### CRASH!! #########################
+		char* rsrp = (char*) &current_rsrp;
+		strcat(payloadstring, rsrp);
+		strcat(payloadstring, ";");
+
+		if(neighbors[0] != '\0')
+			strcat(payloadstring, neighbors);
+		strcat(payloadstring, ";");
+		
+		strcat(payloadstring, nmea_sentence);
+		strcat(payloadstring, ";");
+
+		// Send message to UDP server
+		//do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring);
+		LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
+
+		enable_PSM();
 		k_sleep(K_SECONDS(5));
 
-		} else 
-		{
-			LOG_ERR("Unexpected ERROR, try rebooting the device.");
-		}
-			
 	} else 
 	{
-		LOG_INF("Waiting for GPS fix ...");
+		LOG_ERR("Unexpected ERROR, try rebooting the device.");
 	}
 	LOG_INF("---------END-----------");
 }

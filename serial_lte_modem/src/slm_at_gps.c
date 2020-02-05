@@ -16,7 +16,7 @@
 #define AT_CFUN0       "AT+CFUN=0" // off
 #define AT_CFUN1       "AT+CFUN=1" // on
 #define AT_CPSMS1	   "AT+CPSMS=1" // enable PSM for LTE (to get GPS fix)
-#define AT_CPSMS2	   "AT+CPSMS=1,\"\",\"\",\"10101010\",\"00100001\""
+#define AT_CPSMS2	   "AT+CPSMS=1,\"\",\"\",\"10101010\",\"00000001\""
 
 #ifdef CONFIG_BOARD_NRF9160_PCA10090NS
 #define AT_MAGPIO      "AT\%XMAGPIO=1,0,0,1,1,1574,1577"
@@ -30,7 +30,7 @@ static const char     gps_at_commands[][40]  = {
 				AT_COEX0,
 #endif
 				AT_CFUN1,
-				AT_CPSMS1 /////////////////////////////////
+				AT_CPSMS2 /////////////////////////////////
 			};
 ///////////////////////////////////////////////////////////////////////////
 
@@ -113,6 +113,7 @@ static void gps_satellite_stats(void)
 
 static void gps_pvt_notify(void)
 {
+	LOG_INF("NOTIFY!");
 	sprintf(buf, "#XGPSP: long %f lat %f\r\n",
 		gps_data.pvt.longitude,
 		gps_data.pvt.latitude);
@@ -146,11 +147,13 @@ static void gps_thread_fn(void *arg1, void *arg2, void *arg3)
 		gps_satellite_stats();
 		switch (gps_data.data_id) {
 		case NRF_GNSS_PVT_DATA_ID:
+			LOG_INF("PVT");
 			if (IS_FIX(gps_data.pvt.flags)) {
+				LOG_INF("PVT HAS FIX");
 				gps_pvt_notify();
 				if (!gps_client_inst.has_fix) {
 					u64_t now = k_uptime_get();
-					sprintf(buf, "#XGPSP: TTFF %d sec\r\n",
+					sprintf(buf, "#	: TTFF %d sec\r\n",
 						(int)(now - ttft_start)/1000);
 					gps_client_inst.callback(buf);
 					gps_client_inst.has_fix = true;
@@ -158,7 +161,9 @@ static void gps_thread_fn(void *arg1, void *arg2, void *arg3)
 			}
 			break;
 		case NRF_GNSS_NMEA_DATA_ID:
+			LOG_INF("NMEA");
 			if (gps_client_inst.has_fix) {
+				LOG_INF("NMEA HAS FIX");
 				gps_client_inst.callback("#XGPSN: ");
 				gps_client_inst.callback(gps_data.nmea);
 			}
