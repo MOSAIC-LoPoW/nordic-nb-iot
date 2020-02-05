@@ -1092,10 +1092,10 @@ int slm_at_tcpip_uninit(void)
 /** If GPS has fix, save NMEA data and toggle PSM to request network stats:
  *  Current and neighbor's Cell ID + RSRP.
  */
-void send_message(nrf_gnss_data_frame_t myGPS_data)
+void send_message(nrf_gnss_data_frame_t* myGPS_datapointer)
 {
 	LOG_INF("--------BEGIN-----------");
-
+	nrf_gnss_data_frame_t myGPS_data = *myGPS_datapointer;
 	// while (strstr(myGPS_data.nmea, "GPGGA") == NULL)
 	// {
 	// 	k_sleep(K_SECONDS(2));

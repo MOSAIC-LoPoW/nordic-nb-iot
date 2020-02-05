@@ -57,7 +57,7 @@ int slm_at_gps_uninit(void);
 
 void wait_for_gps_fix(void);
 
-nrf_gnss_data_frame_t get_gps_nmea(void);
+nrf_gnss_data_frame_t* get_gps_nmea(void);
 
 /** @} */
 

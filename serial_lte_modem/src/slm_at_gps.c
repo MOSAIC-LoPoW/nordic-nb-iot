@@ -7,7 +7,7 @@
 
 #include <zephyr.h>
 #include <stdio.h>
-#include <nrf_socket.h>
+//#include <nrf_socket.h>
 #include <net/socket.h>
 #include "slm_at_gps.h"
 
@@ -456,7 +456,7 @@ void wait_for_gps_fix(void)
 	}
 }
 
-nrf_gnss_data_frame_t get_gps_nmea(void)
+nrf_gnss_data_frame_t* get_gps_nmea(void)
 {
-	return gps_data;
+	return &gps_data;
 }
