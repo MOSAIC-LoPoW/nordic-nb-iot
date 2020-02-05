@@ -446,3 +446,17 @@ int slm_at_gps_uninit(void)
 
 	return 0;
 }
+
+void wait_for_gps_fix(void)
+{
+	while(!gps_client_inst.has_fix)
+	{
+		LOG_INF("waiting for gpsfix");
+		k_sleep(K_SECONDS(1));
+	}
+}
+
+nrf_gnss_data_frame_t get_gps_nmea(void)
+{
+	return gps_data;
+}

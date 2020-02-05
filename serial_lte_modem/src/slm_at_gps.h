@@ -13,6 +13,7 @@
  * @{
  */
 
+#include <nrf_socket.h>
 #include <zephyr/types.h>
 #include "slm_at_host.h"
 
@@ -53,6 +54,10 @@ int slm_at_gps_init(at_cmd_handler_t callback);
  *           Otherwise, a (negative) error code is returned.
  */
 int slm_at_gps_uninit(void);
+
+void wait_for_gps_fix(void);
+
+nrf_gnss_data_frame_t get_gps_nmea(void);
 
 /** @} */
 

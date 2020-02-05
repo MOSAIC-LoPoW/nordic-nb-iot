@@ -1,6 +1,0 @@
-osource "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/Kconfig.nrf"
-
-osource "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/mcuboot/zephyr/Kconfig"
-
-osource "/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrfxlib/Kconfig.nrfxlib"
-

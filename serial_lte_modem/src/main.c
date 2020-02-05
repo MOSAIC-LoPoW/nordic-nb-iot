@@ -102,12 +102,12 @@ void main(void)
 void main(void)
 {
 	start_execute();
-	k_sleep(K_SECONDS(10));
+	wait_for_gps_fix();
 	while(1)
 	{
-		send_message();
+		send_message(get_gps_nmea());
 		//send_message_without_gps();
-		k_sleep(K_SECONDS(5));
+		k_sleep(K_SECONDS(2));
 	}
 }
 #endif	/* CONFIG_THIN_GPIO_WAKEUP */

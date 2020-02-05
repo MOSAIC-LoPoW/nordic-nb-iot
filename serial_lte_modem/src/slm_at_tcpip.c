@@ -1092,26 +1092,27 @@ int slm_at_tcpip_uninit(void)
 /** If GPS has fix, save NMEA data and toggle PSM to request network stats:
  *  Current and neighbor's Cell ID + RSRP.
  */
-void send_message(void)
+void send_message(nrf_gnss_data_frame_t myGPS_data)
 {
 	LOG_INF("--------BEGIN-----------");
 
-	while (strstr(gps_data.nmea, "GPGGA") == NULL)
-	{
-		k_sleep(K_SECONDS(2));
-		LOG_INF("NO FIX YET, NMEA = ", gps_data.nmea);
-	}
+	// while (strstr(myGPS_data.nmea, "GPGGA") == NULL)
+	// {
+	// 	k_sleep(K_SECONDS(2));
+	// 	LOG_INF("NO FIX YET, NMEA = ", myGPS_data.nmea);
+	// }
 
-	LOG_INF("GPS client running = %d", gps_client_inst.running);
-	LOG_INF("GPS client has fix = %d", gps_client_inst.has_fix);
-	LOG_INF("GPS data PVT flags = %d", gps_data.pvt.flags);
-	LOG_INF("NMEA = ", gps_data.nmea);
+	//LOG_INF("GPS client running = %d", gps_client_inst.running);
+	//LOG_INF("GPS client has fix = %d", gps_client_inst.has_fix);
+	//LOG_INF("GPS data PVT flags = %d", gps_data.pvt.flags);
+	LOG_INF("gps_data.data_id: %d", myGPS_data.data_id);
+	LOG_INF("NMEA = ", myGPS_data.nmea);
 
-	int temp = (int) gps_data.pvt.latitude;
+	int temp = (int) myGPS_data.pvt.latitude;
 	LOG_INF("latitude = %d !!!", temp);
 
 	char nmea_sentence[200]={0}; // "$GPGGA,092204.999,4250.5589,S,14718.5084,E,1,04,24.4,19.7,M,,,,0000*1F";
-	strncpy(nmea_sentence, gps_data.nmea, strlen(gps_data.nmea));
+	strncpy(nmea_sentence, myGPS_data.nmea, strlen(myGPS_data.nmea));
 	LOG_INF("NMEA sentence = %s (LENGTH = %d)", nmea_sentence, strlen(nmea_sentence));
 
 	disable_PSM();
