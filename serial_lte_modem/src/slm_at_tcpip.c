@@ -50,6 +50,7 @@ char neighbors[100] = {0};
 // GPS stats
 extern nrf_gnss_data_frame_t gps_data; 
 extern struct gps_client gps_client_inst;
+extern struct current_loc current_location;
 /////////////////////////////////////////////////////////////////
 
 /*
@@ -108,6 +109,7 @@ static struct tcpip_client {
 	bool connected; /* TCP connected flag */
 	at_cmd_handler_t callback;
 } client;
+extern uint8_t notified;
 
 static char buf[300] = {0};
 
@@ -981,7 +983,7 @@ int request_nb_iot_network_stats()
 		close(at_sock);
 		return -1;
 	}
-	k_sleep(K_SECONDS(3));
+	k_sleep(K_SECONDS(1));
 
 	// Get and parse current RSRP: AT+CESQ
 	bytes_sent = send(at_sock, AT_CESQ, strlen(AT_CESQ), 0);
@@ -1012,7 +1014,7 @@ int request_nb_iot_network_stats()
 		return -1;
 	}
 
-	k_sleep(K_SECONDS(2));
+	k_sleep(K_SECONDS(1));
 
 	// Get and parse neighboring cell IDs and RSRP values: AT+NBRGRSRP
 	bytes_sent = send(at_sock, AT_NBRGRSRP, strlen(AT_NBRGRSRP), 0);
@@ -1050,7 +1052,7 @@ int request_nb_iot_network_stats()
 		close(at_sock);
 		return -1;
 	}
-	k_sleep(K_SECONDS(2));
+	k_sleep(K_SECONDS(1));
 	close(at_sock);
 	LOG_INF("NB-IoT network stats requested.");
 	
@@ -1074,11 +1076,21 @@ int slm_at_tcpip_init(at_cmd_handler_t callback)
 
 	////////////////////////////////////////////////////////////////////
 	// Init nb_iot module & udp socket
-	init_nb_iot_parameters();
-	do_socket_open(2);
+	int err = init_nb_iot_parameters();
+	if(!err)
+	{
+		do_socket_open(2);
+		return 0;
+	}
+	else
+	{
+		LOG_ERR("Could not init nb-iot parameters!");
+		return -1;
+	}
+	
 	////////////////////////////////////////////////////////////////////
 
-	return 0;
+	
 }
 
 /**@brief API to uninitialize TCP/IP AT commands handler
@@ -1089,34 +1101,67 @@ int slm_at_tcpip_uninit(void)
 }
 
 ////////////////////////////////////////////////////////////////////////
-/** If GPS has fix, save NMEA data and toggle PSM to request network stats:
- *  Current and neighbor's Cell ID + RSRP.
+/** If GPS has fix, save GPS data and toggle PSM to request network stats:
+ *  Cell ID and RSRP of serving cell and neighbors (if available).
  */
-void send_message(nrf_gnss_data_frame_t* myGPS_datapointer)
+void send_message()
 {
 	LOG_INF("--------BEGIN-----------");
-	nrf_gnss_data_frame_t myGPS_data = *myGPS_datapointer;
-	// while (strstr(myGPS_data.nmea, "GPGGA") == NULL)
+	// Wait for GPS fix
+	while(!notified)
+	{
+		k_sleep(K_SECONDS(1));
+		LOG_INF("waiting for GPS fix");
+	}
+	LOG_INF("GPS client running = %d", gps_client_inst.running);
+	LOG_INF("GPS client has fix = %d", gps_client_inst.has_fix);
+
+	// Get GPS data
+	//nrf_gnss_data_frame_t myGPS_data = *myGPS_datapointer;
+	char gps_buf[100];
+	sprintf(gps_buf, "%f;%f;%f;%f;%04u-%02u-%02u %02u:%02u:%02u", 
+		current_location.lat, 
+		current_location.lon, 
+		current_location.alt, 
+		current_location.hdop, 
+		current_location.datetime.year,
+		current_location.datetime.month,
+		current_location.datetime.day,
+		current_location.datetime.hour,
+		current_location.datetime.minute,
+		current_location.datetime.seconds);
+
+	gps_client_inst.callback(gps_buf);
+
+	// switch(myGPS_data.data_id)
 	// {
-	// 	k_sleep(K_SECONDS(2));
-	// 	LOG_INF("NO FIX YET, NMEA = ", myGPS_data.nmea);
+	// 	//PVT
+	// 	case 1:
+	// 		LOG_INF("PVT data type");
+	// 		char temp[30];
+	// 		sprintf(temp, "PVT current latitude = %f !!!\r\n", current_location.lat);
+	// 		gps_client_inst.callback(temp); 
+	// 		LOG_INF("GPS data PVT flags = %d", myGPS_data.pvt.flags);
+	// 		break;
+		
+	// 	//NMEA
+	// 	case 2:
+	// 		LOG_INF("NMEA data type");
+	// 		char nmea_sentence[200]={0}; // "$GPGGA,092204.999,4250.5589,S,14718.5084,E,1,04,24.4,19.7,M,,,,0000*1F";
+	// 		strncpy(nmea_sentence, myGPS_data.nmea, strlen(myGPS_data.nmea));
+	// 		LOG_INF("NMEA sentence = %s (LENGTH = %d)", nmea_sentence, strlen(nmea_sentence));
+	// 		char temp2[30]={0};
+	// 		sprintf(temp2, "NMEA current latitude = %f !!!\r\n", current_location.lat);
+	// 		gps_client_inst.callback(temp2); 
+	// 		break;
+
+	// 	//default
+	// 	default:
+	// 		LOG_INF("UNKOWN GPS DATA TYPE");
 	// }
-
-	//LOG_INF("GPS client running = %d", gps_client_inst.running);
-	//LOG_INF("GPS client has fix = %d", gps_client_inst.has_fix);
-	//LOG_INF("GPS data PVT flags = %d", gps_data.pvt.flags);
-	LOG_INF("gps_data.data_id: %d", myGPS_data.data_id);
-	LOG_INF("NMEA = ", myGPS_data.nmea);
-
-	int temp = (int) myGPS_data.pvt.latitude;
-	LOG_INF("latitude = %d !!!", temp);
-
-	char nmea_sentence[200]={0}; // "$GPGGA,092204.999,4250.5589,S,14718.5084,E,1,04,24.4,19.7,M,,,,0000*1F";
-	strncpy(nmea_sentence, myGPS_data.nmea, strlen(myGPS_data.nmea));
-	LOG_INF("NMEA sentence = %s (LENGTH = %d)", nmea_sentence, strlen(nmea_sentence));
-
+	
 	disable_PSM();
-	k_sleep(K_SECONDS(2));
+	k_sleep(K_SECONDS(3));
 
 	int error = request_nb_iot_network_stats();
 	if(error == 0)
@@ -1135,20 +1180,19 @@ void send_message(nrf_gnss_data_frame_t* myGPS_datapointer)
 			strcat(payloadstring, neighbors);
 		strcat(payloadstring, ";");
 		
-		strcat(payloadstring, nmea_sentence);
-		strcat(payloadstring, ";");
+		strcat(payloadstring, gps_buf);
 
 		// Send message to UDP server
-		//do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring);
+		//do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring); // TODO change UDP port
 		LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
 
 		enable_PSM();
-		k_sleep(K_SECONDS(5));
 
 	} else 
 	{
 		LOG_ERR("Unexpected ERROR, try rebooting the device.");
 	}
+	notified = 0;
 	LOG_INF("---------END-----------");
 }
 

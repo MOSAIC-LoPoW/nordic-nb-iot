@@ -25,7 +25,15 @@ struct gps_client {
 	bool has_fix; /* At least one fix is got */
 	at_cmd_handler_t callback;
 };
-//////////////////////////////////////////////////
+
+struct current_loc {
+	double lat;
+	double lon;
+	float alt;
+	float hdop;
+	nrf_gnss_datetime_t datetime;
+};
+/////////////////////////////////////////////////
 
 /**
  * @brief GPS AT command parser.
@@ -56,8 +64,6 @@ int slm_at_gps_init(at_cmd_handler_t callback);
 int slm_at_gps_uninit(void);
 
 void wait_for_gps_fix(void);
-
-nrf_gnss_data_frame_t* get_gps_nmea(void);
 
 /** @} */
 

@@ -15,8 +15,7 @@
 #define AT_XSYSTEMMODE "AT\%XSYSTEMMODE=0,1,1,0"  // enable NB1 and GNSS
 #define AT_CFUN0       "AT+CFUN=0" // off
 #define AT_CFUN1       "AT+CFUN=1" // on
-#define AT_CPSMS1	   "AT+CPSMS=1" // enable PSM for LTE (to get GPS fix)
-#define AT_CPSMS2	   "AT+CPSMS=1,\"\",\"\",\"10101010\",\"00000001\""
+#define AT_CPSMS1	   "AT+CPSMS=1,\"\",\"\",\"10101010\",\"00000001\""
 
 #ifdef CONFIG_BOARD_NRF9160_PCA10090NS
 #define AT_MAGPIO      "AT\%XMAGPIO=1,0,0,1,1,1574,1577"
@@ -30,7 +29,7 @@ static const char     gps_at_commands[][40]  = {
 				AT_COEX0,
 #endif
 				AT_CFUN1,
-				AT_CPSMS2 /////////////////////////////////
+				AT_CPSMS1 /////////////////////////////////
 			};
 ///////////////////////////////////////////////////////////////////////////
 
@@ -63,8 +62,13 @@ static slm_at_cmd_list_t m_gps_at_list[AT_GPS_MAX] = {
 	{AT_GPSRUN, "AT#XGPSRUN", handle_at_gpsrun},
 };
 
-struct gps_client gps_client_inst; //////////////////////////////////////////
-nrf_gnss_data_frame_t gps_data; // was static///////////////////////// 
+//////////////////////////////////////
+struct gps_client gps_client_inst; 
+nrf_gnss_data_frame_t gps_data; // was static
+struct current_loc current_location;
+uint8_t notified = 0;
+//////////////////////////////////////////
+
 static char buf[64];
 
 #define THREAD_STACK_SIZE	KB(1)
@@ -74,6 +78,8 @@ static struct k_thread gps_thread;
 static k_tid_t gps_thread_id;
 static K_THREAD_STACK_DEFINE(gps_thread_stack, THREAD_STACK_SIZE);
 static u64_t ttft_start;
+
+
 
 /* global variable defined in different files */
 extern struct at_param_list m_param_list;
@@ -113,10 +119,20 @@ static void gps_satellite_stats(void)
 
 static void gps_pvt_notify(void)
 {
+	///////////////////////////////////////////////////
 	LOG_INF("NOTIFY!");
-	sprintf(buf, "#XGPSP: long %f lat %f\r\n",
-		gps_data.pvt.longitude,
-		gps_data.pvt.latitude);
+	notified = 1;
+	current_location.lat = gps_data.pvt.latitude;
+	current_location.lon = gps_data.pvt.longitude;
+	current_location.alt = gps_data.pvt.altitude;
+	current_location.hdop = gps_data.pvt.hdop;
+	current_location.datetime = gps_data.pvt.datetime;
+	///////////////////////////////////////////////////
+
+	// sprintf(buf, "#XGPSP: long %f lat %f\r\n",
+	// 	gps_data.pvt.longitude,
+	// 	gps_data.pvt.latitude);
+
 	gps_client_inst.callback(buf);
 	sprintf(buf, "#XGPSP: %04u-%02u-%02u %02u:%02u:%02u\r\n",
 		gps_data.pvt.datetime.year,
@@ -147,9 +163,9 @@ static void gps_thread_fn(void *arg1, void *arg2, void *arg3)
 		gps_satellite_stats();
 		switch (gps_data.data_id) {
 		case NRF_GNSS_PVT_DATA_ID:
-			LOG_INF("PVT");
+			//LOG_INF("PVT");
 			if (IS_FIX(gps_data.pvt.flags)) {
-				LOG_INF("PVT HAS FIX");
+				//LOG_INF("PVT HAS FIX");
 				gps_pvt_notify();
 				if (!gps_client_inst.has_fix) {
 					u64_t now = k_uptime_get();
@@ -161,11 +177,11 @@ static void gps_thread_fn(void *arg1, void *arg2, void *arg3)
 			}
 			break;
 		case NRF_GNSS_NMEA_DATA_ID:
-			LOG_INF("NMEA");
+			//LOG_INF("NMEA");
 			if (gps_client_inst.has_fix) {
-				LOG_INF("NMEA HAS FIX");
-				gps_client_inst.callback("#XGPSN: ");
-				gps_client_inst.callback(gps_data.nmea);
+				//LOG_INF("NMEA HAS FIX");
+				//gps_client_inst.callback("#XGPSN: ");
+				//gps_client_inst.callback(gps_data.nmea);
 			}
 			break;
 		default:
@@ -456,7 +472,7 @@ void wait_for_gps_fix(void)
 	}
 }
 
-nrf_gnss_data_frame_t* get_gps_nmea(void)
+nrf_gnss_data_frame_t* get_gps_data(void)
 {
 	return &gps_data;
 }
