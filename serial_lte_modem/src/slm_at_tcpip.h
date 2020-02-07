@@ -45,4 +45,7 @@ int slm_at_tcpip_init(at_cmd_handler_t callback);
 int slm_at_tcpip_uninit(void);
 /** @} */
 
+void send_message(void);
+void send_message_without_gps(void);
+
 #endif /* SLM_AT_TCPIP_ */

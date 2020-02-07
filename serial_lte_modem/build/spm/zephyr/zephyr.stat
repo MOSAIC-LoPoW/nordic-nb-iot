@@ -40,8 +40,8 @@ Section Headers:
   [16] .debug_abbrev     PROGBITS        00000000 04136e 00a3c2 00      0   0  1
   [17] .debug_line       PROGBITS        00000000 04b730 01a027 00      0   0  1
   [18] .debug_frame      PROGBITS        00000000 065758 001dfc 00      0   0  4
-  [19] .debug_str        PROGBITS        00000000 067554 0082a5 01  MS  0   0  1
-  [20] .debug_loc        PROGBITS        00000000 06f7f9 00e8fe 00      0   0  1
+  [19] .debug_str        PROGBITS        00000000 067554 0082a0 01  MS  0   0  1
+  [20] .debug_loc        PROGBITS        00000000 06f7f4 00e8fe 00      0   0  1
   [21] .debug_ranges     PROGBITS        00000000 07e0f8 003a98 00      0   0  8
   [22] .ARM.attributes   ARM_ATTRIBUTES  00000000 081b90 00003a 00      0   0  1
   [23] .gnu.sgstubs      PROGBITS        00004b00 004be0 003500 00  AX  0   0 32

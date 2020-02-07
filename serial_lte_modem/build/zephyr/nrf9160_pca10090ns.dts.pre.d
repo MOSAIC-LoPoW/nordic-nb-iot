@@ -11,4 +11,4 @@ empty_file.o: \
  /home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/zephyr/dts/arm/nordic/nrf9160_common.dtsi \
  /home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/zephyr/boards/arm/nrf9160_pca10090/nrf9160_pca10090_common.dts \
  /home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/zephyr/boards/arm/nrf9160_pca10090/nrf9160_pca10090_partition_conf.dts \
- /home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem_MATS/nrf9160_pca10090ns.overlay
+ /home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/nrf9160_pca10090ns.overlay

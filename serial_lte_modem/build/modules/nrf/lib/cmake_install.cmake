@@ -34,14 +34,14 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem_MATS/build/modules/nrf/lib/bin/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem_MATS/build/modules/nrf/lib/bsdlib/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem_MATS/build/modules/nrf/lib/at_cmd/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem_MATS/build/modules/nrf/lib/at_notif/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem_MATS/build/modules/nrf/lib/at_cmd_parser/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem_MATS/build/modules/nrf/lib/lte_link_control/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem_MATS/build/modules/nrf/lib/flash_patch/cmake_install.cmake")
-  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem_MATS/build/modules/nrf/lib/fatal_error/cmake_install.cmake")
+  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/lib/bin/cmake_install.cmake")
+  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/lib/bsdlib/cmake_install.cmake")
+  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/lib/at_cmd/cmake_install.cmake")
+  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/lib/at_notif/cmake_install.cmake")
+  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/lib/at_cmd_parser/cmake_install.cmake")
+  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/lib/lte_link_control/cmake_install.cmake")
+  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/lib/flash_patch/cmake_install.cmake")
+  include("/home/thomas/Documents/UA/Doctoraat/projects/nb-iot-multiple-bs/code/ncs/nrf/samples/nrf9160/serial_lte_modem/build/modules/nrf/lib/fatal_error/cmake_install.cmake")
 
 endif()
 

@@ -1104,7 +1104,7 @@ int slm_at_tcpip_uninit(void)
 /** If GPS has fix, save GPS data and toggle PSM to request network stats:
  *  Cell ID and RSRP of serving cell and neighbors (if available).
  */
-void send_message()
+void send_message(void)
 {
 	LOG_INF("--------BEGIN-----------");
 	// Wait for GPS fix
@@ -1117,7 +1117,6 @@ void send_message()
 	LOG_INF("GPS client has fix = %d", gps_client_inst.has_fix);
 
 	// Get GPS data
-	//nrf_gnss_data_frame_t myGPS_data = *myGPS_datapointer;
 	char gps_buf[100];
 	sprintf(gps_buf, "%f;%f;%f;%f;%04u-%02u-%02u %02u:%02u:%02u", 
 		current_location.lat, 
@@ -1131,38 +1130,12 @@ void send_message()
 		current_location.datetime.minute,
 		current_location.datetime.seconds);
 
-	gps_client_inst.callback(gps_buf);
-
-	// switch(myGPS_data.data_id)
-	// {
-	// 	//PVT
-	// 	case 1:
-	// 		LOG_INF("PVT data type");
-	// 		char temp[30];
-	// 		sprintf(temp, "PVT current latitude = %f !!!\r\n", current_location.lat);
-	// 		gps_client_inst.callback(temp); 
-	// 		LOG_INF("GPS data PVT flags = %d", myGPS_data.pvt.flags);
-	// 		break;
-		
-	// 	//NMEA
-	// 	case 2:
-	// 		LOG_INF("NMEA data type");
-	// 		char nmea_sentence[200]={0}; // "$GPGGA,092204.999,4250.5589,S,14718.5084,E,1,04,24.4,19.7,M,,,,0000*1F";
-	// 		strncpy(nmea_sentence, myGPS_data.nmea, strlen(myGPS_data.nmea));
-	// 		LOG_INF("NMEA sentence = %s (LENGTH = %d)", nmea_sentence, strlen(nmea_sentence));
-	// 		char temp2[30]={0};
-	// 		sprintf(temp2, "NMEA current latitude = %f !!!\r\n", current_location.lat);
-	// 		gps_client_inst.callback(temp2); 
-	// 		break;
-
-	// 	//default
-	// 	default:
-	// 		LOG_INF("UNKOWN GPS DATA TYPE");
-	// }
+	gps_client_inst.callback(strcat(gps_buf, "\r\n"));
 	
 	disable_PSM();
 	k_sleep(K_SECONDS(3));
 
+	// Request ID and RSRSP of current and neighboring cells (if available)
 	int error = request_nb_iot_network_stats();
 	if(error == 0)
 	{
@@ -1183,7 +1156,7 @@ void send_message()
 		strcat(payloadstring, gps_buf);
 
 		// Send message to UDP server
-		//do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring); // TODO change UDP port
+		do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring); // TODO change UDP port
 		LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
 
 		enable_PSM();
@@ -1194,6 +1167,7 @@ void send_message()
 	}
 	notified = 0;
 	LOG_INF("---------END-----------");
+	k_sleep(K_SECONDS(3));
 }
 
 void send_message_without_gps(void)
