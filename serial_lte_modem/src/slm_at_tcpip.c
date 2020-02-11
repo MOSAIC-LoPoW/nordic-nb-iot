@@ -1155,10 +1155,18 @@ void send_message(void)
 		
 		strcat(payloadstring, gps_buf);
 
-		// Send message to UDP server
-		do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring); // TODO change UDP port
-		LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
-
+		// Send valid messages to UDP server
+		if(current_rsrp != 255)
+		{
+			do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring); // TODO change UDP port
+			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
+		}
+		else
+		{
+			LOG_ERR("Not sending the message (RSRP = 255)");
+		}
+		
+			
 		enable_PSM();
 
 	} else 
@@ -1167,7 +1175,7 @@ void send_message(void)
 	}
 	notified = 0;
 	LOG_INF("---------END-----------");
-	k_sleep(K_SECONDS(3));
+	k_sleep(K_SECONDS(20));
 }
 
 void send_message_without_gps(void)
