@@ -105,8 +105,9 @@ void main(void)
 	
 	while(1)
 	{
-		//send_message();
+		//send_message(); // also uncomment GPS init in slm_at_host.c and uncomment XSYSTEMMODE command!
 		send_message_without_gps();
+		k_sleep(K_SECONDS(10));
 	}
 }
 #endif	/* CONFIG_THIN_GPIO_WAKEUP */

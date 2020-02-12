@@ -35,7 +35,7 @@ LOG_MODULE_REGISTER(tcpip, CONFIG_SLM_LOG_LEVEL);
 static const char nb_init_at_commands[][40] = {
 				// AT_CFUN0,
 				// AT_XRFTEST,
-				//AT_XSYSTEMMODE, // TODO enable again for GPS to function
+				//AT_XSYSTEMMODE, // TODO enable again for GPS to work
 				//AT_XBANDLOCK,
 				AT_CFUN1,
 				AT_CGDCONT,
@@ -941,22 +941,13 @@ void disable_PSM(void)
 	close(at_sock);
 }
 
-
-int request_nb_iot_network_stats()
+// Request Cell ID: AT+CEREG?
+int request_cell_id(int at_sock)
 {
-	LOG_INF("Requesting NB-IoT network stats...");
-
-	int  at_sock;
 	int  bytes_sent;
 	int  bytes_received;
 	char buffer[150] = {0};
 
-	at_sock = socket(AF_LTE, 0, NPROTO_AT);
-	if (at_sock < 0) {
-		return -1;
-	}
-
-	// Get and parse current cell ID: AT+CEREG?
 	bytes_sent = send(at_sock, AT_CEREG, strlen(AT_CEREG), 0);
 	if (bytes_sent < 0) {
 		LOG_INF("CEREG send error");
@@ -966,7 +957,7 @@ int request_nb_iot_network_stats()
 	do {
 		bytes_received = recv(at_sock, buffer, 100, 0);
 	} while (bytes_received == 0);
-	
+
 	//LOG_INF("CEREG RESPONSE: %s", buf); // +CEREG: 0,5,"5276","0101D268",9
 	if(strstr(buffer, "OK") != NULL)
 	{
@@ -983,9 +974,16 @@ int request_nb_iot_network_stats()
 		close(at_sock);
 		return -1;
 	}
-	k_sleep(K_SECONDS(1));
+	return 0;
+}
 
-	// Get and parse current RSRP: AT+CESQ
+// Get and parse current RSRP: AT+CESQ
+int request_rsrp(int at_sock)
+{
+	int  bytes_sent;
+	int  bytes_received;
+	char buffer[150] = {0};
+
 	bytes_sent = send(at_sock, AT_CESQ, strlen(AT_CESQ), 0);
 	if (bytes_sent < 0) {
 		LOG_INF("CESQ send error");
@@ -1001,11 +999,8 @@ int request_nb_iot_network_stats()
 	{
 		char *pos1 = strrchr(buffer, ',') + 1;
 		char *pos2 = strstr(pos1, "\n");
-		// char rsrp[3];
 		memcpy(current_rsrp, pos1, strlen(pos1)-strlen(pos2));
-		// sprintf(current_rsrp, "%d", rsrp);
-		// char* ptr;
-		// current_rsrp = (uint8_t) strtol(rsrp, &ptr, 10);
+
 		LOG_INF("Current RSRP = %s", current_rsrp);
 	} 
 	else if (strstr(buffer, "ERROR") != NULL) 
@@ -1014,10 +1009,16 @@ int request_nb_iot_network_stats()
 		close(at_sock);
 		return -1;
 	}
+	return 0;
+}
 
-	k_sleep(K_SECONDS(1));
+// Wait for and parse neighboring cell IDs and RSRP values: AT+NBRGRSRP
+int request_neighbors(int at_sock)
+{
+	int  bytes_sent;
+	int  bytes_received;
+	char buffer[150] = {0};
 
-	// Wait for and parse neighboring cell IDs and RSRP values: AT+NBRGRSRP
 	int neighbors_found = 0;
 	while(!neighbors_found)
 	{
@@ -1059,6 +1060,31 @@ int request_nb_iot_network_stats()
 		}
 		k_sleep(K_SECONDS(1));
 	}
+	return 0;
+}
+
+
+int request_nb_iot_network_stats()
+{
+	LOG_INF("Requesting NB-IoT network stats...");
+
+	int  at_sock;
+	at_sock = socket(AF_LTE, 0, NPROTO_AT);
+	if (at_sock < 0) {
+		return -1;
+	}
+
+	// Get and parse current cell ID, RSRP and neighbors
+	if(request_cell_id(at_sock) != 0)
+		return -1;
+	k_sleep(K_SECONDS(1));
+	if(request_rsrp(at_sock) != 0)
+		return -1;
+	k_sleep(K_SECONDS(1));
+	if(request_neighbors(at_sock) != 0)
+		return -1;
+	k_sleep(K_SECONDS(1));
+
 	close(at_sock);
 	LOG_INF("NB-IoT network stats requested.");
 	
@@ -1147,40 +1173,32 @@ void send_message(void)
 	{
 		// Put all data in a buffer
 		char payloadstring[500] = {0};
-
 		strcat(payloadstring, current_cell_id);
 		strcat(payloadstring, ";");
-
 		strcat(payloadstring, current_rsrp);
 		strcat(payloadstring, ";");
-
 		if(neighbors[0] != '\0')
 			strcat(payloadstring, neighbors);
 		strcat(payloadstring, ";");
-		
 		strcat(payloadstring, gps_buf);
 
 		// Send valid messages to UDP server
-		if(!strcmp(current_rsrp, "255"))
+		if(strcmp(current_rsrp, "255") == 0)
+			LOG_ERR("Not sending the message (RSRP = 255)");
+		else
 		{
 			do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring); // TODO change UDP port
 			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
-		}
-		else
-		{
-			LOG_ERR("Not sending the message (RSRP = 255)");
 		}
 		
 		enable_PSM();
 		k_sleep(K_SECONDS(10));
 
 	} else 
-	{
 		LOG_ERR("Unexpected ERROR, try rebooting the device.");
-	}
+
 	notified = 0;
 	LOG_INF("---------END-----------");
-	k_sleep(K_SECONDS(10));
 }
 
 void send_message_without_gps(void)
@@ -1194,27 +1212,23 @@ void send_message_without_gps(void)
 
 		strcat(payloadstring, current_cell_id);
 		strcat(payloadstring, ";");
-
 		strcat(payloadstring, current_rsrp);
 		strcat(payloadstring, ";");
-		LOG_INF("payloadstring = %s", payloadstring);
-
 		if(neighbors[0] != '\0')
 			strcat(payloadstring, neighbors);
 		strcat(payloadstring, ";");
 
 		// Send valid messages to UDP server
 		if(strcmp(current_rsrp, "255")==0)
-		{
 			LOG_ERR("Not sending the message (RSRP = 255)");
-		}
 		else
 		{
 			do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring); // TODO change UDP port
 			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
 		}
-	}
+	} else 
+		LOG_ERR("Unexpected ERROR, try rebooting the device.");
+
 	LOG_INF("---------END-----------");
-	k_sleep(K_SECONDS(20));
 }
 ////////////////////////////////////////////////////////////////////////
