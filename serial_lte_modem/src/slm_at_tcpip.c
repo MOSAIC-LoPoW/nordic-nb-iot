@@ -29,6 +29,7 @@ LOG_MODULE_REGISTER(tcpip, CONFIG_SLM_LOG_LEVEL);
 #define AT_CEREG		"AT+CEREG?"
 #define AT_CESQ			"AT+CESQ"
 #define AT_NBRGRSRP		"AT\%NBRGRSRP"
+#define AT_CCLK			"AT+CCLK?"
 #define AT_CPSMS1	    "AT+CPSMS=1,\"\",\"\",\"10101010\",\"00000001\"" // enable PSM for LTE (to get GPS fix)
 #define AT_CPSMS0	    "AT+CPSMS=0" // disable PSM for LTE (to get LTE RSRP)
 
@@ -46,6 +47,7 @@ static const char nb_init_at_commands[][40] = {
 char current_cell_id[10] = {0};
 char current_rsrp[4] = {0};
 char neighbors[100] = {0};
+char datetime[50] = {0};
 
 // GPS stats
 extern nrf_gnss_data_frame_t gps_data; 
@@ -958,7 +960,7 @@ int request_cell_id(int at_sock)
 		bytes_received = recv(at_sock, buffer, 100, 0);
 	} while (bytes_received == 0);
 
-	//LOG_INF("CEREG RESPONSE: %s", buf); // +CEREG: 0,5,"5276","0101D268",9
+	//LOG_INF("CEREG RESPONSE: %s", buffer); // +CEREG: 0,5,"5276","0101D268",9
 	if(strstr(buffer, "OK") != NULL)
 	{
 		char* pos = strstr(buffer, "\",\"")+3;		
@@ -1032,7 +1034,7 @@ int request_neighbors(int at_sock)
 			bytes_received = recv(at_sock, buffer, 150, 0);
 		} while (bytes_received == 0);
 
-		//LOG_INF("NBRGRSRP RESPONSE: %s", buf); // %NBRGRSRP: 179,6447,57,11,6447,54
+		//LOG_INF("NBRGRSRP RESPONSE: %s", buffer); // %NBRGRSRP: 179,6447,57,11,6447,54
 		if(strstr(buffer, "OK") != NULL)
 		{
 			if(strstr(buffer, "NBRGRSRP") != NULL)
@@ -1063,6 +1065,41 @@ int request_neighbors(int at_sock)
 	return 0;
 }
 
+// Request date and time from the network (no accuracy guaranteed): AT+CCLK?
+int request_datetime(int at_sock)
+{
+	int  bytes_sent;
+	int  bytes_received;
+	char buffer[150] = {0};
+
+	bytes_sent = send(at_sock, AT_CCLK, strlen(AT_CCLK), 0);
+	if (bytes_sent < 0) {
+		LOG_INF("CEREG send error");
+		close(at_sock);
+		return -1;
+	}
+	do {
+		bytes_received = recv(at_sock, buffer, 100, 0);
+	} while (bytes_received == 0);
+
+	//LOG_INF("CCLK RESPONSE: %s", buffer); // +CCLK: "20/02/12,14:34:43+04"
+	if(strstr(buffer, "OK") != NULL)
+	{
+		char* pos1 = strstr(buffer, "\"") + 1;
+		char *pos2 = strstr(pos1, "\n");
+		memcpy(datetime, pos1, strlen(pos1)-strlen(pos2));
+
+		LOG_INF("Datetime = %s", datetime);
+	} 
+	else if (strstr(buffer, "ERROR") != NULL) 
+	{
+		LOG_ERR("Error while getting current cell ID!");
+		close(at_sock);
+		return -1;
+	}
+	return 0;
+}
+
 
 int request_nb_iot_network_stats()
 {
@@ -1074,14 +1111,17 @@ int request_nb_iot_network_stats()
 		return -1;
 	}
 
-	// Get and parse current cell ID, RSRP and neighbors
+	// Get and parse current cell ID, RSRP, neighbors and datetime
+	if(request_neighbors(at_sock) != 0)
+		return -1;
+	k_sleep(K_SECONDS(1));
 	if(request_cell_id(at_sock) != 0)
 		return -1;
 	k_sleep(K_SECONDS(1));
 	if(request_rsrp(at_sock) != 0)
 		return -1;
 	k_sleep(K_SECONDS(1));
-	if(request_neighbors(at_sock) != 0)
+	if(request_datetime(at_sock) != 0)
 		return -1;
 	k_sleep(K_SECONDS(1));
 
@@ -1210,6 +1250,8 @@ void send_message_without_gps(void)
 		// Put all data in a buffer
 		char payloadstring[500] = {0};
 
+		strcat(payloadstring, datetime);
+		strcat(payloadstring, ";");
 		strcat(payloadstring, current_cell_id);
 		strcat(payloadstring, ";");
 		strcat(payloadstring, current_rsrp);
