@@ -408,6 +408,7 @@ static int enable_gps(void)
 
 		if (memcmp(buf, "OK", 2) != 0) {
 			close(at_sock);
+			LOG_ERR("failed to enable GPS");
 			return -1;
 		}
 		//at_cmd_write(gps_at_commands[i], NULL, 0, NULL);

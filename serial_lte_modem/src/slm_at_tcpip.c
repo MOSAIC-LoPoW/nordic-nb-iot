@@ -35,7 +35,7 @@ LOG_MODULE_REGISTER(tcpip, CONFIG_SLM_LOG_LEVEL);
 static const char nb_init_at_commands[][40] = {
 				// AT_CFUN0,
 				// AT_XRFTEST,
-				AT_XSYSTEMMODE,
+				//AT_XSYSTEMMODE, // TODO enable again for GPS to function
 				//AT_XBANDLOCK,
 				AT_CFUN1,
 				AT_CGDCONT,
@@ -44,7 +44,7 @@ static const char nb_init_at_commands[][40] = {
 
 // Network stats
 char current_cell_id[10] = {0};
-uint8_t current_rsrp = 0;
+char current_rsrp[4] = {0};
 char neighbors[100] = {0};
 
 // GPS stats
@@ -1001,11 +1001,12 @@ int request_nb_iot_network_stats()
 	{
 		char *pos1 = strrchr(buffer, ',') + 1;
 		char *pos2 = strstr(pos1, "\n");
-		char rsrp[2];
-		memcpy(rsrp, pos1, strlen(pos1)-strlen(pos2));
-		char* ptr;
-		current_rsrp = (uint8_t) strtol(rsrp, &ptr, 10);
-		LOG_INF("Current RSRP = %d", current_rsrp);
+		// char rsrp[3];
+		memcpy(current_rsrp, pos1, strlen(pos1)-strlen(pos2));
+		// sprintf(current_rsrp, "%d", rsrp);
+		// char* ptr;
+		// current_rsrp = (uint8_t) strtol(rsrp, &ptr, 10);
+		LOG_INF("Current RSRP = %s", current_rsrp);
 	} 
 	else if (strstr(buffer, "ERROR") != NULL) 
 	{
@@ -1016,43 +1017,48 @@ int request_nb_iot_network_stats()
 
 	k_sleep(K_SECONDS(1));
 
-	// Get and parse neighboring cell IDs and RSRP values: AT+NBRGRSRP
-	bytes_sent = send(at_sock, AT_NBRGRSRP, strlen(AT_NBRGRSRP), 0);
-	if (bytes_sent < 0) {
-		LOG_INF("NBRGRSRP send error");
-		close(at_sock);
-		return -1;
-	}
-	do {
-		bytes_received = recv(at_sock, buffer, 150, 0);
-	} while (bytes_received == 0);
-
-	//LOG_INF("NBRGRSRP RESPONSE: %s", buf); // %NBRGRSRP: 179,6447,57,11,6447,54
-	if(strstr(buffer, "OK") != NULL)
+	// Wait for and parse neighboring cell IDs and RSRP values: AT+NBRGRSRP
+	int neighbors_found = 0;
+	while(!neighbors_found)
 	{
-		if(strstr(buffer, "NBRGRSRP") != NULL)
-		{
-			char* pos1 = strstr(buffer, "\%NBRGRSRP: ") + strlen("\%NBRGRSRP: ");
-			char* pos2 = strstr(pos1, "\n");
-			for(uint8_t i=0; i<strlen(pos1)-strlen(pos2); i++)
-			{
-				neighbors[i] = pos1[i];
-			}
-			LOG_INF("Neighbors = %s", neighbors);
+		bytes_sent = send(at_sock, AT_NBRGRSRP, strlen(AT_NBRGRSRP), 0);
+		if (bytes_sent < 0) {
+			LOG_INF("NBRGRSRP send error");
+			close(at_sock);
+			return -1;
 		}
-		else
+		do {
+			bytes_received = recv(at_sock, buffer, 150, 0);
+		} while (bytes_received == 0);
+
+		//LOG_INF("NBRGRSRP RESPONSE: %s", buf); // %NBRGRSRP: 179,6447,57,11,6447,54
+		if(strstr(buffer, "OK") != NULL)
 		{
-			LOG_INF("No neighbors found.");
-			neighbors[0] = '\0';
-		}	
+			if(strstr(buffer, "NBRGRSRP") != NULL)
+			{
+				char* pos1 = strstr(buffer, "\%NBRGRSRP: ") + strlen("\%NBRGRSRP: ");
+				char* pos2 = strstr(pos1, "\n");
+				for(uint8_t i=0; i<strlen(pos1)-strlen(pos2); i++)
+				{
+					neighbors[i] = pos1[i];
+				}
+				LOG_INF("Neighbors = %s", neighbors);
+				neighbors_found = 1;
+			}
+			else
+			{
+				LOG_INF("No neighbors found.");
+				neighbors[0] = '\0';
+			}	
+		}
+		else if (strstr(buffer, "ERROR") != NULL) 
+		{
+			LOG_ERR("Error while getting neighbor data!");
+			close(at_sock);
+			return -1;
+		}
+		k_sleep(K_SECONDS(1));
 	}
-	else if (strstr(buffer, "ERROR") != NULL) 
-	{
-		LOG_ERR("Error while getting neighbor data!");
-		close(at_sock);
-		return -1;
-	}
-	k_sleep(K_SECONDS(1));
 	close(at_sock);
 	LOG_INF("NB-IoT network stats requested.");
 	
@@ -1133,7 +1139,7 @@ void send_message(void)
 	gps_client_inst.callback(strcat(gps_buf, "\r\n"));
 	
 	disable_PSM();
-	k_sleep(K_SECONDS(3));
+	k_sleep(K_SECONDS(10));
 
 	// Request ID and RSRSP of current and neighboring cells (if available)
 	int error = request_nb_iot_network_stats();
@@ -1145,8 +1151,7 @@ void send_message(void)
 		strcat(payloadstring, current_cell_id);
 		strcat(payloadstring, ";");
 
-		char* rsrp = (char*) &current_rsrp;
-		strcat(payloadstring, rsrp);
+		strcat(payloadstring, current_rsrp);
 		strcat(payloadstring, ";");
 
 		if(neighbors[0] != '\0')
@@ -1156,7 +1161,7 @@ void send_message(void)
 		strcat(payloadstring, gps_buf);
 
 		// Send valid messages to UDP server
-		if(current_rsrp != 255)
+		if(!strcmp(current_rsrp, "255"))
 		{
 			do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring); // TODO change UDP port
 			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
@@ -1166,8 +1171,8 @@ void send_message(void)
 			LOG_ERR("Not sending the message (RSRP = 255)");
 		}
 		
-			
 		enable_PSM();
+		k_sleep(K_SECONDS(10));
 
 	} else 
 	{
@@ -1175,32 +1180,41 @@ void send_message(void)
 	}
 	notified = 0;
 	LOG_INF("---------END-----------");
-	k_sleep(K_SECONDS(20));
+	k_sleep(K_SECONDS(10));
 }
 
 void send_message_without_gps(void)
 {
-	char payloadstring[300] = {0};
+	LOG_INF("--------BEGIN----------");
 	int error = request_nb_iot_network_stats();
 	if(error == 0)
+	{
+		// Put all data in a buffer
+		char payloadstring[500] = {0};
+
+		strcat(payloadstring, current_cell_id);
+		strcat(payloadstring, ";");
+
+		strcat(payloadstring, current_rsrp);
+		strcat(payloadstring, ";");
+		LOG_INF("payloadstring = %s", payloadstring);
+
+		if(neighbors[0] != '\0')
+			strcat(payloadstring, neighbors);
+		strcat(payloadstring, ";");
+
+		// Send valid messages to UDP server
+		if(strcmp(current_rsrp, "255")==0)
 		{
-			// Put all data in a buffer
-			strcat(payloadstring, current_cell_id);
-			strcat(payloadstring, ";");
-
-			char* rsrp = (char*) &current_rsrp;
-			strcat(payloadstring, rsrp);
-			strcat(payloadstring, ";");
-
-			if(neighbors[0] != '\0')
-			{
-				strcat(payloadstring, neighbors);
-			}
-			strcat(payloadstring, ";");
-
-			// Send message to UDP server
-			//do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring);
-			LOG_INF("MESSAGE SENT: \"%s\"", payloadstring);
+			LOG_ERR("Not sending the message (RSRP = 255)");
 		}
+		else
+		{
+			do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring); // TODO change UDP port
+			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
+		}
+	}
+	LOG_INF("---------END-----------");
+	k_sleep(K_SECONDS(20));
 }
 ////////////////////////////////////////////////////////////////////////

@@ -105,9 +105,8 @@ void main(void)
 	
 	while(1)
 	{
-		send_message();
-		//send_message_without_gps();
-		// k_sleep(K_SECONDS(1));
+		//send_message();
+		send_message_without_gps();
 	}
 }
 #endif	/* CONFIG_THIN_GPIO_WAKEUP */

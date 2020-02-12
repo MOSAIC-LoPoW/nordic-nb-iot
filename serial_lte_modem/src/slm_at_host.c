@@ -395,14 +395,14 @@ int slm_at_host_init(void)
 		return -EFAULT;
 	}
 #endif
-#if defined(CONFIG_SLM_GPS_AT_MODE)
-	/* Initialize the GPS module */
-	err = slm_at_gps_init(slm_at_callback);
-	if (err) {
-		LOG_ERR("GPS could not be initialized: %d", err);
-		return -EFAULT;
-	}
-#endif
+// #if defined(CONFIG_SLM_GPS_AT_MODE) // TODO enable again for GPS to function
+// 	/* Initialize the GPS module */
+// 	err = slm_at_gps_init(slm_at_callback);
+// 	if (err) {
+// 		LOG_ERR("GPS could not be initialized: %d", err);
+// 		return -EFAULT;
+// 	}
+// #endif
 	LOG_DBG("at_host init done");
 	return err;
 }
