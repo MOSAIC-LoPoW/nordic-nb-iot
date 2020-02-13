@@ -859,7 +859,7 @@ static int init_nb_iot_parameters(void)
 		}
 		//at_cmd_write(nb_init_at_commands[i], NULL, 0, NULL);
 		
-		k_sleep(K_SECONDS(3));
+		k_sleep(K_SECONDS(1));
 	}
 	
 	// // Keep requesting for neighboring cells until some are found.
@@ -1000,7 +1000,7 @@ int request_rsrp(int at_sock)
 	if(strstr(buffer, "OK") != NULL)
 	{
 		char *pos1 = strrchr(buffer, ',') + 1;
-		char *pos2 = strstr(pos1, "\n");
+		char *pos2 = strstr(pos1, "\n") - 1;
 		memcpy(current_rsrp, pos1, strlen(pos1)-strlen(pos2));
 
 		LOG_INF("Current RSRP = %s", current_rsrp);
@@ -1040,7 +1040,7 @@ int request_neighbors(int at_sock)
 			if(strstr(buffer, "NBRGRSRP") != NULL)
 			{
 				char* pos1 = strstr(buffer, "\%NBRGRSRP: ") + strlen("\%NBRGRSRP: ");
-				char* pos2 = strstr(pos1, "\n");
+				char* pos2 = strstr(pos1, "\n") -1;
 				for(uint8_t i=0; i<strlen(pos1)-strlen(pos2); i++)
 				{
 					neighbors[i] = pos1[i];
@@ -1086,7 +1086,7 @@ int request_datetime(int at_sock)
 	if(strstr(buffer, "OK") != NULL)
 	{
 		char* pos1 = strstr(buffer, "\"") + 1;
-		char *pos2 = strstr(pos1, "\n");
+		char *pos2 = strstr(pos1, "\"");
 		memcpy(datetime, pos1, strlen(pos1)-strlen(pos2));
 
 		LOG_INF("Datetime = %s", datetime);
@@ -1111,19 +1111,18 @@ int request_nb_iot_network_stats()
 		return -1;
 	}
 
-	// Get and parse current cell ID, RSRP, neighbors and datetime
+	// Wait for neighbors, get and parse neighbors, current cell ID, RSRP and datetime
 	if(request_neighbors(at_sock) != 0)
 		return -1;
-	k_sleep(K_SECONDS(1));
+
 	if(request_cell_id(at_sock) != 0)
 		return -1;
-	k_sleep(K_SECONDS(1));
+
 	if(request_rsrp(at_sock) != 0)
 		return -1;
-	k_sleep(K_SECONDS(1));
+
 	if(request_datetime(at_sock) != 0)
 		return -1;
-	k_sleep(K_SECONDS(1));
 
 	close(at_sock);
 	LOG_INF("NB-IoT network stats requested.");
@@ -1249,7 +1248,6 @@ void send_message_without_gps(void)
 	{
 		// Put all data in a buffer
 		char payloadstring[500] = {0};
-
 		strcat(payloadstring, datetime);
 		strcat(payloadstring, ";");
 		strcat(payloadstring, current_cell_id);
