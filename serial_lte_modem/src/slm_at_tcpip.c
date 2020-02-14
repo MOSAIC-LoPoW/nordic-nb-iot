@@ -1051,6 +1051,8 @@ int request_neighbors(int at_sock)
 			else
 			{
 				LOG_INF("No neighbors found.");
+				request_cell_id(at_sock); //################TODO remove again##########################################
+				request_rsrp(at_sock); //###################TODO remove agian##########################################
 				neighbors[0] = '\0';
 			}	
 		}
@@ -1114,13 +1116,13 @@ int request_nb_iot_network_stats()
 	// Wait for neighbors, get and parse neighbors, current cell ID, RSRP and datetime
 	if(request_neighbors(at_sock) != 0)
 		return -1;
-
+	k_sleep(K_MSEC(500));
 	if(request_cell_id(at_sock) != 0)
 		return -1;
-
+	k_sleep(K_MSEC(500));
 	if(request_rsrp(at_sock) != 0)
 		return -1;
-
+	k_sleep(K_MSEC(500));
 	if(request_datetime(at_sock) != 0)
 		return -1;
 
@@ -1263,8 +1265,17 @@ void send_message_without_gps(void)
 			LOG_ERR("Not sending the message (RSRP = 255)");
 		else
 		{
-			do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring); // TODO change UDP port
-			LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
+			int err = do_udp_sendto("nbiot.idlab.uantwerpen.be", 1270, payloadstring); // TODO change UDP port
+			if(err==-1)
+			{				
+				LOG_ERR("Could not send message, trying to reopen the socket...");
+				do_socket_open(2);
+			}
+
+			else
+			{
+				LOG_INF("MESSAGE SENT: \"%s\" (LENGTH = %d)", payloadstring, strlen(payloadstring));
+			}
 		}
 	} else 
 		LOG_ERR("Unexpected ERROR, try rebooting the device.");
